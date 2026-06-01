@@ -478,4 +478,84 @@ describe('Auth Integration — POST /api/auth', () => {
       expect(mockPrisma.listing.create).not.toHaveBeenCalled();
     });
   });
+
+  describe('GET /api/auth/me — Protected Profile', () => {
+    it('should return the authenticated user profile', async () => {
+      const token = generateValidToken();
+
+      mockPrisma.user.findUnique.mockResolvedValue({
+        id: CREATED_USER_ROW.id,
+        email: CREATED_USER_ROW.email,
+        name: CREATED_USER_ROW.name,
+        phone: CREATED_USER_ROW.phone,
+        role: 'AGENT',
+        createdAt: new Date().toISOString(),
+      });
+
+      const res = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.email).toBe('agent@test.com');
+      expect(res.body.data).not.toHaveProperty('password');
+    });
+
+    it('should return 401 without a token', async () => {
+      const res = await request(app)
+        .get('/api/auth/me')
+        .expect(401);
+
+      expect(res.body.success).toBe(false);
+    });
+
+    it('should return 404 when user no longer exists', async () => {
+      const token = generateValidToken();
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+
+      const res = await request(app)
+        .get('/api/auth/me')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(401);
+
+      expect(res.body.success).toBe(false);
+    });
+  });
+
+  describe('POST /api/auth/register — Role Assignment', () => {
+    it('should default role to AGENT when not specified', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      mockPrisma.user.create.mockImplementation(async (args) => {
+        const { password: _, ...rest } = { id: 'u1', ...args.data };
+        return rest;
+      });
+
+      await request(app)
+        .post('/api/auth/register')
+        .send({ email: 'new@test.com', password: 'Password123!', name: 'New', phone: '+123' })
+        .expect(201);
+
+      expect(mockPrisma.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ role: 'AGENT' }) }),
+      );
+    });
+
+    it('should allow explicit role override', async () => {
+      mockPrisma.user.findUnique.mockResolvedValue(null);
+      mockPrisma.user.create.mockImplementation(async (args) => {
+        const { password: _, ...rest } = { id: 'u1', ...args.data };
+        return rest;
+      });
+
+      await request(app)
+        .post('/api/auth/register')
+        .send({ email: 'admin@test.com', password: 'Password123!', name: 'Admin', phone: '+123', role: 'SUPER_ADMIN' })
+        .expect(201);
+
+      expect(mockPrisma.user.create).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ role: 'SUPER_ADMIN' }) }),
+      );
+    });
+  });
 });
