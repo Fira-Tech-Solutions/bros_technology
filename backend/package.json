@@ -7,12 +7,19 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
-    "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "db:push": "dotenv -e .env.test -- prisma db push --skip-generate",
+    "db:push:dev": "prisma db push --skip-generate",
+    "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --forceExit",
+    "test:watch": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --watch",
+    "test:coverage": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --coverage --forceExit",
+    "test:unit": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --testPathPattern='(unit|__tests__)/' --forceExit",
+    "test:integration": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --testPathPattern='integration' --forceExit",
+    "test:ci": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --coverage --ci --forceExit",
+    "test:setup": "docker compose -f ../DataBase/docker-compose.yml up -d postgres-test-db && sleep 3 && npm run db:push",
+    "test:teardown": "docker compose -f ../DataBase/docker-compose.yml down -v --filter name=marketplace_test_postgres"
   },
   "keywords": [],
   "license": "ISC",
@@ -32,6 +39,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^30.4.1",
+    "dotenv-cli": "^11.0.0",
     "jest": "^30.4.2",
     "nodemon": "^3.1.0",
     "prisma": "^6.9.0",
