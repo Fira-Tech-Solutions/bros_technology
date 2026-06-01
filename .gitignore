@@ -1,0 +1,73 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log
+
+# Env files
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+log/
+
+# Build outputs
+dist/
+build/
+.next/
+.out/
+.release/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+android/
+ios/
+*.apk
+*.aab
+
+# Coverage
+coverage/
+.nyc_output/
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# macOS
+.DS_Store
+
+# Linux
+local-credentials.json
+
+# Misc
+.cache/
+*.tmp
+*.swp
+
+# Public website artifacts
+public-website/.next/
+public-website/build/
+
+# Backend
+backend/node_modules/
+backend/build/
+
+# Admin mobile app
+admin-mobile-app/.expo/
+admin-mobile-app/node_modules/
+
+# Ignore secrets and keys
+*.pem
+*.key
+*.crt
+
+# Ignore generated images or uploads (if stored locally during development)
+uploads/
+media/
