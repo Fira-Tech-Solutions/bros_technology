@@ -1,0 +1,118 @@
+// backend/src/config/schema.prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Global Roles for Access Control
+enum Role {
+  SUPER_ADMIN  // Can create categories, manage all listings
+  AGENT        // Can only manage their own listings (cars, houses, electronics, etc.)
+}
+
+// System Status for listings
+enum ListingStatus {
+  AVAILABLE
+  PENDING
+  SOLD
+  ARCHIVED
+}
+
+// Track the state of automated social media postings
+enum SyndicationStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model User {
+  id          String        @id @default(uuid())
+  email       String        @unique
+  password    String        
+  name        String
+  phone       String        // Essential for buyers to contact agents
+  role        Role          @default(AGENT)
+  listings    Listing[]     // One-to-Many relationship
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("users")
+}
+
+model Category {
+  id          String        @id @default(uuid())
+  name        String        @unique // e.g., "CARS", "REAL_ESTATE", "ELECTRONICS"
+  displayName String        // e.g., "Vehicles & Cars", "Houses & Apartments"
+  icon        String        // String identifier for frontend icons (e.g., "home", "car")
+  
+  // Dynamic validation rules stored as JSON array. Example:
+  // [{"field": "mileage", "type": "number", "required": true}]
+  schemaRules Json          
+  
+  listings    Listing[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("categories")
+}
+
+model Listing {
+  id                    String           @id @default(uuid())
+  title                 String
+  description           String           @db.Text
+  price                 Decimal          @db.Decimal(12, 2)
+  status                ListingStatus    @default(AVAILABLE)
+  
+  // High-priority core fields for quick search filtering
+  city                  String           // e.g., "Addis Ababa", "Adama"
+  neighborhood          String           // e.g., "Bole", "Bole Michael"
+  
+  // Arrays store compressed WebP paths. Index [0] represents the cover photo
+  images                String[]         
+  
+  // Flexible storage block matching the Category's dynamic schemaRules
+  attributes            Json             
+  
+  // Custom platform-specific syndication override fields
+  customTelegramCaption String?          @db.Text // Optional template text customized by agent
+  
+  categoryId            String
+  category              Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  
+  agentId               String
+  agent                 User             @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  
+  // Real-time metrics
+  viewsCount            Int              @default(0)
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  // Relationship to syndication logs
+  syndications          SyndicationLog[]
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([city, neighborhood]) // Compound index for fast regional search queries
+  @@map("listings")
+}
+
+model SyndicationLog {
+  id           String            @id @default(uuid())
+  listingId    String
+  listing      Listing           @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  
+  platform     String            // "TELEGRAM", "FACEBOOK", "INSTAGRAM"
+  status       SyndicationStatus @default(PENDING)
+  channelInfo  String            // Stores target channel ID or group metadata link
+  errorMessage String?           @db.Text // Contains raw API failure strings if push drops
+  
+  runAt        DateTime          @default(now())
+
+  @@index([listingId])
+  @@map("syndication_logs")
+}
