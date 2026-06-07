@@ -10,7 +10,9 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportError } from "../lib/error-reporting";
+import { reportLovableError } from "../lib/lovable-error-reporting";
+import { ThemeProvider } from "../providers/theme";
+import { LocaleProvider } from "../providers/locale";
 
 function NotFoundComponent() {
   return (
@@ -38,7 +40,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportError(error, { boundary: "tanstack_root_error_component" });
+    reportLovableError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -77,14 +79,21 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Æther — Architectural Living, Curated" },
-      { name: "description", content: "A curated portfolio of architectural residences and retreats. Cinematic, immersive, mobile-first." },
-      { name: "theme-color", content: "#1a1726" },
-      { property: "og:title", content: "Æther — Architectural Living, Curated" },
-      { property: "og:description", content: "A curated portfolio of architectural residences and retreats." },
+      { title: "Adama Property — Premium Real Estate in Adama, Ethiopia" },
+      {
+        name: "description",
+        content:
+          "Adama Property \u2014 premium real estate and architectural residences in Adama, Ethiopia.",
+      },
+      { name: "theme-color", content: "#c85a2a" },
+      { property: "og:title", content: "Adama Property — Premium Real Estate in Adama, Ethiopia" },
+      {
+        property: "og:description",
+        content: "Adama Property \u2014 premium real estate and architectural residences in Adama, Ethiopia.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Retailment" },
+      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -92,8 +101,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Ethiopic:wght@300;400;500;600&family=Noto+Serif+Ethiopic:wght@400;600&display=swap",
       },
+      { rel: "manifest", href: "/manifest.json" },
+      { rel: "apple-touch-icon", href: "/icons/icon-192x192.png" },
     ],
   }),
   shellComponent: RootShell,
@@ -104,11 +115,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="transition-colors duration-300">
         {children}
         <Scripts />
       </body>
@@ -121,8 +132,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeProvider>
+        <LocaleProvider>
+          <Outlet />
+        </LocaleProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

@@ -5,6 +5,7 @@ import { Nav } from "@/components/Nav";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperty } from "@/hooks/use-properties";
 import { formatPrice } from "@/lib/api/properties";
+import { useLocale } from "@/providers/locale";
 
 export const Route = createFileRoute("/property/$id")({
   component: Detail,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/property/$id")({
 function Detail() {
   const { id } = Route.useParams();
   const { data: p, isLoading, isError, refetch } = useProperty(id);
+  const { t } = useLocale();
 
   if (isLoading) {
     return (
@@ -30,7 +32,7 @@ function Detail() {
       <div className="min-h-screen bg-background pt-24">
         <Nav />
         <div className="mx-auto max-w-7xl px-6">
-          <ErrorState message="Residence not found." onRetry={() => refetch()} />
+          <ErrorState message={t("error.notFound")} onRetry={() => refetch()} />
         </div>
       </div>
     );
@@ -54,8 +56,11 @@ function Detail() {
 
         <div className="absolute inset-x-0 top-20 z-10 px-6 md:top-32">
           <div className="mx-auto max-w-7xl">
-            <Link to="/catalog" className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs">
-              <ArrowLeft className="h-3.5 w-3.5" /> Back to collection
+            <Link
+              to="/catalog"
+              className="inline-flex items-center gap-2 rounded-full glass px-4 py-2 text-xs"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> {t("property.backToCollection")}
             </Link>
           </div>
         </div>
@@ -93,21 +98,25 @@ function Detail() {
             className="grid grid-cols-2 gap-4 md:grid-cols-4"
           >
             {[
-              { icon: Bed, label: "Beds", value: p.beds },
-              { icon: Bath, label: "Baths", value: p.baths },
+              { icon: Bed, label: t("filter.bedrooms"), value: p.beds },
+              { icon: Bath, label: t("filter.bathrooms"), value: p.baths },
               { icon: Maximize2, label: "Area", value: `${p.area.toLocaleString()} ft²` },
-              { label: "Price", value: formatPrice(p.price), gold: true },
+              { label: t("filter.price"), value: formatPrice(p.price), gold: true },
             ].map((s, i) => (
               <div key={i} className="rounded-2xl border border-border bg-card p-5">
                 <p className="text-xs uppercase tracking-widest text-muted-foreground">{s.label}</p>
-                <p className={`mt-2 font-display text-2xl ${s.gold ? "text-gradient-gold" : ""}`}>{s.value}</p>
+                <p className={`mt-2 font-display text-2xl ${s.gold ? "text-gradient-gold" : ""}`}>
+                  {s.value}
+                </p>
               </div>
             ))}
           </motion.div>
 
           {/* Description */}
           <div className="mt-16">
-            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">The residence</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              {t("property.theResidence")}
+            </p>
             <p className="mt-4 max-w-2xl text-balance text-xl leading-relaxed text-foreground/90 md:text-2xl">
               {p.description}
             </p>
@@ -115,7 +124,9 @@ function Detail() {
 
           {/* Gallery */}
           <div className="mt-16">
-            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Gallery</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              {t("property.gallery")}
+            </p>
             <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
               {p.gallery.map((src, i) => (
                 <motion.div
@@ -126,7 +137,12 @@ function Detail() {
                   transition={{ type: "spring", stiffness: 80, damping: 18, delay: i * 0.06 }}
                   className={`overflow-hidden rounded-2xl ${i === 0 ? "col-span-2 row-span-2 aspect-square md:aspect-[4/3]" : "aspect-square"}`}
                 >
-                  <img src={src} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 hover:scale-105" />
+                  <img
+                    src={src}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
                 </motion.div>
               ))}
             </div>
@@ -134,10 +150,15 @@ function Detail() {
 
           {/* Features */}
           <div className="mt-16">
-            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Features</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              {t("property.features")}
+            </p>
             <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
               {p.features.map((f) => (
-                <div key={f} className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4">
+                <div
+                  key={f}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card px-5 py-4"
+                >
                   <Check className="h-4 w-4 text-gold" />
                   <span className="text-sm">{f}</span>
                 </div>
@@ -147,7 +168,9 @@ function Detail() {
 
           {/* Map */}
           <div className="mt-16">
-            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Location</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              {t("property.location")}
+            </p>
             <div className="mt-6 aspect-[16/9] overflow-hidden rounded-2xl border border-border">
               <iframe
                 title="Map"
@@ -164,18 +187,30 @@ function Detail() {
         {/* Desktop sticky contact */}
         <aside className="hidden lg:block">
           <div className="sticky top-28 rounded-3xl border border-border bg-card p-6 shadow-elegant">
-            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Enquire privately</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+              {t("property.enquire")}
+            </p>
             <p className="mt-3 font-display text-3xl text-gradient-gold">{formatPrice(p.price)}</p>
             <div className="mt-5 space-y-3">
-              <input placeholder="Name" className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none" />
-              <input placeholder="Email" className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none" />
-              <textarea rows={3} placeholder="A note" className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none" />
+              <input
+                placeholder={t("property.namePlaceholder")}
+                className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
+              />
+              <input
+                placeholder={t("property.emailPlaceholder")}
+                className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
+              />
+              <textarea
+                rows={3}
+                placeholder={t("property.notePlaceholder")}
+                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
+              />
             </div>
             <button className="mt-5 w-full rounded-full bg-gradient-gold py-3 text-sm font-medium text-primary-foreground">
-              Request a viewing
+              {t("property.requestViewing")}
             </button>
             <button className="mt-2 w-full rounded-full border border-border py-3 text-sm hover:bg-accent">
-              <Phone className="mr-2 inline h-4 w-4" /> Call concierge
+              <Phone className="mr-2 inline h-4 w-4" /> {t("property.callConcierge")}
             </button>
           </div>
         </aside>
@@ -185,7 +220,9 @@ function Detail() {
       <div className="fixed bottom-20 left-3 right-3 z-40 lg:hidden">
         <div className="flex items-center justify-between gap-3 rounded-2xl glass border border-border p-3 shadow-elegant">
           <div>
-            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">From</p>
+            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              {t("property.from")}
+            </p>
             <p className="font-display text-lg text-gradient-gold">{formatPrice(p.price)}</p>
           </div>
           <div className="flex gap-2">
@@ -193,7 +230,7 @@ function Detail() {
               <Phone className="h-4 w-4" />
             </button>
             <button className="inline-flex items-center gap-2 rounded-full bg-gradient-gold px-4 py-3 text-sm font-medium text-primary-foreground">
-              <Calendar className="h-4 w-4" /> Book viewing
+              <Calendar className="h-4 w-4" /> {t("property.bookViewing")}
             </button>
           </div>
         </div>

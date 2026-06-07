@@ -9,6 +9,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { useProperties } from "@/hooks/use-properties";
 import { useDebounce } from "@/hooks/use-debounce";
 import { CATEGORIES, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
+import { useLocale } from "@/providers/locale";
 import {
   FilterPanel,
   DEFAULT_FILTERS,
@@ -31,8 +32,8 @@ export const Route = createFileRoute("/catalog")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Catalog — Æther" },
-      { name: "description", content: "The full collection of curated residences." },
+      { title: "Catalog — Adama Property" },
+      { name: "description", content: "Browse premium properties and residences in Adama, Ethiopia." },
     ],
   }),
   component: Catalog,
@@ -44,8 +45,8 @@ function Catalog() {
   const navigate = useNavigate({ from: "/catalog" });
   const [layout, setLayout] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
+  const { t, locale } = useLocale();
 
-  // Local input -> debounced -> URL
   const [qInput, setQInput] = useState(q);
   const debouncedQ = useDebounce(qInput, 300);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -58,7 +59,6 @@ function Catalog() {
     });
   }, [debouncedQ]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Cmd/Ctrl + K
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -74,7 +74,6 @@ function Catalog() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Filter state derived from URL
   const filters: FilterState = useMemo(
     () => ({
       priceMin: search.priceMin ?? DEFAULT_FILTERS.priceMin,
@@ -139,9 +138,11 @@ function Catalog() {
         {/* Header + Global search */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Collection</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              {t("catalog.badge")}
+            </p>
             <h1 className="mt-2 font-display text-4xl md:text-6xl">
-              {category === "All" ? "All residences" : category}
+              {category === "All" ? t("catalog.allResidences") : category}
             </h1>
             <motion.p
               key={`${count}-${isLoading}`}
@@ -149,8 +150,14 @@ function Catalog() {
               animate={{ opacity: 1, y: 0 }}
               className="mt-2 text-sm text-muted-foreground"
             >
-              {isLoading ? "Gathering residences…" : `Showing ${count} ${count === 1 ? "property" : "properties"}`}
-              {isFetching && !isLoading && <span className="ml-2 text-gold/80">updating…</span>}
+              {isLoading
+                ? t("catalog.gathering")
+                : t("catalog.showing", { count }) +
+                  " " +
+                  t(count === 1 ? "catalog.property" : "catalog.properties")}
+              {isFetching && !isLoading && (
+                <span className="ml-2 text-gold/80">{t("catalog.updating")}</span>
+              )}
             </motion.p>
           </div>
 
@@ -161,7 +168,7 @@ function Catalog() {
                 ref={searchRef}
                 value={qInput}
                 onChange={(e) => setQInput(e.target.value)}
-                placeholder="Search location, name, tag…"
+                placeholder={t("catalog.searchPlaceholder")}
                 className="w-full rounded-full border border-border bg-card py-3 pl-11 pr-24 text-sm transition-colors focus:border-gold focus:outline-none"
               />
               <AnimatePresence>
@@ -227,7 +234,9 @@ function Catalog() {
                     )}
                     <span
                       className={`relative z-10 ${
-                        active ? "text-primary-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                        active
+                          ? "text-primary-foreground font-medium"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {c}
@@ -245,9 +254,11 @@ function Catalog() {
           <aside className="hidden md:block">
             <div className="sticky top-28 rounded-2xl border border-border bg-card/40 p-5">
               <div className="mb-5 flex items-center justify-between">
-                <h3 className="font-display text-xl">Refine</h3>
+                <h3 className="font-display text-xl">{t("catalog.refine")}</h3>
                 {activeCount > 0 && (
-                  <span className="rounded-full bg-gold/15 px-2 py-0.5 text-xs text-gold">{activeCount} active</span>
+                  <span className="rounded-full bg-gold/15 px-2 py-0.5 text-xs text-gold">
+                    {activeCount} {t("catalog.active")}
+                  </span>
                 )}
               </div>
               <FilterPanel value={filters} onChange={setFilters} onReset={resetFilters} />
@@ -283,14 +294,18 @@ function Catalog() {
                     />
                     <div className="flex flex-1 flex-col justify-between py-2">
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.location}</p>
+                        <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                          {p.location}
+                        </p>
                         <h3 className="font-display text-2xl">{p.title}</h3>
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">
                           {p.beds} bd · {p.baths} ba · {p.area.toLocaleString()} ft²
                         </span>
-                        <span className="text-gradient-gold font-display text-lg">{formatPrice(p.price)}</span>
+                        <span className="text-gradient-gold font-display text-lg">
+                          {formatPrice(p.price)}
+                        </span>
                       </div>
                     </div>
                   </Link>
@@ -316,7 +331,8 @@ function Catalog() {
         className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-gold px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
       >
         <SlidersHorizontal className="h-4 w-4" />
-        Filters{activeCount > 0 ? ` (${activeCount} active)` : ""}
+        {t("catalog.filters")}
+        {activeCount > 0 ? ` (${activeCount} ${t("catalog.active")})` : ""}
       </motion.button>
 
       {/* Mobile filter sheet */}
@@ -341,10 +357,12 @@ function Catalog() {
                 <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border" />
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="font-display text-2xl">Refine</h3>
+                    <h3 className="font-display text-2xl">{t("catalog.refine")}</h3>
                     <p className="text-xs text-muted-foreground">
-                      {isLoading ? "…" : `${count} match${count === 1 ? "" : "es"}`}
-                      {activeCount > 0 ? ` · ${activeCount} active` : ""}
+                      {isLoading
+                        ? "…"
+                        : `${count} ${t(count === 1 ? "catalog.property" : "catalog.properties")}`}
+                      {activeCount > 0 ? ` · ${activeCount} ${t("catalog.active")}` : ""}
                     </p>
                   </div>
                   <button
@@ -363,7 +381,10 @@ function Catalog() {
                 onClick={() => setFilterOpen(false)}
                 className="mt-8 w-full rounded-full bg-gradient-gold py-3.5 text-sm font-medium text-primary-foreground"
               >
-                Show {count} {count === 1 ? "result" : "results"}
+                {t("catalog.showResults", {
+                  count,
+                  type: t(count === 1 ? "catalog.property" : "catalog.properties"),
+                })}
               </button>
             </motion.div>
           </>
@@ -374,6 +395,7 @@ function Catalog() {
 }
 
 function EmptyState({ onReset }: { onReset: () => void }) {
+  const { t } = useLocale();
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -388,15 +410,13 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       >
         <SearchX className="h-7 w-7" />
       </motion.div>
-      <h3 className="font-display text-3xl">No residences match</h3>
-      <p className="mt-2 max-w-sm px-6 text-sm text-muted-foreground">
-        Try widening your price range or removing a filter — your perfect retreat may be one tap away.
-      </p>
+      <h3 className="font-display text-3xl">{t("empty.title")}</h3>
+      <p className="mt-2 max-w-sm px-6 text-sm text-muted-foreground">{t("empty.description")}</p>
       <button
         onClick={onReset}
         className="mt-6 rounded-full bg-gradient-gold px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-glow"
       >
-        Reset all filters
+        {t("empty.resetAll")}
       </button>
     </motion.div>
   );
