@@ -12,6 +12,27 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  postgres-test-db:
+    image: postgres:15-alpine
+    container_name: marketplace_test_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: test_admin
+      POSTGRES_PASSWORD: test_secure_password123
+      POSTGRES_DB: marketplace_test_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    # Health check ensures the container is ready before tests connect
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_admin -d marketplace_test_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
 volumes:
   postgres_data:
+    driver: local
+  postgres_test_data:
     driver: local

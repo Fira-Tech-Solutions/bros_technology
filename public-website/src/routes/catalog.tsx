@@ -1,0 +1,403 @@
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { z } from "zod";
+import { LayoutGrid, List, SlidersHorizontal, Search, X, Command, SearchX } from "lucide-react";
+import { Nav } from "@/components/Nav";
+import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
+import { ErrorState } from "@/components/ErrorState";
+import { useProperties } from "@/hooks/use-properties";
+import { useDebounce } from "@/hooks/use-debounce";
+import { CATEGORIES, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
+import {
+  FilterPanel,
+  DEFAULT_FILTERS,
+  countActiveFilters,
+  type FilterState,
+} from "@/components/FilterPanel";
+
+const searchSchema = z.object({
+  category: z.string().optional(),
+  q: z.string().optional(),
+  priceMin: z.number().optional(),
+  priceMax: z.number().optional(),
+  beds: z.number().optional(),
+  baths: z.number().optional(),
+  amenities: z.array(z.string()).optional(),
+});
+type Search = z.infer<typeof searchSchema>;
+
+export const Route = createFileRoute("/catalog")({
+  validateSearch: searchSchema,
+  head: () => ({
+    meta: [
+      { title: "Catalog — Æther" },
+      { name: "description", content: "The full collection of curated residences." },
+    ],
+  }),
+  component: Catalog,
+});
+
+function Catalog() {
+  const search = Route.useSearch();
+  const { category = "All", q = "" } = search;
+  const navigate = useNavigate({ from: "/catalog" });
+  const [layout, setLayout] = useState<"grid" | "list">("grid");
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  // Local input -> debounced -> URL
+  const [qInput, setQInput] = useState(q);
+  const debouncedQ = useDebounce(qInput, 300);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (debouncedQ === (search.q ?? "")) return;
+    navigate({
+      search: (s: Search) => ({ ...s, q: debouncedQ || undefined }),
+      replace: true,
+    });
+  }, [debouncedQ]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Cmd/Ctrl + K
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        searchRef.current?.focus();
+        searchRef.current?.select();
+      }
+      if (e.key === "Escape" && document.activeElement === searchRef.current) {
+        setQInput("");
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Filter state derived from URL
+  const filters: FilterState = useMemo(
+    () => ({
+      priceMin: search.priceMin ?? DEFAULT_FILTERS.priceMin,
+      priceMax: search.priceMax ?? DEFAULT_FILTERS.priceMax,
+      beds: search.beds ?? 0,
+      baths: search.baths ?? 0,
+      amenities: search.amenities ?? [],
+    }),
+    [search.priceMin, search.priceMax, search.beds, search.baths, search.amenities],
+  );
+  const activeCount = countActiveFilters(filters);
+
+  const setFilters = (next: FilterState) =>
+    navigate({
+      search: (s: Search) => ({
+        ...s,
+        priceMin: next.priceMin > PRICE_BOUNDS.min ? next.priceMin : undefined,
+        priceMax: next.priceMax < PRICE_BOUNDS.max ? next.priceMax : undefined,
+        beds: next.beds || undefined,
+        baths: next.baths || undefined,
+        amenities: next.amenities.length ? next.amenities : undefined,
+      }),
+      replace: true,
+    });
+
+  const resetFilters = () =>
+    navigate({
+      search: (s: Search) => ({
+        category: s.category,
+        q: s.q,
+      }),
+      replace: true,
+    });
+
+  const resetAll = () => {
+    setQInput("");
+    navigate({ search: () => ({}), replace: true });
+  };
+
+  const setCategory = (c: string) =>
+    navigate({
+      search: (s: Search) => ({ ...s, category: c === "All" ? undefined : c }),
+      replace: true,
+    });
+
+  const { data, isLoading, isFetching, isError, refetch } = useProperties({
+    category,
+    q: debouncedQ,
+    priceMin: search.priceMin,
+    priceMax: search.priceMax,
+    beds: search.beds,
+    baths: search.baths,
+    amenities: search.amenities,
+  });
+
+  const count = data?.length ?? 0;
+
+  return (
+    <div className="min-h-screen bg-background pb-32 pt-24 md:pt-32">
+      <Nav />
+      <div className="mx-auto max-w-7xl px-5 md:px-6">
+        {/* Header + Global search */}
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Collection</p>
+            <h1 className="mt-2 font-display text-4xl md:text-6xl">
+              {category === "All" ? "All residences" : category}
+            </h1>
+            <motion.p
+              key={`${count}-${isLoading}`}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-2 text-sm text-muted-foreground"
+            >
+              {isLoading ? "Gathering residences…" : `Showing ${count} ${count === 1 ? "property" : "properties"}`}
+              {isFetching && !isLoading && <span className="ml-2 text-gold/80">updating…</span>}
+            </motion.p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 md:w-80">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                ref={searchRef}
+                value={qInput}
+                onChange={(e) => setQInput(e.target.value)}
+                placeholder="Search location, name, tag…"
+                className="w-full rounded-full border border-border bg-card py-3 pl-11 pr-24 text-sm transition-colors focus:border-gold focus:outline-none"
+              />
+              <AnimatePresence>
+                {qInput && (
+                  <motion.button
+                    type="button"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    onClick={() => {
+                      setQInput("");
+                      searchRef.current?.focus();
+                    }}
+                    aria-label="Clear search"
+                    className="absolute right-14 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 items-center gap-1 rounded-md border border-border bg-background/60 px-1.5 py-0.5 text-[10px] text-muted-foreground md:inline-flex">
+                <Command className="h-3 w-3" /> K
+              </kbd>
+            </div>
+
+            <div className="hidden md:flex rounded-full border border-border bg-card p-1">
+              <button
+                onClick={() => setLayout("grid")}
+                aria-label="Grid view"
+                className={`rounded-full p-2 transition-colors ${layout === "grid" ? "bg-accent" : ""}`}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setLayout("list")}
+                aria-label="List view"
+                className={`rounded-full p-2 transition-colors ${layout === "list" ? "bg-accent" : ""}`}
+              >
+                <List className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Horizontal swipeable category switcher */}
+        <div className="-mx-5 mt-8 overflow-x-auto px-5 no-scrollbar md:mx-0 md:px-0">
+          <LayoutGroup id="category-switcher">
+            <div className="flex w-max gap-2 md:flex-wrap">
+              {CATEGORIES.map((c) => {
+                const active = (category ?? "All") === c;
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setCategory(c)}
+                    className="relative rounded-full border border-border px-4 py-2 text-sm transition-colors"
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="category-pill"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 rounded-full bg-gradient-gold shadow-glow"
+                      />
+                    )}
+                    <span
+                      className={`relative z-10 ${
+                        active ? "text-primary-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {c}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </LayoutGroup>
+        </div>
+
+        {/* Body: sidebar (desktop) + results */}
+        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[280px_1fr]">
+          {/* Desktop sidebar */}
+          <aside className="hidden md:block">
+            <div className="sticky top-28 rounded-2xl border border-border bg-card/40 p-5">
+              <div className="mb-5 flex items-center justify-between">
+                <h3 className="font-display text-xl">Refine</h3>
+                {activeCount > 0 && (
+                  <span className="rounded-full bg-gold/15 px-2 py-0.5 text-xs text-gold">{activeCount} active</span>
+                )}
+              </div>
+              <FilterPanel value={filters} onChange={setFilters} onReset={resetFilters} />
+            </div>
+          </aside>
+
+          {/* Results */}
+          <div>
+            {isError ? (
+              <ErrorState onRetry={() => refetch()} />
+            ) : isLoading ? (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <PropertyCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : count === 0 ? (
+              <EmptyState onReset={resetAll} />
+            ) : layout === "list" ? (
+              <div className="flex flex-col gap-4">
+                {data!.map((p) => (
+                  <Link
+                    key={p.id}
+                    to="/property/$id"
+                    params={{ id: p.id }}
+                    className="group flex gap-5 overflow-hidden rounded-2xl border border-border bg-card p-3 transition-colors hover:border-gold"
+                  >
+                    <img
+                      src={p.hero}
+                      alt={p.title}
+                      className="h-32 w-44 flex-shrink-0 rounded-xl object-cover"
+                      loading="lazy"
+                    />
+                    <div className="flex flex-1 flex-col justify-between py-2">
+                      <div>
+                        <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.location}</p>
+                        <h3 className="font-display text-2xl">{p.title}</h3>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          {p.beds} bd · {p.baths} ba · {p.area.toLocaleString()} ft²
+                        </span>
+                        <span className="text-gradient-gold font-display text-lg">{formatPrice(p.price)}</span>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {data!.map((p, i) => (
+                  <PropertyCard key={p.id} p={p} index={i} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile sticky filter button */}
+      <motion.button
+        onClick={() => setFilterOpen(true)}
+        initial={{ y: 80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.2 }}
+        className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-gold px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
+      >
+        <SlidersHorizontal className="h-4 w-4" />
+        Filters{activeCount > 0 ? ` (${activeCount} active)` : ""}
+      </motion.button>
+
+      {/* Mobile filter sheet */}
+      <AnimatePresence>
+        {filterOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setFilterOpen(false)}
+              className="fixed inset-0 z-[60] bg-background/70 backdrop-blur-sm md:hidden"
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 280, damping: 32 }}
+              className="fixed bottom-0 left-0 right-0 z-[61] max-h-[88vh] overflow-y-auto rounded-t-3xl border-t border-border bg-card p-6 pb-10 md:hidden"
+            >
+              <div className="sticky top-0 -mx-6 -mt-6 mb-2 bg-card px-6 pb-3 pt-4">
+                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border" />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-display text-2xl">Refine</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {isLoading ? "…" : `${count} match${count === 1 ? "" : "es"}`}
+                      {activeCount > 0 ? ` · ${activeCount} active` : ""}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setFilterOpen(false)}
+                    className="rounded-full p-2 hover:bg-accent"
+                    aria-label="Close filters"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <FilterPanel value={filters} onChange={setFilters} onReset={resetFilters} />
+
+              <button
+                onClick={() => setFilterOpen(false)}
+                className="mt-8 w-full rounded-full bg-gradient-gold py-3.5 text-sm font-medium text-primary-foreground"
+              >
+                Show {count} {count === 1 ? "result" : "results"}
+              </button>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function EmptyState({ onReset }: { onReset: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 120, damping: 18 }}
+      className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card/40 py-24 text-center"
+    >
+      <motion.div
+        animate={{ rotate: [0, -8, 8, -4, 0] }}
+        transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2.5 }}
+        className="mb-5 grid h-16 w-16 place-content-center rounded-full bg-gradient-gold/10 text-gold"
+      >
+        <SearchX className="h-7 w-7" />
+      </motion.div>
+      <h3 className="font-display text-3xl">No residences match</h3>
+      <p className="mt-2 max-w-sm px-6 text-sm text-muted-foreground">
+        Try widening your price range or removing a filter — your perfect retreat may be one tap away.
+      </p>
+      <button
+        onClick={onReset}
+        className="mt-6 rounded-full bg-gradient-gold px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-glow"
+      >
+        Reset all filters
+      </button>
+    </motion.div>
+  );
+}
