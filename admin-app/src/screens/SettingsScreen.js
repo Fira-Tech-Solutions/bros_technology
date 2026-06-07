@@ -1,0 +1,224 @@
+import React from "react";
+import { View, Text, Switch, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  Sun,
+  Moon,
+  Globe,
+  LogOut,
+  ChevronRight,
+  Info,
+} from "lucide-react-native";
+
+import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
+
+export default function SettingsScreen() {
+  const { isDark, toggleTheme, colors } = useTheme();
+  const { language, setLanguage, t, languages } = useLanguage();
+  const { user, signOut } = useAuth();
+
+  const handleLanguageChange = (code) => {
+    setLanguage(code);
+  };
+
+  const handleLogout = () => {
+    Alert.alert(t("logout"), "Are you sure you want to logout?", [
+      { text: t("cancel"), style: "cancel" },
+      {
+        text: t("logout"),
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await signOut();
+          } catch {
+            // signOut clears local state even if storage fails
+          }
+        },
+      },
+    ]);
+  };
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+        <View className="px-5 pt-4 pb-6">
+          <Text
+            style={{ color: colors.text }}
+            className="text-2xl font-bold mb-1"
+          >
+            {t("settingsTitle")}
+          </Text>
+        </View>
+
+        {user && (
+          <View className="px-5 mb-6">
+            <View
+              className="flex-row items-center p-4 rounded-2xl"
+              style={{
+                backgroundColor: colors.card,
+                borderWidth: 1,
+                borderColor: colors.border,
+              }}
+            >
+              <View
+                className="w-12 h-12 rounded-full items-center justify-center mr-3"
+                style={{ backgroundColor: colors.primary }}
+              >
+                <Text style={{ color: "#ffffff" }} className="text-lg font-bold">
+                  {user.name?.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text
+                  style={{ color: colors.text }}
+                  className="text-base font-semibold"
+                >
+                  {user.name}
+                </Text>
+                <Text
+                  style={{ color: colors.textSecondary }}
+                  className="text-sm"
+                >
+                  {user.email}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+
+        <View className="px-5 mb-6">
+          <Text
+            style={{ color: colors.textSecondary }}
+            className="text-sm font-semibold uppercase tracking-wide mb-3"
+          >
+            {t("appearance")}
+          </Text>
+          <View
+            className="rounded-2xl overflow-hidden"
+            style={{
+              backgroundColor: colors.card,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <View className="flex-row items-center justify-between p-4">
+              <View className="flex-row items-center">
+                {isDark ? (
+                  <Moon size={20} color={colors.primary} />
+                ) : (
+                  <Sun size={20} color={colors.primary} />
+                )}
+                <Text
+                  style={{ color: colors.text }}
+                  className="ml-3 text-base font-medium"
+                >
+                  {isDark ? t("darkMode") : t("lightMode")}
+                </Text>
+              </View>
+              <Switch
+                value={isDark}
+                onValueChange={toggleTheme}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor="#ffffff"
+              />
+            </View>
+          </View>
+        </View>
+
+        <View className="px-5 mb-6">
+          <Text
+            style={{ color: colors.textSecondary }}
+            className="text-sm font-semibold uppercase tracking-wide mb-3"
+          >
+            {t("language")}
+          </Text>
+          <View
+            className="rounded-2xl overflow-hidden"
+            style={{
+              backgroundColor: colors.card,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            {languages.map((lang, index) => (
+              <TouchableOpacity
+                key={lang.code}
+                onPress={() => handleLanguageChange(lang.code)}
+                className="flex-row items-center justify-between p-4"
+                style={{
+                  borderBottomWidth:
+                    index < languages.length - 1 ? 1 : 0,
+                  borderBottomColor: colors.border,
+                }}
+              >
+                <View className="flex-row items-center">
+                  <Globe size={20} color={colors.primary} />
+                  <Text
+                    style={{ color: colors.text }}
+                    className="ml-3 text-base font-medium"
+                  >
+                    {lang.label}
+                  </Text>
+                </View>
+                {language === lang.code && (
+                  <View
+                    className="w-5 h-5 rounded-full items-center justify-center"
+                    style={{ backgroundColor: colors.primary }}
+                  >
+                    <View className="w-2 h-2 rounded-full bg-white" />
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View className="px-5 mb-6">
+          <Text
+            style={{ color: colors.textSecondary }}
+            className="text-sm font-semibold uppercase tracking-wide mb-3"
+          >
+            {t("about")}
+          </Text>
+          <View
+            className="rounded-2xl overflow-hidden"
+            style={{
+              backgroundColor: colors.card,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <View className="flex-row items-center p-4">
+              <Info size={20} color={colors.primary} />
+              <Text
+                style={{ color: colors.text }}
+                className="ml-3 text-base font-medium"
+              >
+                {t("version")} 1.0.0
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View className="px-5">
+          <TouchableOpacity
+            onPress={handleLogout}
+            className="flex-row items-center justify-center p-4 rounded-2xl"
+            style={{
+              backgroundColor: "#fef2f2",
+              borderWidth: 1,
+              borderColor: "#fecaca",
+            }}
+          >
+            <LogOut size={20} color="#dc2626" />
+            <Text className="ml-2 text-base font-semibold text-red-600">
+              {t("logout")}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
