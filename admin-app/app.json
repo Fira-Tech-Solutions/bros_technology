@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Retailment Admin",
+    "slug": "admin-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "retailment-admin",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#2563eb"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.retailment.admin"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#2563eb",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.retailment.admin"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow access to photos for listing images",
+          "cameraPermission": "Allow access to camera for taking listing photos"
+        }
+      ],
+      [
+        "expo-secure-store",
+        {}
+      ]
+    ]
+  }
+}

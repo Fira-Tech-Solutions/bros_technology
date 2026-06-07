@@ -3,18 +3,46 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import userRoutes from './modules/users/user.routes.js';
 import categoryRoutes from './modules/properties/category.routes.js';
 import listingRoutes from './modules/properties/listing.routes.js';
+import syndicationRoutes from './modules/syndication/syndication.routes.js';
 import { DynamicValidationError } from './modules/properties/dynamic.validation.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 
 app.use(helmet());
-app.use(cors());
+
+const allowedOrigins = [
+  'http://localhost:5000',
+  'http://localhost:19006',
+  'http://10.0.2.2:5000',
+  'http://10.0.2.2:19006',
+  'http://127.0.0.1:5000',
+];
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (/^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin)) return callback(null, true);
+    if (/^http:\/\/10\.\d+\.\d+\.\d+:\d+$/.test(origin)) return callback(null, true);
+    if (process.env.NODE_ENV === 'development') return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -26,6 +54,9 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/listings', listingRoutes);
+app.use('/api/syndication', syndicationRoutes);
+
+app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 
 app.use((err, _req, res, _next) => {
   if (err instanceof DynamicValidationError) {

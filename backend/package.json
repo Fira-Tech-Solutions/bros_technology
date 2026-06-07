@@ -19,7 +19,8 @@
     "test:integration": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --testPathPattern='integration' --forceExit",
     "test:ci": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --coverage --ci --forceExit",
     "test:setup": "docker compose -f ../DataBase/docker-compose.yml up -d postgres-test-db && sleep 3 && npm run db:push",
-    "test:teardown": "docker compose -f ../DataBase/docker-compose.yml down -v --filter name=marketplace_test_postgres"
+    "test:teardown": "docker compose -f ../DataBase/docker-compose.yml down -v --filter name=marketplace_test_postgres",
+    "db:seed": "node prisma/seed.js"
   },
   "keywords": [],
   "license": "ISC",
@@ -44,5 +45,8 @@
     "nodemon": "^3.1.0",
     "prisma": "^6.9.0",
     "supertest": "^7.2.2"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }
