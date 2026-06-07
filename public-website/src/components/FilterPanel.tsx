@@ -1,6 +1,7 @@
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { AMENITIES, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
+import { useLocale } from "@/providers/locale";
 
 export type FilterState = {
   priceMin: number;
@@ -38,6 +39,7 @@ export function FilterPanel({
   onChange: (next: FilterState) => void;
   onReset: () => void;
 }) {
+  const { t } = useLocale();
   const patch = (p: Partial<FilterState>) => onChange({ ...value, ...p });
 
   const toggleAmenity = (a: string) => {
@@ -49,7 +51,9 @@ export function FilterPanel({
     <div className="space-y-8">
       <section>
         <div className="flex items-baseline justify-between">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Price</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            {t("filter.price")}
+          </p>
           <p className="font-display text-sm text-foreground/90">
             {formatPrice(value.priceMin)} – {formatPrice(value.priceMax)}
           </p>
@@ -66,7 +70,9 @@ export function FilterPanel({
       </section>
 
       <section>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Bedrooms</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          {t("filter.bedrooms")}
+        </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {BED_OPTIONS.map((n) => {
             const active = value.beds === n;
@@ -80,7 +86,7 @@ export function FilterPanel({
                     : "border-border bg-card text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {n === 0 ? "Any" : `${n}+`}
+                {n === 0 ? t("filter.any") : `${n}+`}
               </button>
             );
           })}
@@ -88,7 +94,9 @@ export function FilterPanel({
       </section>
 
       <section>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Bathrooms</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          {t("filter.bathrooms")}
+        </p>
         <div className="mt-3 flex flex-wrap gap-2">
           {BED_OPTIONS.map((n) => {
             const active = value.baths === n;
@@ -102,7 +110,7 @@ export function FilterPanel({
                     : "border-border bg-card text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {n === 0 ? "Any" : `${n}+`}
+                {n === 0 ? t("filter.any") : `${n}+`}
               </button>
             );
           })}
@@ -110,7 +118,9 @@ export function FilterPanel({
       </section>
 
       <section>
-        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Amenities</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          {t("filter.amenities")}
+        </p>
         <div className="mt-3 grid grid-cols-1 gap-2.5">
           {AMENITIES.map((a) => {
             const checked = value.amenities.includes(a);
@@ -131,7 +141,7 @@ export function FilterPanel({
         onClick={onReset}
         className="w-full rounded-full border border-border py-2.5 text-sm text-muted-foreground hover:text-foreground hover:border-gold transition-colors"
       >
-        Reset all filters
+        {t("filter.resetAll")}
       </button>
     </div>
   );
