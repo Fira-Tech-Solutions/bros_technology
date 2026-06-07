@@ -1,0 +1,52 @@
+{
+  "name": "retailment-marketplace-backend",
+  "version": "1.0.0",
+  "description": "High-performance marketplace platform backend",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "db:push": "dotenv -e .env.test -- prisma db push --skip-generate",
+    "db:push:dev": "prisma db push --skip-generate",
+    "test": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --forceExit",
+    "test:watch": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --watch",
+    "test:coverage": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --coverage --forceExit",
+    "test:unit": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --testPathPattern='(unit|__tests__)/' --forceExit",
+    "test:integration": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --testPathPattern='integration' --forceExit",
+    "test:ci": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --coverage --ci --forceExit",
+    "test:setup": "docker compose -f ../DataBase/docker-compose.yml up -d postgres-test-db && sleep 3 && npm run db:push",
+    "test:teardown": "docker compose -f ../DataBase/docker-compose.yml down -v --filter name=marketplace_test_postgres",
+    "db:seed": "node prisma/seed.js"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.9.0",
+    "axios": "^1.7.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^5.2.1",
+    "form-data": "^4.0.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^30.4.1",
+    "dotenv-cli": "^11.0.0",
+    "jest": "^30.4.2",
+    "nodemon": "^3.1.0",
+    "prisma": "^6.9.0",
+    "supertest": "^7.2.2"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
