@@ -4,8 +4,6 @@ import { Eye, EyeOff } from "lucide-react-native";
 import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { useTheme } from "../context/ThemeContext";
 
-const AnimatedView = Animated.createAnimatedComponent(View);
-
 export default function Input({
   label,
   value,
@@ -25,7 +23,7 @@ export default function Input({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <AnimatedView
+    <Animated.View
       entering={FadeIn.springify()}
       className={`mb-4 ${className}`}
     >
@@ -107,6 +105,6 @@ export default function Input({
           {error}
         </Animated.Text>
       )}
-    </AnimatedView>
+    </Animated.View>
   );
 }
