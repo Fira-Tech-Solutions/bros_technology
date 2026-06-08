@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { Eye, EyeOff } from "lucide-react-native";
+import Animated, { FadeIn, ZoomIn } from "react-native-reanimated";
 import { useTheme } from "../context/ThemeContext";
+
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 export default function Input({
   label,
@@ -22,34 +25,44 @@ export default function Input({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <View className={`mb-4 ${className}`}>
+    <AnimatedView
+      entering={FadeIn.springify()}
+      className={`mb-4 ${className}`}
+    >
       {label && (
         <Text
           style={{ color: colors.textSecondary }}
-          className="text-sm font-medium mb-1.5"
+          className="text-sm font-medium mb-2"
         >
           {label}
           {required && <Text className="text-red-500"> *</Text>}
         </Text>
       )}
-      <View
+      <Animated.View
+        entering={ZoomIn.springify()}
         className="flex-row items-center rounded-xl px-4"
         style={{
           backgroundColor: colors.input,
-          borderWidth: 1,
+          borderWidth: 1.5,
           borderColor: error
             ? colors.danger
             : focused
               ? colors.primary
               : colors.inputBorder,
-          minHeight: multiline ? 100 : 48,
+          minHeight: multiline ? 100 : 52,
+          shadowColor: focused ? colors.primary : "transparent",
+          shadowOffset: { width: 0, height: focused ? 4 : 0 },
+          shadowOpacity: focused ? 0.2 : 0,
+          shadowRadius: focused ? 8 : 0,
+          elevation: focused ? 4 : 0,
         }}
       >
         {Icon && (
           <Icon
-            size={18}
+            size={20}
             color={focused ? colors.primary : colors.textMuted}
-            style={{ marginRight: 10 }}
+            style={{ marginRight: 12 }}
+            strokeWidth={1.5}
           />
         )}
         <TextInput
@@ -69,6 +82,7 @@ export default function Input({
             fontSize: 16,
             paddingVertical: multiline ? 12 : 0,
             textAlignVertical: multiline ? "top" : "center",
+            fontWeight: "500",
           }}
         />
         {secureTextEntry && (
@@ -77,18 +91,22 @@ export default function Input({
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             {showPassword ? (
-              <EyeOff size={18} color={colors.textMuted} />
+              <EyeOff size={20} color={colors.textMuted} strokeWidth={1.5} />
             ) : (
-              <Eye size={18} color={colors.textMuted} />
+              <Eye size={20} color={colors.textMuted} strokeWidth={1.5} />
             )}
           </TouchableOpacity>
         )}
-      </View>
+      </Animated.View>
       {error && (
-        <Text style={{ color: colors.danger }} className="text-xs mt-1">
+        <Animated.Text
+          entering={FadeIn.springify()}
+          style={{ color: colors.danger }}
+          className="text-xs mt-1.5 font-medium"
+        >
           {error}
-        </Text>
+        </Animated.Text>
       )}
-    </View>
+    </AnimatedView>
   );
 }

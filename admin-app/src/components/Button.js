@@ -1,6 +1,14 @@
 import React from "react";
 import { TouchableOpacity, Text, ActivityIndicator } from "react-native";
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from "react-native-reanimated";
 import { useTheme } from "../context/ThemeContext";
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 const variants = {
   primary: "bg-blue-600 active:bg-blue-700",
@@ -37,6 +45,19 @@ export default function Button({
   className = "",
 }) {
   const { colors } = useTheme();
+  const scale = useSharedValue(1);
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.96);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1);
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   const bgColor =
     variant === "outline"
@@ -49,58 +70,76 @@ export default function Button({
     variant === "outline" ? colors.border : "transparent";
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.7}
-      className={`flex-row items-center justify-center ${sizes[size]} ${
-        disabled ? "opacity-50" : ""
-      } ${className}`}
-      style={{
-        backgroundColor:
-          variant === "primary" || variant === "danger" || variant === "success"
-            ? bgColor
-            : variant === "outline"
-              ? "transparent"
-              : colors.bgSecondary,
-        borderWidth: variant === "outline" ? 1 : 0,
-        borderColor,
-      }}
+    <Animated.View
+      entering={FadeIn.springify()}
+      style={animatedStyle}
     >
-      {loading ? (
-        <ActivityIndicator
-          color={variant === "primary" || variant === "danger" || variant === "success" ? "#ffffff" : colors.primary}
-          size="small"
-        />
-      ) : (
-        <>
-          {Icon && (
-            <Icon
-              size={18}
-              color={
-                variant === "primary" || variant === "danger" || variant === "success"
-                  ? "#ffffff"
-                  : colors.primary
-              }
-              style={{ marginRight: 8 }}
-            />
-          )}
-          <Text
-            style={{
-              color:
-                variant === "primary" || variant === "danger" || variant === "success"
-                  ? "#ffffff"
-                  : variant === "outline"
-                    ? colors.text
-                    : colors.primary,
-              fontSize: size === "sm" ? 14 : 16,
-              fontWeight: "600",
-            }}
-          >
-            {title}
-          </Text>
-        </>
-      )}
-    </TouchableOpacity>
+      <AnimatedTouchable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled || loading}
+        activeOpacity={0.9}
+        className={`flex-row items-center justify-center ${sizes[size]} ${
+          disabled ? "opacity-50" : ""
+        } ${className}`}
+        style={{
+          backgroundColor:
+            variant === "primary" || variant === "danger" || variant === "success"
+              ? bgColor
+              : variant === "outline"
+                ? "transparent"
+                : colors.bgSecondary,
+          borderWidth: variant === "outline" ? 1.5 : 0,
+          borderColor,
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 8,
+          elevation: 5,
+        }}
+      >
+        {loading ? (
+          <ActivityIndicator
+            color={
+              variant === "primary" || variant === "danger" || variant === "success"
+                ? "#ffffff"
+                : colors.primary
+            }
+            size="small"
+          />
+        ) : (
+          <>
+            {Icon && (
+              <Icon
+                size={20}
+                color={
+                  variant === "primary" || variant === "danger" || variant === "success"
+                    ? "#ffffff"
+                    : colors.primary
+                }
+                style={{ marginRight: 10 }}
+                strokeWidth={1.5}
+              />
+            )}
+            <Text
+              style={{
+                color:
+                  variant === "primary" || variant === "danger" || variant === "success"
+                    ? "#ffffff"
+                    : variant === "outline"
+                      ? colors.text
+                      : colors.primary,
+                fontSize: size === "sm" ? 14 : 16,
+                fontWeight: "700",
+                letterSpacing: 0.3,
+              }}
+            >
+              {title}
+            </Text>
+          </>
+        )}
+      </AnimatedTouchable>
+    </Animated.View>
   );
 }
