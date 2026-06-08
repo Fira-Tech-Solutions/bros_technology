@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -18,8 +18,6 @@ import Animated, {
   useSharedValue,
   withSpring,
   useAnimatedStyle,
-  interpolate,
-  Extrapolate,
 } from "react-native-reanimated";
 
 import { useTheme } from "../context/ThemeContext";
@@ -30,8 +28,6 @@ import Input from "../components/Input";
 
 const { width, height } = Dimensions.get("window");
 
-const AnimatedView = Animated.createAnimatedComponent(View);
-
 export default function LoginScreen() {
   const { colors } = useTheme();
   const { t } = useLanguage();
@@ -41,18 +37,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
-  const logoScale = useSharedValue(0);
-  const formOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    logoScale.value = withSpring(1);
-    formOpacity.value = withSpring(1);
-  }, []);
-
-  const logoAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: logoScale.value }],
-  }));
 
   const validate = () => {
     const newErrors = {};
@@ -110,7 +94,7 @@ export default function LoginScreen() {
               {/* Logo Container with Animation */}
               <Animated.View
                 entering={ZoomIn.springify()}
-                style={[logoAnimatedStyle, { alignItems: "center", marginBottom: 40 }]}
+                style={{ alignItems: "center", marginBottom: 40 }}
               >
                 <View
                   style={{

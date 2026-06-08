@@ -8,8 +8,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTheme } from "../context/ThemeContext";
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
 const variants = {
   primary: "bg-blue-600 active:bg-blue-700",
   secondary: "bg-gray-200 active:bg-gray-300",
@@ -74,7 +72,7 @@ export default function Button({
       entering={FadeIn.springify()}
       style={animatedStyle}
     >
-      <AnimatedTouchable
+      <TouchableOpacity
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
@@ -139,7 +137,7 @@ export default function Button({
             </Text>
           </>
         )}
-      </AnimatedTouchable>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
