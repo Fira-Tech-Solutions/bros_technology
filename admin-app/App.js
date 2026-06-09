@@ -9,7 +9,7 @@ import { LanguageProvider } from "./src/context/LanguageContext";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 
 import MainNavigator from "./src/navigation/MainNavigator";
-import LoginScreen from "./src/screens/LoginScreen";
+import AuthNavigator from "./src/navigation/AuthNavigator";
 
 function RootNavigator() {
   const { isAuthenticated, loading } = useAuth();
@@ -23,7 +23,7 @@ function RootNavigator() {
     );
   }
 
-  return isAuthenticated ? <MainNavigator /> : <LoginScreen />;
+  return isAuthenticated ? <MainNavigator /> : <AuthNavigator />;
 }
 
 export default function App() {

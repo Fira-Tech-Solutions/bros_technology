@@ -41,6 +41,7 @@ export default function Button({
   disabled = false,
   icon: Icon,
   className = "",
+  color,
 }) {
   const { colors } = useTheme();
   const scale = useSharedValue(1);
@@ -62,7 +63,7 @@ export default function Button({
       ? "transparent"
       : variant === "ghost"
         ? "transparent"
-        : colors.primary;
+        : color || colors.primary;
 
   const borderColor =
     variant === "outline" ? colors.border : "transparent";

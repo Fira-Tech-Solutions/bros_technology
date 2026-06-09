@@ -2,23 +2,19 @@ import React, { useState } from "react";
 import {
   View,
   Text,
+  Image,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
   Alert,
   ImageBackground,
+  TouchableOpacity,
   Dimensions,
+  StyleSheet,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Mail, Lock, Building2, ArrowRight } from "lucide-react-native";
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  ZoomIn,
-  useSharedValue,
-  withSpring,
-  useAnimatedStyle,
-} from "react-native-reanimated";
+import { Mail, Lock, ArrowLeft } from "lucide-react-native";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -26,9 +22,9 @@ import { useAuth } from "../context/AuthContext";
 import Button from "../components/Button";
 import Input from "../components/Input";
 
-const { width, height } = Dimensions.get("window");
+const { height } = Dimensions.get("window");
 
-export default function LoginScreen() {
+export default function LoginScreen({ navigation }) {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { signIn } = useAuth();
@@ -62,178 +58,191 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <View style={{ flex: 1, backgroundColor: "#000" }}>
+      <ImageBackground
+        source={require("../../assets/login-2.jpg")}
         style={{ flex: 1 }}
+        resizeMode="cover"
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-          scrollEnabled={height > 800}
-        >
-          <ImageBackground
-            source={require("../../assets/login-bg.jpg")}
-            style={{ flex: 1, width, minHeight: height }}
-            resizeMode="cover"
-          >
-            {/* Dark Overlay for better contrast */}
-            <View
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0, 0, 0, 0.45)",
-              }}
-            />
+        <View
+          style={{
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: "rgba(0,0,0,0.35)",
+          }}
+        />
 
-            {/* Content Container */}
-            <View style={{ flex: 1, justifyContent: "center", paddingHorizontal: 20 }}>
-              {/* Logo Container with Animation */}
+        <SafeAreaView style={{ flex: 1 }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1 }}
+          >
+            <ScrollView
+              contentContainerStyle={{ flexGrow: 1 }}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              {/* Logo + Back row */}
               <Animated.View
-                entering={ZoomIn.springify()}
-                style={{ alignItems: "center", marginBottom: 40 }}
+                entering={FadeInDown.delay(100).springify()}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 20,
+                  paddingTop: 8,
+                }}
               >
-                <View
+                <TouchableOpacity
+                  onPress={() => navigation.goBack()}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
                   style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 24,
-                    backgroundColor: colors.primary,
+                    width: 42,
+                    height: 42,
+                    borderRadius: 21,
+                    backgroundColor: "rgba(255,255,255,0.15)",
                     alignItems: "center",
                     justifyContent: "center",
-                    marginBottom: 24,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 8 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 12,
-                    elevation: 10,
                   }}
                 >
-                  <Building2 size={40} color="#ffffff" strokeWidth={1.5} />
+                  <ArrowLeft size={22} color="#ffffff" strokeWidth={2} />
+                </TouchableOpacity>
+
+                <View
+                  style={{ flexDirection: "row", alignItems: "center", marginLeft: 16 }}
+                >
+                  <Image
+                    source={require("../../assets/android-chrome-192x192.png")}
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                    }}
+                    resizeMode="cover"
+                  />
+                  <View style={{ marginLeft: 10 }}>
+                    <Text
+                      style={{
+                        fontFamily: "serif",
+                        fontStyle: "italic",
+                        color: "#ef4444",
+                        fontSize: 18,
+                        fontWeight: "700",
+                        letterSpacing: 0.5,
+                      }}
+                      numberOfLines={1}
+                    >
+                      Retailment
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "serif",
+                        fontStyle: "italic",
+                        color: "rgba(239, 68, 68, 0.6)",
+                        fontSize: 9,
+                        letterSpacing: 2,
+                        fontWeight: "500",
+                        marginTop: 1,
+                      }}
+                      numberOfLines={1}
+                    >
+                      SECURE ACCESS
+                    </Text>
+                  </View>
                 </View>
               </Animated.View>
 
-              {/* Header Text */}
-              <Animated.View
-                entering={FadeInDown.delay(200).springify()}
-                style={{ alignItems: "center", marginBottom: 36 }}
-              >
-                <Text
-                  style={{
-                    color: "#ffffff",
-                    fontSize: 32,
-                    fontWeight: "800",
-                    marginBottom: 12,
-                    textShadowColor: "rgba(0, 0, 0, 0.2)",
-                    textShadowOffset: { width: 0, height: 2 },
-                    textShadowRadius: 4,
-                  }}
-                >
-                  {t("loginTitle")}
-                </Text>
-                <Text
-                  style={{
-                    color: "rgba(255, 255, 255, 0.9)",
-                    fontSize: 16,
-                    fontWeight: "500",
-                    textShadowColor: "rgba(0, 0, 0, 0.1)",
-                    textShadowOffset: { width: 0, height: 1 },
-                    textShadowRadius: 2,
-                  }}
-                >
-                  {t("loginSubtitle")}
-                </Text>
-              </Animated.View>
-
-              {/* Premium Card Container */}
-              <Animated.View
-                entering={FadeInUp.delay(400).springify()}
+              <View
                 style={{
-                  backgroundColor: "rgba(255, 255, 255, 0.12)",
-                  borderRadius: 28,
-                  padding: 28,
-                  backdropFilter: "blur(10px)",
-                  borderWidth: 1,
-                  borderColor: "rgba(255, 255, 255, 0.2)",
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 20 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 30,
-                  elevation: 15,
+                  flex: 1,
+                  justifyContent: "flex-end",
+                  paddingHorizontal: 24,
+                  paddingBottom: 40,
                 }}
               >
-                {/* Input Fields */}
+                {/* Spacer */}
+
+                {/* Form Card */}
                 <Animated.View
-                  entering={FadeInUp.delay(500).springify()}
-                  style={{ marginBottom: 8 }}
-                >
-                  <Input
-                    label={t("email")}
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder="admin@example.com"
-                    keyboardType="email-address"
-                    icon={Mail}
-                    error={errors.email}
-                    required
-                    className="mb-6"
-                  />
-                </Animated.View>
-
-                <Animated.View entering={FadeInUp.delay(600).springify()}>
-                  <Input
-                    label={t("password")}
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="••••••••"
-                    secureTextEntry
-                    icon={Lock}
-                    error={errors.password}
-                    required
-                    className="mb-2"
-                  />
-                </Animated.View>
-
-                {/* Login Button */}
-                <Animated.View
-                  entering={FadeInUp.delay(700).springify()}
-                  style={{ marginTop: 28 }}
-                >
-                  <Button
-                    title={t("loginButton")}
-                    onPress={handleLogin}
-                    loading={loading}
-                    size="lg"
-                    icon={!loading ? ArrowRight : null}
-                  />
-                </Animated.View>
-              </Animated.View>
-
-              {/* Footer Text */}
-              <Animated.View
-                entering={FadeInUp.delay(800).springify()}
-                style={{ alignItems: "center", marginTop: 32 }}
-              >
-                <Text
+                  entering={FadeInUp.delay(300).springify().damping(15)}
                   style={{
-                    color: "rgba(255, 255, 255, 0.7)",
-                    fontSize: 13,
-                    fontWeight: "500",
-                    textShadowColor: "rgba(0, 0, 0, 0.1)",
-                    textShadowOffset: { width: 0, height: 1 },
-                    textShadowRadius: 2,
+                    backgroundColor: "rgba(255,255,255,0.95)",
+                    borderRadius: 28,
+                    padding: 28,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 12 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 30,
+                    elevation: 12,
                   }}
                 >
-                  Secure Login • Premium Experience
-                </Text>
-              </Animated.View>
-            </View>
-          </ImageBackground>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+                  <Animated.View entering={FadeInUp.delay(350).springify()}>
+                    <Input
+                      label={t("email")}
+                      value={email}
+                      onChangeText={setEmail}
+                      placeholder="admin@example.com"
+                      keyboardType="email-address"
+                      icon={Mail}
+                      error={errors.email}
+                      required
+                      className="mb-4"
+                    />
+                  </Animated.View>
+
+                  <Animated.View entering={FadeInUp.delay(420).springify()}>
+                    <Input
+                      label={t("password")}
+                      value={password}
+                      onChangeText={setPassword}
+                      placeholder="••••••••"
+                      secureTextEntry
+                      icon={Lock}
+                      error={errors.password}
+                      required
+                      className="mb-2"
+                    />
+                  </Animated.View>
+
+                  <Animated.View entering={FadeInUp.delay(500).springify()}>
+                    <Button
+                      title={t("loginButton")}
+                      onPress={handleLogin}
+                      loading={loading}
+                      size="lg"
+                      className="mt-2"
+                    />
+                  </Animated.View>
+
+                  <Animated.View
+                    entering={FadeInUp.delay(580).springify()}
+                    style={{ alignItems: "center", marginTop: 20 }}
+                  >
+                    <TouchableOpacity
+                      onPress={() =>
+                        Alert.alert(
+                          "Forgot Password",
+                          "Password reset functionality coming soon."
+                        )
+                      }
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    >
+                      <Text
+                        style={{
+                          color: colors.primary,
+                          fontSize: 14,
+                          fontWeight: "600",
+                          letterSpacing: 0.3,
+                        }}
+                      >
+                        Forgot Password?
+                      </Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                </Animated.View>
+              </View>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </ImageBackground>
+    </View>
   );
 }
