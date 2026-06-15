@@ -30,16 +30,42 @@ enum SyndicationStatus {
   FAILED
 }
 
+enum SyndicationAction {
+  NEW_POST
+  EDITED
+  DELETED
+}
+
 model User {
-  id          String        @id @default(uuid())
-  email       String        @unique
-  password    String        
-  name        String
-  phone       String        // Essential for buyers to contact agents
-  role        Role          @default(AGENT)
-  listings    Listing[]     // One-to-Many relationship
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String        
+  name         String
+  phone        String        // Essential for buyers to contact agents
+  role         Role          @default(AGENT)
+  profileImage String?       // Profile picture URL (Cloudinary or local)
+  
+  // Social media & contact links
+  facebook     String?
+  twitter      String?
+  instagram    String?
+  linkedin     String?
+  telegram     String?
+  whatsapp     String?
+  tiktok       String?
+  youtube      String?
+  website      String?
+  
+  // Telegram integration for notifications & OTP
+  telegramChatId      String?   // Telegram chat ID for direct messages
+  telegramConnected   Boolean   @default(false)
+  telegramUsername     String?   // Telegram username
+  telegramFirstName   String?   // Telegram first name
+  telegramPhotoUrl    String?   // Telegram profile picture URL
+  
+  listings     Listing[]     // One-to-Many relationship
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@map("users")
 }
@@ -108,11 +134,28 @@ model SyndicationLog {
   
   platform     String            // "TELEGRAM", "FACEBOOK", "INSTAGRAM"
   status       SyndicationStatus @default(PENDING)
+  action       SyndicationAction @default(NEW_POST)
   channelInfo  String            // Stores target channel ID or group metadata link
+  messageId    Int?              // Telegram message_id for tracking edits/deletes
   errorMessage String?           @db.Text // Contains raw API failure strings if push drops
   
   runAt        DateTime          @default(now())
 
   @@index([listingId])
   @@map("syndication_logs")
+}
+
+model SyndicationConfig {
+  id            String   @id @default(uuid())
+  platform      String   @unique // "TELEGRAM", "FACEBOOK", "INSTAGRAM"
+  botToken      String?  // Bot API token
+  channelId     String?  // Channel/group ID
+  apiKey        String?  // Additional API key if needed
+  apiSecret     String?  // Additional API secret if needed
+  isActive      Boolean  @default(true)
+  extraConfig   Json?    // Flexible storage for platform-specific settings
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("syndication_configs")
 }

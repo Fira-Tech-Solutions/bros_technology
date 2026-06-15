@@ -17,6 +17,8 @@ export default function Input({
   icon: Icon,
   required = false,
   className = "",
+  rounded = "xl",
+  small = false,
 }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
@@ -33,12 +35,12 @@ export default function Input({
           className="text-sm font-medium mb-2"
         >
           {label}
-          {required && <Text className="text-red-500"> *</Text>}
+          {required && <Text style={{ color: colors.danger }}> *</Text>}
         </Text>
       )}
       <Animated.View
         entering={ZoomIn.springify()}
-        className="flex-row items-center rounded-xl px-4"
+        className={`flex-row items-center px-4 ${rounded === "full" ? "rounded-full" : rounded === "lg" ? "rounded-lg" : "rounded-xl"}`}
         style={{
           backgroundColor: colors.input,
           borderWidth: 1.5,
@@ -77,7 +79,7 @@ export default function Input({
           style={{
             flex: 1,
             color: colors.text,
-            fontSize: 16,
+            fontSize: small ? 14 : 16,
             paddingVertical: multiline ? 12 : 0,
             textAlignVertical: multiline ? "top" : "center",
             fontWeight: "500",

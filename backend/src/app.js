@@ -9,8 +9,10 @@ import { fileURLToPath } from 'url';
 import userRoutes from './modules/users/user.routes.js';
 import categoryRoutes from './modules/properties/category.routes.js';
 import listingRoutes from './modules/properties/listing.routes.js';
+import publicRoutes from './modules/properties/public.routes.js';
 import syndicationRoutes from './modules/syndication/syndication.routes.js';
 import { DynamicValidationError } from './modules/properties/dynamic.validation.js';
+import TelegramNotificationService from './modules/users/telegramNotification.service.js';
 
 dotenv.config();
 
@@ -24,6 +26,8 @@ app.use(helmet());
 const allowedOrigins = [
   'http://localhost:5000',
   'http://localhost:19006',
+  'http://localhost:3000',
+  'http://localhost:5173',
   'http://10.0.2.2:5000',
   'http://10.0.2.2:19006',
   'http://127.0.0.1:5000',
@@ -54,9 +58,12 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', userRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/listings', listingRoutes);
+app.use('/api/public', publicRoutes);
 app.use('/api/syndication', syndicationRoutes);
 
-app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
+if (process.env.STORAGE_PROVIDER !== 'cloudinary') {
+  app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
+}
 
 app.use((err, _req, res, _next) => {
   if (err instanceof DynamicValidationError) {
@@ -98,3 +105,6 @@ app.use((err, _req, res, _next) => {
 });
 
 export default app;
+
+// Configure bot commands on startup
+TelegramNotificationService.configureBotCommands().catch(() => {});

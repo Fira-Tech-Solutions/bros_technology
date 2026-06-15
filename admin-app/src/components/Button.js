@@ -9,21 +9,21 @@ import Animated, {
 import { useTheme } from "../context/ThemeContext";
 
 const variants = {
-  primary: "bg-blue-600 active:bg-blue-700",
-  secondary: "bg-gray-200 active:bg-gray-300",
-  danger: "bg-red-600 active:bg-red-700",
-  success: "bg-green-600 active:bg-green-700",
-  outline: "bg-transparent border border-gray-300",
+  primary: "active:opacity-80",
+  secondary: "active:opacity-80",
+  danger: "active:opacity-80",
+  success: "active:opacity-80",
+  outline: "bg-transparent border",
   ghost: "bg-transparent",
 };
 
 const textVariants = {
   primary: "text-white font-semibold",
-  secondary: "text-gray-800 font-semibold",
+  secondary: "font-semibold",
   danger: "text-white font-semibold",
   success: "text-white font-semibold",
-  outline: "text-gray-700 font-semibold",
-  ghost: "text-blue-600 font-semibold",
+  outline: "text-white font-semibold",
+  ghost: "font-semibold",
 };
 
 const sizes = {

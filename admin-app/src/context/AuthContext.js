@@ -40,17 +40,26 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signOut = async () => {
-    await deleteItemAsync("auth_token");
-    await deleteItemAsync("user_data");
+    try {
+      await deleteItemAsync("auth_token");
+    } catch {}
+    try {
+      await deleteItemAsync("user_data");
+    } catch {}
     setToken(null);
     setUser(null);
+  };
+
+  const updateUser = async (newUserData) => {
+    setUser((prev) => ({ ...prev, ...newUserData }));
+    await setItemAsync("user_data", JSON.stringify({ ...user, ...newUserData }));
   };
 
   const isAuthenticated = !!token && !!user;
 
   return (
     <AuthContext.Provider
-      value={{ user, token, loading, signIn, signOut, isAuthenticated }}
+      value={{ user, token, loading, signIn, signOut, updateUser, isAuthenticated }}
     >
       {children}
     </AuthContext.Provider>

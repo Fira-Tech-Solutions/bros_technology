@@ -6,10 +6,11 @@ import {
   ImageBackground,
   Dimensions,
   StyleSheet,
+  Linking,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ArrowRight } from "lucide-react-native";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -38,10 +39,7 @@ export default function WelcomeScreen({ navigation }) {
         <SafeAreaView style={{ flex: 1 }}>
           <View style={{ flex: 1 }}>
             {/* Top section - Logo top-left + text */}
-            <Animated.View
-              entering={FadeInDown.delay(200).springify().damping(15)}
-              style={{ paddingHorizontal: 24, paddingTop: height * 0.08 }}
-            >
+            <View style={{ paddingHorizontal: 24, paddingTop: height * 0.08 }}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Image
                   source={require("../../assets/android-chrome-192x192.png")}
@@ -57,7 +55,7 @@ export default function WelcomeScreen({ navigation }) {
                     style={{
                       fontFamily: "serif",
                       fontStyle: "italic",
-                      color: "#ef4444",
+                      color: colors.primary,
                       fontSize: 24,
                       fontWeight: "700",
                       letterSpacing: 0.8,
@@ -70,7 +68,7 @@ export default function WelcomeScreen({ navigation }) {
                     style={{
                       fontFamily: "serif",
                       fontStyle: "italic",
-                      color: "rgba(239, 68, 68, 0.7)",
+                      color: `${colors.primary}b3`,
                       fontSize: 12,
                       letterSpacing: 3,
                       fontWeight: "500",
@@ -99,12 +97,10 @@ export default function WelcomeScreen({ navigation }) {
                 Curating exceptional properties for discerning clientele since
                 2020.
               </Text>
-            </Animated.View>
+            </View>
 
             {/* Sign In button */}
-            <Animated.View
-              entering={FadeInUp.delay(400).springify().damping(15)}
-              style={{
+            <View style={{
                 width: "100%",
                 marginTop: "auto",
                 paddingBottom: height * 0.1,
@@ -117,10 +113,25 @@ export default function WelcomeScreen({ navigation }) {
                 onPress={() => navigation.navigate("Login")}
                 size="lg"
                 icon={ArrowRight}
-                color="#8b0000"
+                color={colors.primary}
                 className="rounded-[100px]"
               />
-            </Animated.View>
+              <TouchableOpacity
+                onPress={() => Linking.openURL("https://firatech.systems")}
+              >
+                <Text
+                  style={{
+                    textAlign: "center",
+                    color: "rgba(255,255,255,0.35)",
+                    fontSize: 11,
+                    letterSpacing: 0.5,
+                    marginTop: 20,
+                  }}
+                >
+                  fira tech solutions
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </SafeAreaView>
       </ImageBackground>

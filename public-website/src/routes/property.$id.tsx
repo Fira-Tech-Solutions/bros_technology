@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, Bed, Bath, Maximize2, MapPin, Phone, Calendar, Check } from "lucide-react";
+import { ArrowLeft, Bed, Bath, Maximize2, MapPin, Phone, Calendar, Check, Mail, MessageCircle, ExternalLink } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperty } from "@/hooks/use-properties";
@@ -187,31 +187,133 @@ function Detail() {
         {/* Desktop sticky contact */}
         <aside className="hidden lg:block">
           <div className="sticky top-28 rounded-3xl border border-border bg-card p-6 shadow-elegant">
+            {/* Agent Info */}
+            {p.agent && (
+              <div className="mb-6 flex items-center gap-4">
+                {p.agent.profileImage ? (
+                  <img
+                    src={p.agent.profileImage}
+                    alt={p.agent.name}
+                    className="h-14 w-14 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-gold">
+                    <span className="text-lg font-bold text-primary-foreground">
+                      {p.agent.name?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <p className="font-medium">{p.agent.name}</p>
+                  <p className="text-xs text-muted-foreground">Agent</p>
+                </div>
+              </div>
+            )}
+
             <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
               {t("property.enquire")}
             </p>
             <p className="mt-3 font-display text-3xl text-gradient-gold">{formatPrice(p.price)}</p>
+            
+            {/* Contact Actions */}
             <div className="mt-5 space-y-3">
-              <input
-                placeholder={t("property.namePlaceholder")}
-                className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
-              />
-              <input
-                placeholder={t("property.emailPlaceholder")}
-                className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
-              />
-              <textarea
-                rows={3}
-                placeholder={t("property.notePlaceholder")}
-                className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
-              />
+              {p.agent?.phone && (
+                <a
+                  href={`tel:${p.agent.phone}`}
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-border py-3 text-sm hover:bg-accent"
+                >
+                  <Phone className="h-4 w-4" /> Call Agent
+                </a>
+              )}
+              {p.agent?.whatsapp && (
+                <a
+                  href={`https://wa.me/${p.agent.whatsapp.replace(/[^0-9]/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-green-600 py-3 text-sm font-medium text-white hover:bg-green-700"
+                >
+                  <MessageCircle className="h-4 w-4" /> WhatsApp
+                </a>
+              )}
+              {p.agent?.telegram && (
+                <a
+                  href={`https://t.me/${p.agent.telegram.replace("@", "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-full bg-blue-500 py-3 text-sm font-medium text-white hover:bg-blue-600"
+                >
+                  <Send className="h-4 w-4" /> Telegram
+                </a>
+              )}
             </div>
-            <button className="mt-5 w-full rounded-full bg-gradient-gold py-3 text-sm font-medium text-primary-foreground">
-              {t("property.requestViewing")}
-            </button>
-            <button className="mt-2 w-full rounded-full border border-border py-3 text-sm hover:bg-accent">
-              <Phone className="mr-2 inline h-4 w-4" /> {t("property.callConcierge")}
-            </button>
+
+            {/* Social Links */}
+            {p.agent && (
+              <div className="mt-5 flex flex-wrap gap-2">
+                {p.agent.facebook && (
+                  <a
+                    href={p.agent.facebook.startsWith("http") ? p.agent.facebook : `https://facebook.com/${p.agent.facebook}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-accent"
+                  >
+                    Facebook
+                  </a>
+                )}
+                {p.agent.instagram && (
+                  <a
+                    href={p.agent.instagram.startsWith("http") ? p.agent.instagram : `https://instagram.com/${p.agent.instagram}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-accent"
+                  >
+                    Instagram
+                  </a>
+                )}
+                {p.agent.twitter && (
+                  <a
+                    href={p.agent.twitter.startsWith("http") ? p.agent.twitter : `https://x.com/${p.agent.twitter}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-accent"
+                  >
+                    Twitter
+                  </a>
+                )}
+                {p.agent.website && (
+                  <a
+                    href={p.agent.website.startsWith("http") ? p.agent.website : `https://${p.agent.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-border px-3 py-1.5 text-xs hover:bg-accent"
+                  >
+                    <ExternalLink className="mr-1 inline h-3 w-3" /> Website
+                  </a>
+                )}
+              </div>
+            )}
+
+            {/* Enquiry Form */}
+            <div className="mt-6 border-t border-border pt-6">
+              <div className="space-y-3">
+                <input
+                  placeholder={t("property.namePlaceholder")}
+                  className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
+                />
+                <input
+                  placeholder={t("property.emailPlaceholder")}
+                  className="w-full rounded-full border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
+                />
+                <textarea
+                  rows={3}
+                  placeholder={t("property.notePlaceholder")}
+                  className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm focus:border-gold focus:outline-none"
+                />
+              </div>
+              <button className="mt-5 w-full rounded-full bg-gradient-gold py-3 text-sm font-medium text-primary-foreground">
+                {t("property.requestViewing")}
+              </button>
+            </div>
           </div>
         </aside>
       </div>
@@ -226,9 +328,22 @@ function Detail() {
             <p className="font-display text-lg text-gradient-gold">{formatPrice(p.price)}</p>
           </div>
           <div className="flex gap-2">
-            <button className="rounded-full border border-border p-3" aria-label="Call">
-              <Phone className="h-4 w-4" />
-            </button>
+            {p.agent?.phone && (
+              <a href={`tel:${p.agent.phone}`} className="rounded-full border border-border p-3" aria-label="Call">
+                <Phone className="h-4 w-4" />
+              </a>
+            )}
+            {p.agent?.whatsapp && (
+              <a
+                href={`https://wa.me/${p.agent.whatsapp.replace(/[^0-9]/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full bg-green-600 p-3 text-white"
+                aria-label="WhatsApp"
+              >
+                <MessageCircle className="h-4 w-4" />
+              </a>
+            )}
             <button className="inline-flex items-center gap-2 rounded-full bg-gradient-gold px-4 py-3 text-sm font-medium text-primary-foreground">
               <Calendar className="h-4 w-4" /> {t("property.bookViewing")}
             </button>

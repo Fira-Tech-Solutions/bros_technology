@@ -1,13 +1,31 @@
 import axios from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
-
-const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
-const CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID;
+import prisma from '../../../config/prisma.js';
 
 const MAX_IMAGES_IN_GROUP = 10;
 const REQUEST_TIMEOUT_MS = 30_000;
 const MAX_CAPTION_LENGTH = 1024;
+
+async function getTelegramConfig() {
+  const config = await prisma.syndicationConfig.findUnique({
+    where: { platform: 'TELEGRAM' },
+  });
+  return config;
+}
+
+async function resolveFileUrl(fileId, botToken) {
+  try {
+    const { data } = await axios.get(
+      `https://api.telegram.org/bot${botToken}/getFile`,
+      { params: { file_id: fileId }, timeout: 10000 }
+    );
+    if (data.ok && data.result.file_path) {
+      return `https://api.telegram.org/file/bot${botToken}/${data.result.file_path}`;
+    }
+  } catch {}
+  return null;
+}
 
 function formatPrice(price) {
   if (!price) return 'Price on request';
@@ -105,34 +123,54 @@ function buildMediaCaption(listing) {
 }
 
 async function readImageBuffer(imagePath) {
+  if (imagePath.startsWith('http')) {
+    try {
+      const response = await axios.get(imagePath, { responseType: 'arraybuffer', timeout: 15000 });
+      const ext = imagePath.split('.').pop()?.split('?')[0] || 'webp';
+      const contentType = response.headers['content-type'] || `image/${ext}`;
+      const blob = new Blob([response.data], { type: contentType });
+      return {
+        blob,
+        buffer: Buffer.from(response.data),
+        filename: `image.${ext}`,
+        contentType,
+        fullPath: imagePath,
+      };
+    } catch {
+      return null;
+    }
+  }
+
   const fullPath = path.resolve(process.cwd(), imagePath);
   try {
     const stat = await fs.stat(fullPath);
     if (!stat.isFile()) return null;
     const buffer = await fs.readFile(fullPath);
-    return { buffer, filename: path.basename(fullPath), fullPath };
+    const ext = path.extname(fullPath).slice(1) || 'webp';
+    const contentType = `image/${ext}`;
+    const blob = new Blob([buffer], { type: contentType });
+    return { blob, buffer, filename: path.basename(fullPath), contentType, fullPath };
   } catch {
     return null;
   }
 }
 
-async function sendSinglePhoto(caption, imagePath) {
+async function sendSinglePhoto(caption, imagePath, telegramApi, channelId) {
   const imageData = await readImageBuffer(imagePath);
   if (!imageData) {
     throw new Error(`Image file not found or unreadable: ${imagePath}`);
   }
 
   const form = new FormData();
-  form.append('chat_id', CHANNEL_ID);
-  form.append('photo', imageData.buffer, {
+  form.append('chat_id', channelId);
+  form.append('photo', imageData.blob, {
     filename: imageData.filename,
-    contentType: 'image/webp',
+    contentType: imageData.contentType,
   });
   form.append('caption', caption);
   form.append('parse_mode', 'Markdown');
 
-  const { data } = await axios.post(`${TELEGRAM_API}/sendPhoto`, form, {
-    headers: form.getHeaders(),
+  const { data } = await axios.post(`${telegramApi}/sendPhoto`, form, {
     timeout: REQUEST_TIMEOUT_MS,
     maxContentLength: Infinity,
     maxBodyLength: Infinity,
@@ -145,7 +183,7 @@ async function sendSinglePhoto(caption, imagePath) {
   return data.result;
 }
 
-async function sendMediaGroup(caption, imagePaths) {
+async function sendMediaGroup(caption, imagePaths, telegramApi, channelId) {
   const validPaths = imagePaths.slice(0, MAX_IMAGES_IN_GROUP);
 
   const readResults = await Promise.allSettled(
@@ -161,7 +199,7 @@ async function sendMediaGroup(caption, imagePaths) {
   }
 
   const form = new FormData();
-  form.append('chat_id', CHANNEL_ID);
+  form.append('chat_id', channelId);
   form.append('parse_mode', 'Markdown');
 
   if (images.length === 1) {
@@ -171,9 +209,9 @@ async function sendMediaGroup(caption, imagePaths) {
       caption,
       parse_mode: 'Markdown',
     }));
-    form.append('photo0', images[0].buffer, {
+    form.append('photo0', images[0].blob, {
       filename: images[0].filename,
-      contentType: 'image/webp',
+      contentType: images[0].contentType,
     });
   } else {
     const mediaItems = images.map((img, idx) => {
@@ -188,15 +226,14 @@ async function sendMediaGroup(caption, imagePaths) {
     form.append('media', JSON.stringify(mediaItems));
 
     for (let i = 0; i < images.length; i++) {
-      form.append(`photo${i}`, images[i].buffer, {
+      form.append(`photo${i}`, images[i].blob, {
         filename: images[i].filename,
-        contentType: 'image/webp',
+        contentType: images[i].contentType,
       });
     }
   }
 
-  const { data } = await axios.post(`${TELEGRAM_API}/sendMediaGroup`, form, {
-    headers: form.getHeaders(),
+  const { data } = await axios.post(`${telegramApi}/sendMediaGroup`, form, {
     timeout: REQUEST_TIMEOUT_MS,
     maxContentLength: Infinity,
     maxBodyLength: Infinity,
@@ -210,17 +247,120 @@ async function sendMediaGroup(caption, imagePaths) {
 }
 
 export default class TelegramBotService {
-  static validateConfig() {
-    if (!process.env.TELEGRAM_BOT_TOKEN) {
-      throw new Error('TELEGRAM_BOT_TOKEN environment variable is not set');
+  static buildCaption(listingData) {
+    return buildCaption(listingData);
+  }
+
+  static async validateConfig() {
+    const config = await getTelegramConfig();
+    if (!config || !config.botToken) {
+      throw new Error('Telegram bot token not configured. Set it in Syndication Settings.');
     }
-    if (!CHANNEL_ID) {
-      throw new Error('TELEGRAM_CHANNEL_ID environment variable is not set');
+    if (!config.channelId) {
+      throw new Error('Telegram channel ID not configured. Set it in Syndication Settings.');
+    }
+    if (!config.isActive) {
+      throw new Error('Telegram syndication is disabled. Enable it in Syndication Settings.');
+    }
+    return config;
+  }
+
+  static async getBotInfo() {
+    const config = await getTelegramConfig();
+    if (!config || !config.botToken) return null;
+    try {
+      const { data } = await axios.get(
+        `https://api.telegram.org/bot${config.botToken}/getMe`,
+        { timeout: 10000 }
+      );
+      if (!data.ok) return null;
+
+      const bot = data.result;
+
+      // Fetch bot's profile photo and resolve to URL
+      try {
+        const { data: photoData } = await axios.get(
+          `https://api.telegram.org/bot${config.botToken}/getUserProfilePhotos`,
+          { params: { user_id: bot.id, limit: 1 }, timeout: 10000 }
+        );
+        if (photoData.ok && photoData.result.photos.length > 0) {
+          const fileId = photoData.result.photos[0][0].file_id;
+          const photoUrl = await resolveFileUrl(fileId, config.botToken);
+          if (photoUrl) bot.photoUrl = photoUrl;
+        }
+      } catch {}
+
+      return bot;
+    } catch {
+      return null;
     }
   }
 
+  static async getChannelInfo() {
+    const config = await getTelegramConfig();
+    if (!config || !config.botToken || !config.channelId) return null;
+    try {
+      const { data } = await axios.get(
+        `https://api.telegram.org/bot${config.botToken}/getChat`,
+        { params: { chat_id: config.channelId }, timeout: 10000 }
+      );
+      if (!data.ok) return null;
+      const chat = data.result;
+
+      // Resolve channel profile photo to URL
+      if (chat.photo?.big_file_id) {
+        const photoUrl = await resolveFileUrl(chat.photo.big_file_id, config.botToken);
+        if (photoUrl) chat.photoUrl = photoUrl;
+      }
+
+      let memberCount = 0;
+      try {
+        const { data: countData } = await axios.get(
+          `https://api.telegram.org/bot${config.botToken}/getChatMemberCount`,
+          { params: { chat_id: config.channelId }, timeout: 10000 }
+        );
+        if (countData.ok) memberCount = countData.result;
+      } catch {}
+      return { ...chat, memberCount };
+    } catch {
+      return null;
+    }
+  }
+
+  static async deleteMessage(messageId) {
+    const config = await getTelegramConfig();
+    if (!config || !config.botToken) throw new Error('Telegram not configured');
+    const { data } = await axios.post(
+      `https://api.telegram.org/bot${config.botToken}/deleteMessage`,
+      { chat_id: config.channelId, message_id: messageId },
+      { timeout: 10000 }
+    );
+    if (!data.ok) throw new Error(data.description || 'Failed to delete message');
+    return true;
+  }
+
+  static async editMessageCaption(messageId, newCaption) {
+    const config = await getTelegramConfig();
+    if (!config || !config.botToken) throw new Error('Telegram not configured');
+    const { data } = await axios.post(
+      `https://api.telegram.org/bot${config.botToken}/editMessageCaption`,
+      {
+        chat_id: config.channelId,
+        message_id: messageId,
+        caption: newCaption,
+        parse_mode: 'Markdown',
+      },
+      { timeout: 10000 }
+    );
+    if (!data.ok) throw new Error(data.description || 'Failed to edit message');
+    return data.result;
+  }
+
   static async sendListingToChannel(listingData) {
-    this.validateConfig();
+    const config = await this.validateConfig();
+
+    const telegramApi = `https://api.telegram.org/bot${config.botToken}`;
+    const channelId = config.channelId;
 
     const { images = [], category, agent, ...listing } = listingData;
     const listingObj = { ...listing, category, agent, images };
@@ -235,9 +375,9 @@ export default class TelegramBotService {
     if (images.length === 0) {
       throw new Error('Listing must have at least one image to send to Telegram channel');
     } else if (images.length === 1) {
-      result = await sendSinglePhoto(caption, images[0]);
+      result = await sendSinglePhoto(caption, images[0], telegramApi, channelId);
     } else {
-      result = await sendMediaGroup(caption, images);
+      result = await sendMediaGroup(caption, images, telegramApi, channelId);
     }
 
     console.log(
@@ -247,7 +387,7 @@ export default class TelegramBotService {
 
     return {
       platform: 'TELEGRAM',
-      channelInfo: CHANNEL_ID,
+      channelInfo: channelId,
       messageId: result?.message_id,
       imagesSent: images.length,
       captionLength: fullCaption.length,

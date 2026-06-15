@@ -4,6 +4,12 @@ import path from 'path';
 import fs from 'fs/promises';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+  deleteFromCloudinaryBatch,
+  extractPublicId,
+} from './cloudinary.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +19,7 @@ const MAX_WIDTH = 1200;
 const WEBP_QUALITY = 80;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MAX_FILES = 10;
+const STORAGE_PROVIDER = process.env.STORAGE_PROVIDER || 'local';
 
 const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
@@ -57,7 +64,7 @@ function getExtensionForMime(mimeType) {
   return MIME_TO_EXT[mimeType] || '.bin';
 }
 
-async function processSingleImage(file) {
+async function processSingleImageLocal(file) {
   const uploadDir = await ensureUploadDir();
   const inputPath = file.path;
 
@@ -111,6 +118,40 @@ async function processSingleImage(file) {
   }
 }
 
+async function processSingleImageCloudinary(file) {
+  const inputPath = file.path;
+
+  const inputStat = await fs.stat(inputPath).catch(() => null);
+  if (!inputStat || !inputStat.isFile()) {
+    throw new Error(`Uploaded file not found: ${inputPath}`);
+  }
+
+  try {
+    const result = await uploadToCloudinary(inputPath);
+
+    await fs.unlink(inputPath).catch(() => {});
+
+    return {
+      path: result.url,
+      publicId: result.publicId,
+      width: result.width,
+      height: result.height,
+      originalName: file.originalname,
+      size: result.bytes,
+    };
+  } catch (err) {
+    await fs.unlink(inputPath).catch(() => {});
+    throw new Error(`Failed to upload "${file.originalname}" to Cloudinary: ${err.message}`);
+  }
+}
+
+async function processSingleImage(file) {
+  if (STORAGE_PROVIDER === 'cloudinary') {
+    return processSingleImageCloudinary(file);
+  }
+  return processSingleImageLocal(file);
+}
+
 export async function processListingImages(files) {
   if (!files || !Array.isArray(files) || files.length === 0) {
     return [];
@@ -162,6 +203,16 @@ export async function processListingImages(files) {
 export async function cleanupImages(filePaths) {
   if (!filePaths || !Array.isArray(filePaths)) return;
 
+  if (STORAGE_PROVIDER === 'cloudinary') {
+    const publicIds = filePaths
+      .map((url) => extractPublicId(url))
+      .filter(Boolean);
+    if (publicIds.length > 0) {
+      await deleteFromCloudinaryBatch(publicIds);
+    }
+    return;
+  }
+
   const projectRoot = path.resolve(__dirname, '../..');
 
   await Promise.all(
@@ -175,6 +226,21 @@ export async function cleanupImages(filePaths) {
     }),
   );
 }
+
+async function cleanupTempFiles() {
+  if (STORAGE_PROVIDER !== 'cloudinary') return;
+  try {
+    const dir = resolveUploadDir();
+    const files = await fs.readdir(dir).catch(() => []);
+    for (const file of files) {
+      if (file.startsWith('temp-')) {
+        await fs.unlink(path.join(dir, file)).catch(() => {});
+      }
+    }
+  } catch {}
+}
+
+cleanupTempFiles();
 
 const storage = multer.diskStorage({
   destination: async (_req, _file, cb) => {
@@ -228,5 +294,21 @@ export async function optimizeImages(req, res, next) {
     next();
   } catch (err) {
     next(err);
+  }
+}
+
+export async function processProfileImage(file) {
+  if (!file) return null;
+
+  if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
+    await fs.unlink(file.path).catch(() => {});
+    throw new Error(`Invalid file type "${file.mimetype}". Allowed: ${[...ALLOWED_MIME_TYPES].join(', ')}`);
+  }
+
+  try {
+    const result = await processSingleImage(file);
+    return result.path;
+  } catch (err) {
+    throw new Error(`Failed to process profile image: ${err.message}`);
   }
 }
