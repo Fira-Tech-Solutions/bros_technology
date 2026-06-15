@@ -3,18 +3,15 @@ import {
   View,
   Text,
   Image,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
   ImageBackground,
   TouchableOpacity,
   Dimensions,
   StyleSheet,
+  Linking,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Mail, Lock, ArrowLeft } from "lucide-react-native";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -48,10 +45,19 @@ export default function LoginScreen({ navigation }) {
     try {
       await signIn(email.trim(), password);
     } catch (err) {
-      Alert.alert(
-        t("error"),
-        err.response?.data?.error || t("invalidCredentials")
-      );
+      if (err.code === "ECONNABORTED") {
+        Alert.alert("Connection Error", "Request timed out. Check your network.");
+      } else if (!err.response) {
+        Alert.alert(
+          "Connection Error",
+          "Unable to reach the server. Make sure the backend is running and EXPO_PUBLIC_API_URL is set correctly."
+        );
+      } else {
+        Alert.alert(
+          t("error"),
+          err.response?.data?.error || t("invalidCredentials")
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -72,18 +78,8 @@ export default function LoginScreen({ navigation }) {
         />
 
         <SafeAreaView style={{ flex: 1 }}>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            style={{ flex: 1 }}
-          >
-            <ScrollView
-              contentContainerStyle={{ flexGrow: 1 }}
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}
-            >
               {/* Logo + Back row */}
-              <Animated.View
-                entering={FadeInDown.delay(100).springify()}
+              <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -123,7 +119,7 @@ export default function LoginScreen({ navigation }) {
                       style={{
                         fontFamily: "serif",
                         fontStyle: "italic",
-                        color: "#ef4444",
+                        color: colors.primary,
                         fontSize: 18,
                         fontWeight: "700",
                         letterSpacing: 0.5,
@@ -136,7 +132,7 @@ export default function LoginScreen({ navigation }) {
                       style={{
                         fontFamily: "serif",
                         fontStyle: "italic",
-                        color: "rgba(239, 68, 68, 0.6)",
+                        color: `${colors.primary}99`,
                         fontSize: 9,
                         letterSpacing: 2,
                         fontWeight: "500",
@@ -148,72 +144,69 @@ export default function LoginScreen({ navigation }) {
                     </Text>
                   </View>
                 </View>
-              </Animated.View>
+              </View>
 
               <View
                 style={{
                   flex: 1,
                   justifyContent: "flex-end",
                   paddingHorizontal: 24,
-                  paddingBottom: 40,
+                  paddingBottom: 250,
                 }}
               >
                 {/* Spacer */}
 
                 {/* Form Card */}
-                <Animated.View
-                  entering={FadeInUp.delay(300).springify().damping(15)}
+                <View
                   style={{
-                    backgroundColor: "rgba(255,255,255,0.95)",
-                    borderRadius: 28,
-                    padding: 28,
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 12 },
-                    shadowOpacity: 0.15,
-                    shadowRadius: 30,
-                    elevation: 12,
+                    backgroundColor: "transparent",
+                    borderRadius: 0,
+                    padding: 0,
+                    shadowColor: "transparent",
+                    shadowOpacity: 0,
+                    elevation: 0,
                   }}
                 >
-                  <Animated.View entering={FadeInUp.delay(350).springify()}>
+                  <View>
                     <Input
-                      label={t("email")}
                       value={email}
                       onChangeText={setEmail}
-                      placeholder="admin@example.com"
+                      placeholder="Email"
                       keyboardType="email-address"
                       icon={Mail}
                       error={errors.email}
-                      required
+                      rounded="full"
+                      small
                       className="mb-4"
                     />
-                  </Animated.View>
+                  </View>
 
-                  <Animated.View entering={FadeInUp.delay(420).springify()}>
+                  <View>
                     <Input
-                      label={t("password")}
                       value={password}
                       onChangeText={setPassword}
-                      placeholder="••••••••"
+                      placeholder="Password"
                       secureTextEntry
                       icon={Lock}
                       error={errors.password}
-                      required
-                      className="mb-2"
+                      rounded="full"
+                      small
+                      className="mb-4"
                     />
-                  </Animated.View>
+                  </View>
 
-                  <Animated.View entering={FadeInUp.delay(500).springify()}>
+                  <View>
                     <Button
                       title={t("loginButton")}
                       onPress={handleLogin}
                       loading={loading}
                       size="lg"
-                      className="mt-2"
+                      color={colors.primary}
+                      className="mt-2 rounded-[100px]"
                     />
-                  </Animated.View>
+                  </View>
 
-                  <Animated.View
-                    entering={FadeInUp.delay(580).springify()}
+                  <View
                     style={{ alignItems: "center", marginTop: 20 }}
                   >
                     <TouchableOpacity
@@ -236,11 +229,24 @@ export default function LoginScreen({ navigation }) {
                         Forgot Password?
                       </Text>
                     </TouchableOpacity>
-                  </Animated.View>
-                </Animated.View>
+                  </View>
+                </View>
+                <TouchableOpacity
+                  onPress={() => Linking.openURL("https://firatech.systems")}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: "rgba(255,255,255,0.35)",
+                      fontSize: 11,
+                      letterSpacing: 0.5,
+                      marginTop: 16,
+                    }}
+                  >
+                    fira tech solutions
+                  </Text>
+                </TouchableOpacity>
               </View>
-            </ScrollView>
-          </KeyboardAvoidingView>
         </SafeAreaView>
       </ImageBackground>
     </View>

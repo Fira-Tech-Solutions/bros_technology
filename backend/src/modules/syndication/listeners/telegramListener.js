@@ -21,39 +21,96 @@ async function handleSyndication(listingId, eventType) {
       return;
     }
 
+    // On update: try to edit existing Telegram post in-place
+    if (eventType === 'listing:updated') {
+      const existingLog = await prisma.syndicationLog.findFirst({
+        where: {
+          listingId: listing.id,
+          platform: 'TELEGRAM',
+          status: 'SUCCESS',
+          messageId: { not: null },
+        },
+        orderBy: { runAt: 'desc' },
+      });
+
+      if (existingLog?.messageId) {
+        const logEntry = await prisma.syndicationLog.create({
+          data: {
+            listingId: listing.id,
+            platform: 'TELEGRAM',
+            status: 'PENDING',
+            action: 'EDITED',
+            channelInfo: existingLog.channelInfo,
+            messageId: existingLog.messageId,
+          },
+        });
+
+        try {
+          const caption = TelegramBotService.buildCaption(listing);
+          await TelegramBotService.editMessageCaption(existingLog.messageId, caption);
+
+          await prisma.syndicationLog.update({
+            where: { id: logEntry.id },
+            data: { status: 'SUCCESS' },
+          });
+
+          console.log(
+            `[Syndication] ${eventType} — Telegram EDITED in-place for listing "${listing.title}" (${listing.id}) — message_id: ${existingLog.messageId}`,
+          );
+          return;
+        } catch (err) {
+          const errorMessage = err.response?.data?.description || err.message || String(err);
+
+          // If edit fails (message deleted, etc.), fall through to create new post
+          console.warn(
+            `[Syndication] Edit failed for listing "${listing.title}", falling back to new post:`,
+            errorMessage,
+          );
+
+          await prisma.syndicationLog.update({
+            where: { id: logEntry.id },
+            data: { status: 'FAILED', errorMessage: `Edit failed, fallback to new post: ${errorMessage}` },
+          });
+          // Continue to create new post below
+        }
+      }
+    }
+
+    // Create new post (listing:created, or listing:updated with no existing message)
     const logEntry = await prisma.syndicationLog.create({
       data: {
         listingId: listing.id,
         platform: 'TELEGRAM',
         status: 'PENDING',
+        action: 'NEW_POST',
         channelInfo: process.env.TELEGRAM_CHANNEL_ID || 'unknown',
       },
     });
 
     try {
-      await TelegramBotService.sendListingToChannel(listing);
+      const result = await TelegramBotService.sendListingToChannel(listing);
 
       await prisma.syndicationLog.update({
         where: { id: logEntry.id },
-        data: { status: 'SUCCESS' },
+        data: {
+          status: 'SUCCESS',
+          messageId: result.messageId || null,
+        },
       });
 
       console.log(
-        `[Syndication] ${eventType} — Telegram broadcast succeeded for listing "${listing.title}" (${listing.id})`,
+        `[Syndication] ${eventType} — Telegram NEW_POST succeeded for listing "${listing.title}" (${listing.id}) — message_id: ${result.messageId}`,
       );
     } catch (err) {
       const errorMessage = err.response?.data?.description || err.message || String(err);
 
       await prisma.syndicationLog.update({
         where: { id: logEntry.id },
-        data: {
-          status: 'FAILED',
-          errorMessage,
-        },
+        data: { status: 'FAILED', errorMessage },
       });
 
       console.error(
-        `[Syndication] ${eventType} — Telegram broadcast FAILED for listing "${listing.title}" (${listing.id}):`,
+        `[Syndication] ${eventType} — Telegram NEW_POST FAILED for listing "${listing.title}" (${listing.id}):`,
         errorMessage,
       );
     }
@@ -66,7 +123,6 @@ async function handleSyndication(listingId, eventType) {
 }
 
 export function initializeListingListeners() {
-  // Prevent duplicate listener registration (e.g., during hot reload in development)
   if (listenersInitialized) {
     console.log('[Listener] Listing syndication listeners already initialized, skipping');
     return;

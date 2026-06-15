@@ -58,7 +58,7 @@ export async function createListing(req, res, next) {
       include: LISTING_INCLUDE,
     });
 
-    listingEmitter.emit('listing:created', listing);
+    listingEmitter.emit('listing:created', listing.id);
 
     return res.status(201).json({
       success: true,
@@ -229,11 +229,43 @@ export async function updateListing(req, res, next) {
       include: LISTING_INCLUDE,
     });
 
-    listingEmitter.emit('listing:updated', updated);
+    listingEmitter.emit('listing:updated', updated.id);
 
     return res.status(200).json({
       success: true,
       data: updated,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function deleteListing(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const existing = await prisma.listing.findUnique({ where: { id } });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        error: `Listing with id "${id}" not found`,
+      });
+    }
+
+    if (existing.images && existing.images.length > 0) {
+      cleanupImages(existing.images).catch((err) => {
+        console.error('[Listing] Failed to cleanup images:', err.message);
+      });
+    }
+
+    await prisma.listing.delete({ where: { id } });
+
+    listingEmitter.emit('listing:deleted', id);
+
+    return res.status(200).json({
+      success: true,
+      data: { id },
     });
   } catch (error) {
     next(error);

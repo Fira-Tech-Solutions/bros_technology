@@ -155,3 +155,37 @@ export async function updateCategory(req, res, next) {
     next(error);
   }
 }
+
+export async function deleteCategory(req, res, next) {
+  try {
+    const { id } = req.params;
+
+    const existing = await prisma.category.findUnique({
+      where: { id },
+      include: { _count: { select: { listings: true } } },
+    });
+
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        error: `Category with id "${id}" not found`,
+      });
+    }
+
+    if (existing._count.listings > 0) {
+      return res.status(409).json({
+        success: false,
+        error: `Cannot delete category "${existing.displayName}" — it has ${existing._count.listings} listing(s). Reassign or remove them first.`,
+      });
+    }
+
+    await prisma.category.delete({ where: { id } });
+
+    return res.status(200).json({
+      success: true,
+      data: { id },
+    });
+  } catch (error) {
+    next(error);
+  }
+}

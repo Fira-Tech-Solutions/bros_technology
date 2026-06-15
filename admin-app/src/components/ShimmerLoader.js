@@ -5,7 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 const SHIMMER_WIDTH = Dimensions.get("window").width;
 
 export default function ShimmerLoader({ width, height = 20, className = "" }) {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function ShimmerLoader({ width, height = 20, className = "" }) {
           right: 0,
           bottom: 0,
           transform: [{ translateX }],
-          backgroundColor: "rgba(255,255,255,0.15)",
+          backgroundColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.06)",
         }}
       />
     </View>

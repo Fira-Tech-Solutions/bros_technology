@@ -1,5 +1,12 @@
-import React from "react";
-import { View, Text, Switch, TouchableOpacity, Alert, ScrollView } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  Switch,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Sun,
@@ -8,19 +15,24 @@ import {
   LogOut,
   ChevronRight,
   Info,
+  ChevronDown,
 } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
   const { isDark, toggleTheme, colors } = useTheme();
   const { language, setLanguage, t, languages } = useLanguage();
   const { user, signOut } = useAuth();
+  const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
+
+  const currentLanguage = languages.find((l) => l.code === language);
 
   const handleLanguageChange = (code) => {
     setLanguage(code);
+    setShowLanguageDropdown(false);
   };
 
   const handleLogout = () => {
@@ -53,7 +65,10 @@ export default function SettingsScreen() {
         </View>
 
         {user && (
-          <View className="px-5 mb-6">
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile")}
+            className="px-5 mb-6"
+          >
             <View
               className="flex-row items-center p-4 rounded-2xl"
               style={{
@@ -66,7 +81,10 @@ export default function SettingsScreen() {
                 className="w-12 h-12 rounded-full items-center justify-center mr-3"
                 style={{ backgroundColor: colors.primary }}
               >
-                <Text style={{ color: "#ffffff" }} className="text-lg font-bold">
+                <Text
+                  style={{ color: colors.primaryText }}
+                  className="text-lg font-bold"
+                >
                   {user.name?.charAt(0).toUpperCase()}
                 </Text>
               </View>
@@ -84,8 +102,9 @@ export default function SettingsScreen() {
                   {user.email}
                 </Text>
               </View>
+              <ChevronRight size={18} color={colors.textMuted} />
             </View>
-          </View>
+          </TouchableOpacity>
         )}
 
         <View className="px-5 mb-6">
@@ -121,7 +140,7 @@ export default function SettingsScreen() {
                 value={isDark}
                 onValueChange={toggleTheme}
                 trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor="#ffffff"
+                thumbColor={colors.primaryText}
               />
             </View>
           </View>
@@ -142,36 +161,60 @@ export default function SettingsScreen() {
               borderColor: colors.border,
             }}
           >
-            {languages.map((lang, index) => (
-              <TouchableOpacity
-                key={lang.code}
-                onPress={() => handleLanguageChange(lang.code)}
-                className="flex-row items-center justify-between p-4"
+            <TouchableOpacity
+              onPress={() => setShowLanguageDropdown(!showLanguageDropdown)}
+              className="flex-row items-center justify-between p-4"
+            >
+              <View className="flex-row items-center">
+                <Globe size={20} color={colors.primary} />
+                <Text
+                  style={{ color: colors.text }}
+                  className="ml-3 text-base font-medium"
+                >
+                  {currentLanguage?.label || "English"}
+                </Text>
+              </View>
+              <ChevronDown
+                size={18}
+                color={colors.textMuted}
                 style={{
-                  borderBottomWidth:
-                    index < languages.length - 1 ? 1 : 0,
-                  borderBottomColor: colors.border,
+                  transform: [{ rotate: showLanguageDropdown ? "180deg" : "0deg" }],
                 }}
-              >
-                <View className="flex-row items-center">
-                  <Globe size={20} color={colors.primary} />
-                  <Text
-                    style={{ color: colors.text }}
-                    className="ml-3 text-base font-medium"
+              />
+            </TouchableOpacity>
+            {showLanguageDropdown && (
+              <View style={{ borderTopWidth: 1, borderTopColor: colors.border }}>
+                {languages.map((lang) => (
+                  <TouchableOpacity
+                    key={lang.code}
+                    onPress={() => handleLanguageChange(lang.code)}
+                    className="flex-row items-center justify-between px-4 py-3"
+                    style={{
+                      backgroundColor:
+                        language === lang.code ? `${colors.primary}10` : "transparent",
+                    }}
                   >
-                    {lang.label}
-                  </Text>
-                </View>
-                {language === lang.code && (
-                  <View
-                    className="w-5 h-5 rounded-full items-center justify-center"
-                    style={{ backgroundColor: colors.primary }}
-                  >
-                    <View className="w-2 h-2 rounded-full bg-white" />
-                  </View>
-                )}
-              </TouchableOpacity>
-            ))}
+                    <Text
+                      style={{
+                        color: language === lang.code ? colors.primary : colors.text,
+                        fontSize: 15,
+                        fontWeight: language === lang.code ? "600" : "400",
+                      }}
+                    >
+                      {lang.label}
+                    </Text>
+                    {language === lang.code && (
+                      <View
+                        className="w-5 h-5 rounded-full items-center justify-center"
+                        style={{ backgroundColor: colors.primary }}
+                      >
+                        <View className="w-2 h-2 rounded-full bg-white" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
         </View>
 
@@ -207,13 +250,16 @@ export default function SettingsScreen() {
             onPress={handleLogout}
             className="flex-row items-center justify-center p-4 rounded-2xl"
             style={{
-              backgroundColor: "#fef2f2",
+              backgroundColor: `${colors.danger}12`,
               borderWidth: 1,
-              borderColor: "#fecaca",
+              borderColor: `${colors.danger}30`,
             }}
           >
-            <LogOut size={20} color="#dc2626" />
-            <Text className="ml-2 text-base font-semibold text-red-600">
+            <LogOut size={20} color={colors.danger} />
+            <Text
+              style={{ color: colors.danger }}
+              className="ml-2 text-base font-semibold"
+            >
               {t("logout")}
             </Text>
           </TouchableOpacity>

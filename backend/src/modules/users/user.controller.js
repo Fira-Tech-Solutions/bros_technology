@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import prisma from '../../config/prisma.js';
 import { generateToken } from './auth.middleware.js';
+import { processProfileImage } from '../../utils/imageProcessor.js';
 
 const SALT_ROUNDS = 12;
 
@@ -10,6 +11,20 @@ const USER_SELECT_SAFE = {
   name: true,
   phone: true,
   role: true,
+  profileImage: true,
+  facebook: true,
+  twitter: true,
+  instagram: true,
+  linkedin: true,
+  telegram: true,
+  whatsapp: true,
+  tiktok: true,
+  youtube: true,
+  website: true,
+  telegramConnected: true,
+  telegramUsername: true,
+  telegramFirstName: true,
+  telegramPhotoUrl: true,
   createdAt: true,
 };
 
@@ -128,6 +143,84 @@ export async function getMe(req, res, next) {
         error: 'User not found',
       });
     }
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateMe(req, res, next) {
+  try {
+    const { 
+      name, phone, email,
+      facebook, twitter, instagram, linkedin, 
+      telegram, whatsapp, tiktok, youtube, website 
+    } = req.body;
+    const updateData = {};
+
+    if (name !== undefined) {
+      updateData.name = name.trim();
+    }
+
+    if (phone !== undefined) {
+      updateData.phone = phone.trim();
+    }
+
+    if (email !== undefined) {
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(normalizedEmail)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid email format',
+        });
+      }
+
+      if (normalizedEmail !== req.user.email) {
+        const existing = await prisma.user.findUnique({
+          where: { email: normalizedEmail },
+        });
+        if (existing) {
+          return res.status(409).json({
+            success: false,
+            error: 'An account with this email already exists',
+          });
+        }
+      }
+
+      updateData.email = normalizedEmail;
+    }
+
+    // Social media fields
+    const socialFields = { facebook, twitter, instagram, linkedin, telegram, whatsapp, tiktok, youtube, website };
+    for (const [key, value] of Object.entries(socialFields)) {
+      if (value !== undefined) {
+        updateData[key] = value.trim() || null;
+      }
+    }
+
+    // Handle profile image upload
+    if (req.file) {
+      try {
+        const imageUrl = await processProfileImage(req.file);
+        if (imageUrl) {
+          updateData.profileImage = imageUrl;
+        }
+      } catch (err) {
+        console.error('Profile image processing error:', err);
+      }
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: updateData,
+      select: USER_SELECT_SAFE,
+    });
 
     return res.status(200).json({
       success: true,

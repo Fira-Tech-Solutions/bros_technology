@@ -16,3 +16,5 @@ export const updateListing = (id, formData) =>
     headers: { "Content-Type": "multipart/form-data" },
     timeout: 30000,
   });
+
+export const deleteListing = (id) => client.delete(`/api/listings/${id}`);

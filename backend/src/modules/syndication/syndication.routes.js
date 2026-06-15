@@ -2,12 +2,132 @@ import { Router } from 'express';
 import prisma from '../../config/prisma.js';
 import listingEmitter from '../../core/listingEmitter.js';
 import { authenticate, authorize } from '../users/auth.middleware.js';
+import TelegramBotService from './services/telegramBot.service.js';
 
 const router = Router();
 
+router.get('/config', authenticate(), async (req, res, next) => {
+  try {
+    const configs = await prisma.syndicationConfig.findMany({
+      orderBy: { platform: 'asc' },
+    });
+    return res.status(200).json({ success: true, data: configs });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/config/:platform', authenticate(), async (req, res, next) => {
+  try {
+    const { platform } = req.params;
+    const config = await prisma.syndicationConfig.findUnique({
+      where: { platform: platform.toUpperCase() },
+    });
+    if (!config) {
+      return res.status(404).json({ success: false, error: 'Config not found' });
+    }
+    return res.status(200).json({ success: true, data: config });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/config', authenticate(), authorize('SUPER_ADMIN'), async (req, res, next) => {
+  try {
+    const { platform, botToken, channelId, apiKey, apiSecret, isActive, extraConfig } = req.body;
+    if (!platform) {
+      return res.status(400).json({ success: false, error: 'Platform is required' });
+    }
+    const config = await prisma.syndicationConfig.upsert({
+      where: { platform: platform.toUpperCase() },
+      update: {
+        ...(botToken !== undefined && { botToken }),
+        ...(channelId !== undefined && { channelId }),
+        ...(apiKey !== undefined && { apiKey }),
+        ...(apiSecret !== undefined && { apiSecret }),
+        ...(isActive !== undefined && { isActive }),
+        ...(extraConfig !== undefined && { extraConfig }),
+      },
+      create: {
+        platform: platform.toUpperCase(),
+        botToken: botToken || null,
+        channelId: channelId || null,
+        apiKey: apiKey || null,
+        apiSecret: apiSecret || null,
+        isActive: isActive !== false,
+        extraConfig: extraConfig || null,
+      },
+    });
+    return res.status(200).json({ success: true, data: config });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/config/:platform', authenticate(), authorize('SUPER_ADMIN'), async (req, res, next) => {
+  try {
+    const { platform } = req.params;
+    await prisma.syndicationConfig.delete({
+      where: { platform: platform.toUpperCase() },
+    });
+    return res.status(200).json({ success: true, data: { platform: platform.toUpperCase() } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/telegram/info', authenticate(), async (req, res, next) => {
+  try {
+    const [botInfo, channelInfo] = await Promise.all([
+      TelegramBotService.getBotInfo(),
+      TelegramBotService.getChannelInfo(),
+    ]);
+    return res.status(200).json({
+      success: true,
+      data: { bot: botInfo, channel: channelInfo },
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/delete-message/:messageId', authenticate(), authorize('SUPER_ADMIN'), async (req, res, next) => {
+  try {
+    const { messageId } = req.params;
+    const { logId } = req.body;
+
+    await TelegramBotService.deleteMessage(parseInt(messageId, 10));
+
+    if (logId) {
+      await prisma.syndicationLog.update({
+        where: { id: logId },
+        data: { status: 'SUCCESS', action: 'DELETED' },
+      });
+    }
+
+    return res.status(200).json({ success: true, data: { deleted: true } });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/edit-message/:messageId', authenticate(), authorize('SUPER_ADMIN'), async (req, res, next) => {
+  try {
+    const { messageId } = req.params;
+    const { caption } = req.body;
+    if (!caption) {
+      return res.status(400).json({ success: false, error: 'Caption is required' });
+    }
+    const result = await TelegramBotService.editMessageCaption(parseInt(messageId, 10), caption);
+    return res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get('/logs', authenticate(), async (req, res, next) => {
   try {
-    const { page = 1, limit = 50, status, listingId } = req.query;
+    const { page = 1, limit = 50, status, action, listingId } = req.query;
 
     const pageNumber = Math.max(1, parseInt(page, 10) || 1);
     const limitNumber = Math.min(100, Math.max(1, parseInt(limit, 10) || 50));
@@ -15,6 +135,7 @@ router.get('/logs', authenticate(), async (req, res, next) => {
 
     const where = {};
     if (status) where.status = status;
+    if (action) where.action = action;
     if (listingId) where.listingId = listingId;
 
     if (req.user.role === 'AGENT') {
@@ -35,6 +156,8 @@ router.get('/logs', authenticate(), async (req, res, next) => {
               city: true,
               neighborhood: true,
               images: true,
+              price: true,
+              category: true,
             },
           },
         },

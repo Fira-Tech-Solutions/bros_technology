@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { LayoutDashboard, Building2, Settings, Plus } from "lucide-react-native";
+import { LayoutDashboard, Building2, Settings, Plus, Send } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -9,8 +9,11 @@ import { useLanguage } from "../context/LanguageContext";
 import DashboardScreen from "../screens/DashboardScreen";
 import PropertiesScreen from "../screens/PropertiesScreen";
 import AddListingScreen from "../screens/AddListingScreen";
+import ListingDetailScreen from "../screens/ListingDetailScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 import SyndicationScreen from "../screens/SyndicationScreen";
+import SyndicationConfigScreen from "../screens/SyndicationConfigScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,6 +40,11 @@ function DashboardStack() {
         component={SyndicationScreen}
         options={{ title: t("syndication") }}
       />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -62,6 +70,37 @@ function PropertiesStack() {
         name="AddListing"
         component={AddListingScreen}
         options={{ title: t("addListingTitle") }}
+      />
+      <Stack.Screen
+        name="ListingDetail"
+        component={ListingDetailScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function SettingsStack() {
+  const { colors } = useTheme();
+  const { t } = useLanguage();
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.bgSecondary },
+        headerTintColor: colors.text,
+        headerShadowVisible: false,
+      }}
+    >
+      <Stack.Screen
+        name="SettingsHome"
+        component={SettingsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -112,8 +151,18 @@ export default function MainNavigator() {
         }}
       />
       <Tab.Screen
+        name="Syndication"
+        component={SyndicationConfigScreen}
+        options={{
+          tabBarLabel: "Syndication",
+          tabBarIcon: ({ color, size }) => (
+            <Send size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Settings"
-        component={SettingsScreen}
+        component={SettingsStack}
         options={{
           tabBarLabel: t("settings"),
           tabBarIcon: ({ color, size }) => (

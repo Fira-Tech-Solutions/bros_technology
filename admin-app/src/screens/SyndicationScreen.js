@@ -120,7 +120,7 @@ export default function SyndicationScreen() {
       {item.errorMessage && (
         <View
           className="p-3 rounded-xl mb-3"
-          style={{ backgroundColor: "#fef2f2" }}
+          style={{ backgroundColor: `${colors.danger}12` }}
         >
           <Text style={{ color: colors.danger }} className="text-xs">
             {item.errorMessage}
@@ -140,12 +140,12 @@ export default function SyndicationScreen() {
         >
           <RefreshCw
             size={14}
-            color="#ffffff"
+            color={colors.primaryText}
             style={{
               marginRight: 6,
             }}
           />
-          <Text style={{ color: "#ffffff" }} className="text-sm font-semibold">
+          <Text style={{ color: colors.primaryText }} className="text-sm font-semibold">
             {retryingId === item.id ? t("retrying") : t("manualRetry")}
           </Text>
         </TouchableOpacity>

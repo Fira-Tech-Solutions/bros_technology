@@ -7,6 +7,7 @@ import {
   getListings,
   getListingById,
   updateListing,
+  deleteListing,
 } from './listing.controller.js';
 
 const router = Router();
@@ -23,5 +24,6 @@ const protectedWriteMiddleware = [
 
 router.post('/', ...protectedWriteMiddleware, createListing);
 router.patch('/:id', ...protectedWriteMiddleware, updateListing);
+router.delete('/:id', authenticate(), deleteListing);
 
 export default router;
