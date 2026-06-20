@@ -1,5 +1,30 @@
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
+export type Category = {
+  id: string;
+  name: string;
+  displayName: string;
+  icon: string;
+};
+
+type Agent = {
+  id: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  profileImage: string | null;
+  facebook: string | null;
+  twitter: string | null;
+  instagram: string | null;
+  linkedin: string | null;
+  telegram: string | null;
+  whatsapp: string | null;
+  tiktok: string | null;
+  youtube: string | null;
+  website: string | null;
+  customSocials: Array<{ platform: string; link: string }>;
+};
+
 export type Property = {
   id: string;
   title: string;
@@ -15,6 +40,7 @@ export type Property = {
   description: string;
   coords: { lat: number; lng: number };
   features: string[];
+  agent: Agent | null;
 };
 
 export type PropertyFilters = {
@@ -25,6 +51,7 @@ export type PropertyFilters = {
   beds?: number;
   baths?: number;
   amenities?: string[];
+  limit?: string;
 };
 
 export async function fetchProperties(params?: PropertyFilters): Promise<Property[]> {
@@ -36,6 +63,7 @@ export async function fetchProperties(params?: PropertyFilters): Promise<Propert
   if (params?.beds) searchParams.set("beds", String(params.beds));
   if (params?.baths) searchParams.set("baths", String(params.baths));
   if (params?.amenities?.length) searchParams.set("amenities", params.amenities.join(","));
+  if (params?.limit) searchParams.set("limit", params.limit);
 
   const qs = searchParams.toString();
   const url = `${API_BASE}/api/public/listings${qs ? `?${qs}` : ""}`;
@@ -55,17 +83,6 @@ export async function fetchProperty(id: string): Promise<Property | null> {
   return json.data || null;
 }
 
-export async function fetchCategories(): Promise<string[]> {
-  const res = await fetch(`${API_BASE}/api/categories`);
-  if (!res.ok) return ["All"];
-
-  const json = await res.json();
-  const cats = (json.data || []).map((c: { displayName: string }) => c.displayName);
-  return ["All", ...cats];
-}
-
-export const CATEGORIES = ["All", "Villa", "Penthouse", "Loft", "Estate", "Retreat"] as const;
-
 export const AMENITIES = [
   "Infinity Pool",
   "Pool",
@@ -82,3 +99,37 @@ export const PRICE_BOUNDS = { min: 0, max: 100_000_000 } as const;
 
 export const formatPrice = (n: number) =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
+
+const ICON_MAP: Record<string, string> = {
+  home: "Home",
+  building2: "Building2",
+  car: "Car",
+  bike: "Bike",
+  truck: "Truck",
+  smartphone: "Smartphone",
+  laptop: "Laptop",
+  sofa: "Sofa",
+  gem: "Gem",
+  shoppingBag: "ShoppingBag",
+  briefcase: "Briefcase",
+  landmark: "Landmark",
+  treePine: "TreePine",
+  graduationCap: "GraduationCap",
+  heart: "Heart",
+  shield: "Shield",
+  wrench: "Wrench",
+  palette: "Palette",
+  tag: "Tag",
+};
+
+export function getIconName(icon: string): string {
+  return ICON_MAP[icon] || "Tag";
+}
+
+export async function fetchCategories(): Promise<Category[]> {
+  const res = await fetch(`${API_BASE}/api/categories`);
+  if (!res.ok) return [];
+
+  const json = await res.json();
+  return json.data || [];
+}

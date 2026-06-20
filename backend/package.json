@@ -25,6 +25,7 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
+    "@getbrevo/brevo": "^5.0.4",
     "@prisma/client": "^6.9.0",
     "axios": "^1.7.0",
     "bcryptjs": "^3.0.3",

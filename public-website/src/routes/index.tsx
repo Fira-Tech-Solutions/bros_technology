@@ -1,36 +1,64 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import {
+  ArrowRight,
+  Sparkles,
+  Home,
+  Building2,
+  Car,
+  Bike,
+  Truck,
+  Smartphone,
+  Laptop,
+  Sofa,
+  Gem,
+  ShoppingBag,
+  Briefcase,
+  Landmark,
+  TreePine,
+  GraduationCap,
+  Heart,
+  Shield,
+  Wrench,
+  Palette,
+  Tag,
+} from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperties } from "@/hooks/use-properties";
-import { CATEGORIES } from "@/lib/api/properties";
+import { fetchCategories, getIconName } from "@/lib/api/properties";
+import type { Category } from "@/lib/api/properties";
 import { useLocale } from "@/providers/locale";
 import { HeroBackground } from "@/components/HeroBackground";
 
+const ICON_COMPONENTS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  Home, Building2, Car, Bike, Truck, Smartphone, Laptop, Sofa, Gem,
+  ShoppingBag, Briefcase, Landmark, TreePine, GraduationCap, Heart,
+  Shield, Wrench, Palette, Tag,
+};
+
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Adama Property — Premium Real Estate in Adama, Ethiopia" },
-      {
-        name: "description",
-        content: "Adama Property \u2014 premium real estate and architectural residences in Adama, Ethiopia.",
-      },
-    ],
-  }),
   component: Index,
 });
 
 function Index() {
+  const { t } = useLocale();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {});
+  }, []);
+
+  const allCategories = [{ id: "all", name: "All", displayName: t("catalog.allResidences") || "All", icon: "tag" } as Category, ...categories];
+
   const { data, isLoading, isError, refetch } = useProperties();
-  const { t } = useLocale();
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,14 +88,16 @@ function Index() {
             {t("hero.title")}{" "}
             <em className="text-gradient-gold not-italic">{t("hero.titleAccent")}</em>.
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 70, damping: 18, delay: 0.5 }}
-            className="mt-5 max-w-xl text-balance text-base text-muted-foreground md:text-lg"
-          >
-            {t("hero.description")}
-          </motion.p>
+          {t("hero.description") && (
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 70, damping: 18, delay: 0.5 }}
+              className="mt-5 max-w-xl text-balance text-base text-muted-foreground md:text-lg"
+            >
+              {t("hero.description")}
+            </motion.p>
+          )}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -76,7 +106,7 @@ function Index() {
           >
             <Link
               to="/catalog"
-              className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold px-6 py-3 text-sm font-medium text-primary-foreground shadow-glow"
+              className="group inline-flex items-center gap-2 rounded-full bg-gradient-gold px-6 py-3 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:shadow-glow-lg"
             >
               {t("hero.cta")}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -102,23 +132,28 @@ function Index() {
           </div>
         </div>
         <div className="mt-8 flex gap-3 overflow-x-auto no-scrollbar pb-2 md:flex-wrap md:overflow-visible">
-          {CATEGORIES.map((c, i) => (
-            <motion.div
-              key={c}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: "spring", stiffness: 90, damping: 18, delay: i * 0.04 }}
-            >
-              <Link
-                to="/catalog"
-                search={{ category: c === "All" ? undefined : c }}
-                className="block whitespace-nowrap rounded-2xl border border-border bg-card px-6 py-5 hover:border-gold hover:shadow-glow transition-all"
+          {allCategories.map((c, i) => {
+            const iconName = getIconName(c.icon);
+            const IconComp = ICON_COMPONENTS[iconName] || Tag;
+            return (
+              <motion.div
+                key={c.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ type: "spring", stiffness: 90, damping: 18, delay: i * 0.04 }}
               >
-                <span className="font-display text-xl">{c}</span>
-              </Link>
-            </motion.div>
-          ))}
+                <Link
+                  to="/catalog"
+                  search={{ category: c.name === "All" ? undefined : c.displayName }}
+                  className="flex items-center gap-3 whitespace-nowrap rounded-2xl border border-border bg-card px-5 py-4 hover:border-gold hover:shadow-glow transition-all"
+                >
+                  <IconComp size={20} className="text-gold shrink-0" />
+                  <span className="font-display text-lg">{c.displayName}</span>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
@@ -135,7 +170,7 @@ function Index() {
             to="/catalog"
             className="hidden md:inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
           >
-            {t("featured.viewAll")} <ArrowRight className="h-4 w-4" />
+            {t("featured.viewAll")}<ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 

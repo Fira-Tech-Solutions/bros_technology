@@ -25,6 +25,7 @@ function mapListingToProperty(listing) {
         tiktok: listing.agent.tiktok || null,
         youtube: listing.agent.youtube || null,
         website: listing.agent.website || null,
+        customSocials: listing.agent.customSocials || [],
       }
     : null;
 
@@ -160,6 +161,7 @@ export async function getPublicProperty(req, res, next) {
             tiktok: true,
             youtube: true,
             website: true,
+            customSocials: true,
           },
         },
       },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -49,6 +49,7 @@ import {
   ToggleLeft,
   Type,
   Blinds,
+  Search,
 } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
@@ -58,6 +59,7 @@ import { getCategories } from "../api/categories";
 import { createListing } from "../api/listings";
 import Input from "../components/Input";
 import LoadingOverlay from "../components/LoadingOverlay";
+import useSuspenseCache from "../hooks/useSuspenseCache";
 
 const CITIES = [
   "Addis Ababa",
@@ -68,6 +70,20 @@ const CITIES = [
   "Adama",
   "Gondar",
   "Jimma",
+];
+
+const ADAMA_WEREDAS = [
+  "Kebele 01",
+  "Kebele 02",
+  "Kebele 03",
+  "Kebele 06",
+  "Kebele 08",
+  "Kebele 09",
+  "Kebele 10",
+  "Kebele 11",
+  "Kebele 12",
+  "Kebele 13",
+  "Kebele 17",
 ];
 
 const FIELD_META = {
@@ -105,6 +121,61 @@ const FIELD_META = {
   listingType: { label: "Listing Type", icon: CircleDollarSign, type: "string" },
 };
 
+const BOILERPLATE_FIELDS = {
+  HOUSES: [
+    { field: "bedrooms", type: "number", required: true, icon: BedDouble, placeholder: "e.g. 3" },
+    { field: "bathrooms", type: "number", required: true, icon: Bath, placeholder: "e.g. 2" },
+    { field: "area", type: "number", required: true, icon: Ruler, placeholder: "e.g. 150" },
+    { field: "furnished", type: "boolean", icon: Sofa },
+    { field: "parking", type: "number", icon: ParkingSquare, placeholder: "e.g. 2" },
+    { field: "floors", type: "number", icon: Hash, placeholder: "e.g. 2" },
+    { field: "yearBuilt", type: "number", icon: Calendar, placeholder: "e.g. 2025" },
+    { field: "condition", type: "select", icon: Star, placeholder: "Select condition", options: ["New", "Renovated", "Good", "Fair", "Needs Work"] },
+    { field: "compoundType", type: "select", icon: Home, placeholder: "Select type", options: ["Villa", "Apartment", "Studio", "Duplex", "Penthouse", "Condo", "Townhouse"] },
+    { field: "floorLevel", type: "number", icon: Hash, placeholder: "e.g. 3" },
+    { field: "totalFloors", type: "number", icon: Hash, placeholder: "e.g. 5" },
+    { field: "balcony", type: "boolean", icon: Check },
+    { field: "garden", type: "boolean", icon: TreePine },
+    { field: "waterAccess", type: "select", icon: CircleDollarSign, placeholder: "Select water access", options: ["24/7 City Water", "Well Water", "Backup Tank", "Municipal", "None"] },
+    { field: "electricity", type: "select", icon: CircleDollarSign, placeholder: "Select electricity", options: ["24/7 Grid", "Backup Generator", "Solar", "Generator + Solar", "None"] },
+    { field: "roadAccess", type: "select", icon: MapPin, placeholder: "Select road access", options: ["Asphalt", "Gravel", "Earth Road", "Cobblestone", "None"] },
+  ],
+  CARS: [
+    { field: "make", type: "string", required: true, icon: Car, placeholder: "e.g. Toyota" },
+    { field: "model", type: "string", required: true, icon: Tag, placeholder: "e.g. Corolla" },
+    { field: "year", type: "number", required: true, icon: Calendar, placeholder: "e.g. 2020" },
+    { field: "mileage", type: "number", icon: Gauge, placeholder: "e.g. 50000" },
+    { field: "fuelType", type: "select", icon: Fuel, placeholder: "Select fuel type", options: ["Petrol", "Diesel", "Electric", "Hybrid", "CNG"] },
+    { field: "engineSize", type: "string", icon: Settings, placeholder: "e.g. 2000cc" },
+    { field: "transmission", type: "select", icon: Settings, placeholder: "Select transmission", options: ["Manual", "Automatic", "CVT", "DCT"] },
+    { field: "color", type: "string", icon: Palette, placeholder: "e.g. White" },
+    { field: "condition", type: "select", icon: Star, placeholder: "Select condition", options: ["New", "Used - Like New", "Used - Good", "Used - Fair", "Spare Parts"] },
+    { field: "seats", type: "number", icon: Sofa, placeholder: "e.g. 5" },
+    { field: "bodyType", type: "select", icon: Car, placeholder: "Select body type", options: ["Sedan", "SUV", "Hatchback", "Pickup", "Truck", "Van", "Sports", "Other"] },
+  ],
+  ELECTRONICS: [
+    { field: "brand", type: "string", required: true, icon: Tag, placeholder: "e.g. Samsung" },
+    { field: "model", type: "string", required: true, icon: Tag, placeholder: "e.g. Galaxy S24" },
+    { field: "storage", type: "string", icon: Hash, placeholder: "e.g. 256GB" },
+    { field: "ram", type: "string", icon: Hash, placeholder: "e.g. 8GB" },
+    { field: "color", type: "string", icon: Palette, placeholder: "e.g. Black" },
+    { field: "condition", type: "select", icon: Star, placeholder: "Select condition", options: ["New", "Used - Like New", "Used - Good"] },
+  ],
+};
+
+function getBoilerplateForCategory(category) {
+  if (!category) return [];
+  const name = (category.name || "").toLowerCase();
+  const display = (category.displayName || "").toLowerCase();
+  if (["house", "real_estate", "property", "apartment", "home", "villa"].some((k) => name.includes(k) || display.includes(k)))
+    return BOILERPLATE_FIELDS.HOUSES;
+  if (["car", "vehicle", "auto"].some((k) => name.includes(k) || display.includes(k)))
+    return BOILERPLATE_FIELDS.CARS;
+  if (["electronic", "phone", "computer", "laptop", "gadget", "mobile"].some((k) => name.includes(k) || display.includes(k)))
+    return BOILERPLATE_FIELDS.ELECTRONICS;
+  return [];
+}
+
 function getFieldMeta(fieldName, ruleType) {
   if (FIELD_META[fieldName]) return FIELD_META[fieldName];
   return {
@@ -117,8 +188,9 @@ function getFieldMeta(fieldName, ruleType) {
 function WizardProgress({ currentStep, colors }) {
   const steps = [
     { num: 1, label: "Basic Info" },
-    { num: 2, label: "Category Details" },
-    { num: 3, label: "Media & Submit" },
+    { num: 2, label: "Location" },
+    { num: 3, label: "Category Details" },
+    { num: 4, label: "Media & Submit" },
   ];
 
   return (
@@ -357,6 +429,166 @@ function ListingTypeSelector({ value, onChange, colors }) {
   );
 }
 
+function WoredaDropdown({ woredas, value, onChange, onCustomChange, isCustom, colors }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const filtered = woredas.filter((w) =>
+    w.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <View style={{ marginBottom: 16 }}>
+      <TouchableOpacity
+        onPress={() => setOpen(!open)}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          backgroundColor: colors.input,
+          borderRadius: 12,
+          borderWidth: 1,
+          borderColor: colors.inputBorder,
+          paddingHorizontal: 14,
+          height: 52,
+        }}
+        activeOpacity={0.7}
+      >
+        <MapPin size={18} color={value ? colors.primary : colors.textMuted} style={{ marginRight: 10 }} />
+        <Text style={{ flex: 1, color: value ? colors.text : colors.textMuted, fontSize: 14, fontWeight: "500" }}>
+          {value || "Select Kebele"}
+        </Text>
+        <ChevronDown size={16} color={colors.textMuted} />
+      </TouchableOpacity>
+      {open && (
+        <View
+          style={{
+            marginTop: 4,
+            backgroundColor: colors.card,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: colors.border,
+            overflow: "hidden",
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingHorizontal: 12,
+              height: 44,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border,
+              backgroundColor: colors.input,
+            }}
+          >
+            <Search size={16} color={colors.textMuted} />
+            <TextInput
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Search or type custom..."
+              placeholderTextColor={colors.textMuted}
+              style={{
+                flex: 1,
+                marginLeft: 8,
+                color: colors.text,
+                fontSize: 13,
+                padding: 0,
+              }}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {search.length > 0 && (
+              <TouchableOpacity onPress={() => setSearch("")}>
+                <X size={14} color={colors.textMuted} />
+              </TouchableOpacity>
+            )}
+          </View>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            style={{ maxHeight: 200 }}
+            nestedScrollEnabled
+          >
+            {filtered.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setSearch("");
+                  setOpen(false);
+                  onChange(search);
+                  onCustomChange(true);
+                }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 14,
+                  height: 44,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                }}
+              >
+                <View
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: 6,
+                    backgroundColor: `${colors.primary}18`,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 10,
+                  }}
+                >
+                  <Plus size={12} color={colors.primary} />
+                </View>
+                <Text style={{ color: colors.primary, fontSize: 13, fontWeight: "600" }}>
+                  Add &quot;{search}&quot;
+                </Text>
+              </TouchableOpacity>
+            )}
+            {filtered.map((w) => (
+              <TouchableOpacity
+                key={w}
+                onPress={() => {
+                  setSearch("");
+                  setOpen(false);
+                  onChange(w);
+                  onCustomChange(false);
+                }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 14,
+                  height: 44,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                  backgroundColor: value === w ? `${colors.primary}10` : "transparent",
+                }}
+              >
+                <Text
+                  style={{
+                    flex: 1,
+                    color: value === w ? colors.primary : colors.text,
+                    fontSize: 13,
+                    fontWeight: value === w ? "600" : "400",
+                  }}
+                >
+                  {w}
+                </Text>
+                {value === w && <Check size={14} color={colors.primary} />}
+              </TouchableOpacity>
+            ))}
+            {filtered.length === 0 && (
+              <View style={{ padding: 20, alignItems: "center" }}>
+                <Text style={{ color: colors.textMuted, fontSize: 12 }}>
+                  No results
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      )}
+    </View>
+  );
+}
+
 function DynamicField({ rule, value, onChange, colors, error }) {
   const meta = getFieldMeta(rule.field, rule.type);
   const Icon = meta.icon;
@@ -424,15 +656,163 @@ function DynamicField({ rule, value, onChange, colors, error }) {
   );
 }
 
+function BoilerplateField({ field, value, onChange, colors, error }) {
+  const [open, setOpen] = useState(false);
+  const isBool = field.type === "boolean";
+  const isSelect = field.type === "select";
+  const isNumber = field.type === "number";
+
+  if (isBool) {
+    return (
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          backgroundColor: colors.input,
+          borderRadius: 12,
+          borderWidth: 1.5,
+          borderColor: error ? colors.danger : colors.inputBorder,
+          paddingHorizontal: 16,
+          height: 52,
+          marginBottom: 8,
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <field.icon size={18} color={colors.textMuted} style={{ marginRight: 12 }} />
+          <Text style={{ color: colors.text, fontSize: 14, fontWeight: "500" }}>
+            {field.label || (field.field.charAt(0).toUpperCase() + field.field.slice(1))}
+          </Text>
+        </View>
+        <Switch
+          value={!!value}
+          onValueChange={(v) => onChange(field.field, v)}
+          trackColor={{ false: colors.border, true: colors.primary }}
+          thumbColor={colors.primaryText}
+        />
+      </View>
+    );
+  }
+
+  if (isSelect) {
+    return (
+      <View style={{ marginBottom: 8 }}>
+        <TouchableOpacity
+          onPress={() => setOpen(!open)}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: colors.input,
+            borderRadius: 12,
+            borderWidth: 1.5,
+            borderColor: error ? colors.danger : colors.inputBorder,
+            paddingHorizontal: 16,
+            height: 52,
+          }}
+          activeOpacity={0.7}
+        >
+          <field.icon size={18} color={value ? colors.primary : colors.textMuted} style={{ marginRight: 12 }} />
+          <Text style={{ flex: 1, color: value ? colors.text : colors.textMuted, fontSize: 14, fontWeight: "500" }}>
+            {value || field.placeholder || "Select..."}
+          </Text>
+          {field.required && <Text style={{ color: colors.danger, fontSize: 12, marginRight: 6 }}>*</Text>}
+          <ChevronDown size={16} color={colors.textMuted} />
+        </TouchableOpacity>
+        {open && (
+          <View
+            style={{
+              marginTop: 2,
+              backgroundColor: colors.card,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: colors.border,
+              overflow: "hidden",
+            }}
+          >
+            {(field.options || []).map((opt) => (
+              <TouchableOpacity
+                key={opt}
+                onPress={() => {
+                  setOpen(false);
+                  onChange(field.field, opt);
+                }}
+                style={{
+                  paddingHorizontal: 16,
+                  height: 44,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  backgroundColor: value === opt ? `${colors.primary}10` : "transparent",
+                }}
+              >
+                <Text
+                  style={{
+                    flex: 1,
+                    color: value === opt ? colors.primary : colors.text,
+                    fontSize: 13,
+                    fontWeight: value === opt ? "600" : "400",
+                  }}
+                >
+                  {opt}
+                </Text>
+                {value === opt && <Check size={14} color={colors.primary} />}
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+        {error && (
+          <Text style={{ color: colors.danger, fontSize: 10, marginTop: 2 }}>{error}</Text>
+        )}
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ marginBottom: 8 }}>
+      <TextInput
+        value={value || ""}
+        onChangeText={(v) => onChange(field.field, v)}
+        placeholder={`${field.label || field.field}${field.required ? " *" : ""}`}
+        placeholderTextColor={colors.textMuted}
+        keyboardType={isNumber ? "numeric" : "default"}
+        style={{
+          backgroundColor: colors.input,
+          borderWidth: 1.5,
+          borderColor: error ? colors.danger : colors.inputBorder,
+          borderRadius: 12,
+          paddingHorizontal: 16,
+          paddingLeft: 42,
+          height: 52,
+          color: colors.text,
+          fontSize: 14,
+          fontWeight: "500",
+        }}
+      />
+      <View style={{ position: "absolute", left: 16, top: 17 }}>
+        <field.icon size={18} color={value ? colors.primary : colors.textMuted} />
+      </View>
+      {error && (
+        <Text style={{ color: colors.danger, fontSize: 10, marginTop: 2 }}>{error}</Text>
+      )}
+    </View>
+  );
+}
+
 export default function AddListingScreen({ navigation }) {
   const { colors } = useTheme();
   const { t } = useLanguage();
   const { user } = useAuth();
 
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [categories, setCategories] = useState([]);
+
+  const { data: categories } = useSuspenseCache({
+    key: "add_listing_categories",
+    fetcher: async (force) => {
+      const { data } = await getCategories(force);
+      return data.data || [];
+    },
+    initial: [],
+  });
 
   const [form, setForm] = useState({
     title: "",
@@ -440,6 +820,8 @@ export default function AddListingScreen({ navigation }) {
     price: "",
     city: "",
     neighborhood: "",
+    subcity: "",
+    areaTag: "",
     categoryId: "",
     images: [],
   });
@@ -448,20 +830,7 @@ export default function AddListingScreen({ navigation }) {
     listingType: "SELL",
   });
   const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    try {
-      const { data } = await getCategories();
-      setCategories(data.data || []);
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isCustomWoreda, setIsCustomWoreda] = useState(false);
 
   const updateForm = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -498,8 +867,20 @@ export default function AddListingScreen({ navigation }) {
 
     if (step === 2) {
       if (!form.city) newErrors.city = t("requiredField");
-      if (!form.neighborhood.trim()) newErrors.neighborhood = t("requiredField");
+      if (form.city === "Adama" && !form.subcity.trim())
+        newErrors.subcity = "Kebele is required";
+    }
 
+    if (step === 3) {
+      const boilerplateFields = getBoilerplateForCategory(selectedCategory);
+      for (const bf of boilerplateFields) {
+        if (bf.required) {
+          const val = dynamicFields[bf.field];
+          if (val === undefined || val === null || val === "") {
+            newErrors[`attr_${bf.field}`] = `${bf.field.charAt(0).toUpperCase() + bf.field.slice(1)} is required`;
+          }
+        }
+      }
       for (const rule of schemaRules) {
         if (rule.required) {
           const val = dynamicFields[rule.field];
@@ -509,13 +890,16 @@ export default function AddListingScreen({ navigation }) {
         }
       }
     }
+    if (step === 4) {
+      if (form.images.length === 0) newErrors.images = "At least one image is required";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const nextStep = () => {
-    if (validateStep()) setStep((prev) => Math.min(prev + 1, 3));
+    if (validateStep()) setStep((prev) => Math.min(prev + 1, 4));
   };
 
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
@@ -554,7 +938,13 @@ export default function AddListingScreen({ navigation }) {
     formData.append("description", form.description.trim());
     formData.append("price", parseFloat(form.price));
     formData.append("city", form.city);
-    formData.append("neighborhood", form.neighborhood.trim());
+
+    // Build neighborhood from subcity + areaTag
+    const parts = [];
+    if (form.subcity?.trim()) parts.push(form.subcity.trim());
+    if (form.areaTag?.trim()) parts.push(form.areaTag.trim());
+    const neighborhood = parts.length > 0 ? parts.join(" · ") : form.city;
+    formData.append("neighborhood", neighborhood);
     formData.append("categoryId", form.categoryId);
     formData.append("agentId", user.id);
     formData.append("status", "AVAILABLE");
@@ -570,6 +960,10 @@ export default function AddListingScreen({ navigation }) {
         attributes[rule.field] = !!val;
       }
     }
+
+    // Store subcity and areaTag in attributes for structured access
+    if (form.subcity?.trim()) attributes.subcity = form.subcity.trim();
+    if (form.areaTag?.trim()) attributes.areaTag = form.areaTag.trim();
 
     if (Object.keys(attributes).length > 0) {
       formData.append("attributes", JSON.stringify(attributes));
@@ -686,7 +1080,7 @@ export default function AddListingScreen({ navigation }) {
           marginBottom: 16,
         }}
       >
-        Location & Category Details
+        Location
       </Text>
 
       <View style={{ marginBottom: 16 }}>
@@ -697,7 +1091,14 @@ export default function AddListingScreen({ navigation }) {
           {CITIES.map((city) => (
             <TouchableOpacity
               key={city}
-              onPress={() => updateForm("city", city)}
+              onPress={() => {
+                updateForm("city", city);
+                if (city !== "Adama") {
+                  updateForm("subcity", "");
+                  updateForm("areaTag", "");
+                  setIsCustomWoreda(false);
+                }
+              }}
               style={{
                 paddingHorizontal: 14,
                 paddingVertical: 8,
@@ -724,55 +1125,192 @@ export default function AddListingScreen({ navigation }) {
         )}
       </View>
 
-      <Input
-        value={form.neighborhood}
-        onChangeText={(v) => updateForm("neighborhood", v)}
-        placeholder="Neighborhood (e.g. Bole)"
-        icon={MapPin}
-        error={errors.neighborhood}
-        required
-      />
-
-      {schemaRules.length > 0 && (
-        <View
-          style={{
-            marginTop: 8,
-            backgroundColor: `${colors.primary}06`,
-            borderRadius: 12,
-            padding: 14,
-            borderWidth: 1,
-            borderColor: `${colors.primary}18`,
-          }}
-        >
-          <Text
-            style={{
-              color: colors.primary,
-              fontSize: 10,
-              fontWeight: "600",
-              textTransform: "uppercase",
-              letterSpacing: 0.5,
-              marginBottom: 12,
-            }}
-          >
-            {selectedCategory?.displayName || "Category"} Details
+      {form.city === "Adama" && (
+        <>
+          <Text style={{ color: colors.textSecondary, fontSize: 12, fontWeight: "600", marginBottom: 8 }}>
+            Kebele
           </Text>
-
-          {schemaRules.map((rule) => (
-            <DynamicField
-              key={rule.field}
-              rule={rule}
-              value={dynamicFields[rule.field]}
-              onChange={updateDynamic}
-              colors={colors}
-              error={errors[`attr_${rule.field}`]}
-            />
-          ))}
-        </View>
+          <WoredaDropdown
+            woredas={ADAMA_WEREDAS}
+            value={form.subcity}
+            onChange={(v) => updateForm("subcity", v)}
+            onCustomChange={setIsCustomWoreda}
+            isCustom={isCustomWoreda}
+            colors={colors}
+          />
+          {isCustomWoreda && (
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: colors.input,
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: colors.inputBorder,
+              paddingHorizontal: 14,
+              height: 48,
+              marginTop: -8,
+              marginBottom: 16,
+            }}>
+              <MapPin size={16} color={colors.textMuted} />
+              <TextInput
+                value={form.subcity}
+                onChangeText={(v) => updateForm("subcity", v)}
+                placeholder="Type your kebele"
+                placeholderTextColor={`${colors.textMuted}80`}
+                style={{
+                  flex: 1,
+                  marginLeft: 10,
+                  color: colors.text,
+                  fontSize: 14,
+                  padding: 0,
+                }}
+              />
+            </View>
+          )}
+          {errors.subcity && (
+            <Text style={{ color: colors.danger, fontSize: 10, marginTop: -8, marginBottom: 16 }}>
+              {errors.subcity}
+            </Text>
+          )}
+        </>
       )}
+
+      <Text style={{ color: colors.textSecondary, fontSize: 12, fontWeight: "600", marginBottom: 8 }}>
+        Area Tag / Label
+      </Text>
+      <View style={{
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: colors.input,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: colors.inputBorder,
+        paddingHorizontal: 14,
+        height: 48,
+        marginBottom: 16,
+      }}>
+        <Tag size={16} color={colors.textMuted} />
+        <TextInput
+          value={form.areaTag}
+          onChangeText={(v) => updateForm("areaTag", v)}
+          placeholder="e.g. Bole Michael, Kebena, 24 Mazoria, Ayer Tena"
+          placeholderTextColor={`${colors.textMuted}80`}
+          style={{
+            flex: 1,
+            marginLeft: 10,
+            color: colors.text,
+            fontSize: 14,
+            padding: 0,
+          }}
+          autoCapitalize="none"
+        />
+      </View>
+      <Text style={{ color: colors.textMuted, fontSize: 10, marginTop: -12, marginBottom: 16, paddingLeft: 2 }}>
+        Well-known local name for this specific area
+      </Text>
     </>
   );
 
-  const renderStep3 = () => (
+  const renderStep3 = () => {
+    const boilerplateFields = getBoilerplateForCategory(selectedCategory);
+    return (
+      <>
+        <Text
+          style={{
+            color: colors.textMuted,
+            fontSize: 10,
+            fontWeight: "600",
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            marginBottom: 16,
+          }}
+        >
+          {selectedCategory?.displayName || "Category"} Details
+        </Text>
+
+        {boilerplateFields.length > 0 && (
+          <View
+            style={{
+              backgroundColor: `${colors.primary}06`,
+              borderRadius: 12,
+              padding: 14,
+              borderWidth: 1,
+              borderColor: `${colors.primary}18`,
+              marginBottom: schemaRules.length > 0 ? 16 : 0,
+            }}
+          >
+            <Text
+              style={{
+                color: colors.primary,
+                fontSize: 10,
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+                marginBottom: 12,
+              }}
+            >
+              Property Features
+            </Text>
+            {boilerplateFields.map((bf) => (
+              <BoilerplateField
+                key={bf.field}
+                field={bf}
+                value={dynamicFields[bf.field]}
+                onChange={updateDynamic}
+                colors={colors}
+                error={errors[`attr_${bf.field}`]}
+              />
+            ))}
+          </View>
+        )}
+
+        {schemaRules.length > 0 && (
+          <View
+            style={{
+              backgroundColor: `${colors.primary}06`,
+              borderRadius: 12,
+              padding: 14,
+              borderWidth: 1,
+              borderColor: `${colors.primary}18`,
+            }}
+          >
+            <Text
+              style={{
+                color: colors.primary,
+                fontSize: 10,
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+                marginBottom: 12,
+              }}
+            >
+              Additional Fields
+            </Text>
+            {schemaRules.map((rule) => (
+              <DynamicField
+                key={rule.field}
+                rule={rule}
+                value={dynamicFields[rule.field]}
+                onChange={updateDynamic}
+                colors={colors}
+                error={errors[`attr_${rule.field}`]}
+              />
+            ))}
+          </View>
+        )}
+
+        {boilerplateFields.length === 0 && schemaRules.length === 0 && (
+          <View style={{ padding: 24, alignItems: "center" }}>
+            <Text style={{ color: colors.textMuted, fontSize: 13, textAlign: "center" }}>
+              No custom fields available for this category.
+            </Text>
+          </View>
+        )}
+      </>
+    );
+  };
+
+  const renderStep4 = () => (
     <>
       <Text
         style={{
@@ -907,7 +1445,9 @@ export default function AddListingScreen({ navigation }) {
           {form.title || "Untitled"}
         </Text>
         <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: 2 }}>
-          {selectedCategory?.displayName || "—"} · {form.city || "—"} · {form.neighborhood || "—"}
+          {selectedCategory?.displayName || "—"} · {form.city || "—"}
+          {form.subcity ? ` · ${form.subcity}` : ""}
+          {form.areaTag ? ` · ${form.areaTag}` : ""}
         </Text>
         <View className="flex-row items-center mt-2">
           <Text style={{ color: colors.primary, fontSize: 16, fontWeight: "700" }}>
@@ -1047,6 +1587,7 @@ export default function AddListingScreen({ navigation }) {
           {step === 1 && renderStep1()}
           {step === 2 && renderStep2()}
           {step === 3 && renderStep3()}
+          {step === 4 && renderStep4()}
         </ScrollView>
 
         <View
@@ -1086,7 +1627,7 @@ export default function AddListingScreen({ navigation }) {
             </TouchableOpacity>
           )}
           <View style={{ flex: 1 }} />
-          {step < 3 ? (
+          {step < 4 ? (
             <TouchableOpacity
               onPress={nextStep}
               style={{

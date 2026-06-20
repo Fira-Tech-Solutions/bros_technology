@@ -1,10 +1,11 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { LayoutDashboard, Building2, Settings, Plus, Send } from "lucide-react-native";
+import { LayoutDashboard, Building2, Settings, Plus, Send, DollarSign } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
 
 import DashboardScreen from "../screens/DashboardScreen";
 import PropertiesScreen from "../screens/PropertiesScreen";
@@ -14,6 +15,10 @@ import SettingsScreen from "../screens/SettingsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import SyndicationScreen from "../screens/SyndicationScreen";
 import SyndicationConfigScreen from "../screens/SyndicationConfigScreen";
+import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
+import ResetPasswordScreen from "../screens/ResetPasswordScreen";
+import NotificationScreen from "../screens/NotificationScreen";
+import CommissionScreen from "../screens/CommissionScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -43,6 +48,11 @@ function DashboardStack() {
       <Stack.Screen
         name="Profile"
         component={ProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={NotificationScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -102,6 +112,16 @@ function SettingsStack() {
         component={ProfileScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="ForgotPassword"
+        component={ForgotPasswordScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ResetPassword"
+        component={ResetPasswordScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -109,6 +129,9 @@ function SettingsStack() {
 export default function MainNavigator() {
   const { colors, isDark } = useTheme();
   const { t } = useLanguage();
+  const { user } = useAuth();
+
+  const isAdmin = user?.role === "SUPER_ADMIN";
 
   return (
     <Tab.Navigator
@@ -150,6 +173,18 @@ export default function MainNavigator() {
           ),
         }}
       />
+      {isAdmin && (
+        <Tab.Screen
+          name="Commissions"
+          component={CommissionScreen}
+          options={{
+            tabBarLabel: "Commissions",
+            tabBarIcon: ({ color, size }) => (
+              <DollarSign size={size} color={color} />
+            ),
+          }}
+        />
+      )}
       <Tab.Screen
         name="Syndication"
         component={SyndicationConfigScreen}

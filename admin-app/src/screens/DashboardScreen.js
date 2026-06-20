@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Building2, MapPin, TrendingUp } from "lucide-react-native";
+import { Building2, MapPin, TrendingUp, Bell } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { getListings } from "../api/listings";
+import CachedImage from "../components/CachedImage";
+import useNotifications from "../hooks/useNotifications";
+import useSuspenseCache from "../hooks/useSuspenseCache";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -32,30 +35,24 @@ export default function DashboardScreen({ navigation }) {
   const { t } = useLanguage();
   const { user } = useAuth();
 
-  const [listings, setListings] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [chartIndex, setChartIndex] = useState(0);
   const chartPagerRef = useRef(null);
+  const { unreadCount } = useNotifications();
 
-  const fetchData = useCallback(async () => {
-    try {
-      const res = await getListings({ limit: 100 });
-      setListings(res.data.data || []);
-    } catch {
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+  const { data: listings, loading, refresh } = useSuspenseCache({
+    key: "dashboard_listings",
+    fetcher: async (force) => {
+      const res = await getListings({ limit: 100 }, force);
+      return res.data.data || [];
+    },
+    initial: [],
+  });
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    fetchData();
+    await refresh();
+    setRefreshing(false);
   };
 
   const statusCounts = listings.reduce((acc, listing) => {
@@ -92,33 +89,72 @@ export default function DashboardScreen({ navigation }) {
               {user?.name ? `Welcome back, ${user.name}` : ""}
             </Text>
           </View>
-          <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
-            <View
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: 22,
-                backgroundColor: colors.primary,
-                alignItems: "center",
-                justifyContent: "center",
-                borderWidth: 2,
-                borderColor: `${colors.primary}40`,
-                overflow: "hidden",
-              }}
-            >
-              {user?.profileImage ? (
-                <Image
-                  source={{ uri: user.profileImage }}
-                  style={{ width: 40, height: 40, borderRadius: 20 }}
-                  resizeMode="cover"
-                />
-              ) : (
-                <Text style={{ color: colors.primaryText, fontSize: 16, fontWeight: "700" }}>
-                  {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
-                </Text>
-              )}
-            </View>
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+              <View
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  backgroundColor: colors.bgTertiary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
+              >
+                <Bell size={20} color={unreadCount > 0 ? colors.primary : colors.textMuted} />
+                {unreadCount > 0 && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: -2,
+                      right: -2,
+                      width: 18,
+                      height: 18,
+                      borderRadius: 9,
+                      backgroundColor: colors.primary,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      borderWidth: 2,
+                      borderColor: colors.bg,
+                    }}
+                  >
+                    <Text style={{ color: colors.primaryText, fontSize: 9, fontWeight: "800" }}>
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+              <View
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 22,
+                  backgroundColor: colors.primary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderWidth: 2,
+                  borderColor: `${colors.primary}40`,
+                  overflow: "hidden",
+                }}
+              >
+                {user?.profileImage ? (
+                  <CachedImage
+                    uri={user.profileImage}
+                    style={{ width: 40, height: 40, borderRadius: 20 }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Text style={{ color: colors.primaryText, fontSize: 16, fontWeight: "700" }}>
+                    {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
+                  </Text>
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* ─── Total Count ─── */}

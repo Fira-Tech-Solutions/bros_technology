@@ -13,12 +13,8 @@ export const updateProfile = (formData) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-// Telegram connection
-export const connectTelegram = () =>
-  client.post("/api/auth/telegram/connect");
+export const forgotPassword = (email) =>
+  client.post("/api/auth/forgot-password", { email });
 
-export const getTelegramStatus = () =>
-  client.get("/api/auth/telegram/status");
-
-export const disconnectTelegram = () =>
-  client.post("/api/auth/telegram/disconnect");
+export const resetPassword = (email, token, password) =>
+  client.post("/api/auth/reset-password", { email, token, password });

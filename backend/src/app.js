@@ -11,8 +11,9 @@ import categoryRoutes from './modules/properties/category.routes.js';
 import listingRoutes from './modules/properties/listing.routes.js';
 import publicRoutes from './modules/properties/public.routes.js';
 import syndicationRoutes from './modules/syndication/syndication.routes.js';
+import notificationRoutes from './modules/notifications/notification.routes.js';
+import commissionRoutes from './modules/commissions/commission.routes.js';
 import { DynamicValidationError } from './modules/properties/dynamic.validation.js';
-import TelegramNotificationService from './modules/users/telegramNotification.service.js';
 
 dotenv.config();
 
@@ -60,6 +61,8 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api/syndication', syndicationRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/commissions', commissionRoutes);
 
 if (process.env.STORAGE_PROVIDER !== 'cloudinary') {
   app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
@@ -105,6 +108,3 @@ app.use((err, _req, res, _next) => {
 });
 
 export default app;
-
-// Configure bot commands on startup
-TelegramNotificationService.configureBotCommands().catch(() => {});
