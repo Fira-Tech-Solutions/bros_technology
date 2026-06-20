@@ -210,12 +210,7 @@ export default function LoginScreen({ navigation }) {
                     style={{ alignItems: "center", marginTop: 20 }}
                   >
                     <TouchableOpacity
-                      onPress={() =>
-                        Alert.alert(
-                          "Forgot Password",
-                          "Password reset functionality coming soon."
-                        )
-                      }
+                      onPress={() => navigation.navigate("ForgotPassword")}
                       hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     >
                       <Text

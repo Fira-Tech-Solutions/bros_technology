@@ -56,14 +56,15 @@ model User {
   youtube      String?
   website      String?
   
-  // Telegram integration for notifications & OTP
-  telegramChatId      String?   // Telegram chat ID for direct messages
-  telegramConnected   Boolean   @default(false)
-  telegramUsername     String?   // Telegram username
-  telegramFirstName   String?   // Telegram first name
-  telegramPhotoUrl    String?   // Telegram profile picture URL
+  // Custom social links not in the preset list
+  customSocials       Json      @default("[]")
+  
+  // Password reset
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
   
   listings     Listing[]     // One-to-Many relationship
+  notifications Notification[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
@@ -115,6 +116,10 @@ model Listing {
   
   // Real-time metrics
   viewsCount            Int              @default(0)
+  
+  // Commission tracking for admin revenue
+  commissionPercent     Decimal?         @db.Decimal(5, 2)
+  
   createdAt             DateTime         @default(now())
   updatedAt             DateTime         @updatedAt
 
@@ -158,4 +163,19 @@ model SyndicationConfig {
   updatedAt     DateTime @updatedAt
 
   @@map("syndication_configs")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String?
+  type      String   // e.g. "LISTING_CREATED", "SYNDICATION_SUCCESS"
+  data      Json?    // Extra payload (e.g. listingId)
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
 }

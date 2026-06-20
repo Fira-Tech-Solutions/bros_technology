@@ -47,6 +47,8 @@ import {
   Search,
 } from "lucide-react-native";
 
+import CachedImage from "../components/CachedImage";
+import useSuspenseCache from "../hooks/useSuspenseCache";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import { getListings } from "../api/listings";
@@ -103,7 +105,6 @@ export default function PropertiesScreen({ navigation }) {
 
   const [tab, setTab] = useState("listings");
   const [listings, setListings] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
@@ -119,10 +120,19 @@ export default function PropertiesScreen({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
 
+  const { data: categories, refresh: refreshCategories } = useSuspenseCache({
+    key: "properties_categories",
+    fetcher: async (force) => {
+      const { data } = await getCategories(force);
+      return data.data || [];
+    },
+    initial: [],
+  });
+
   const fetchListings = useCallback(
     async (pageNum = 1, append = false) => {
       try {
-        const { data } = await getListings({ page: pageNum, limit: 10 });
+        const { data } = await getListings({ page: pageNum, limit: 10 }, pageNum === 1);
         const items = data.data || [];
         const totalPages = data.pagination?.totalPages || 1;
         if (append) {
@@ -141,27 +151,16 @@ export default function PropertiesScreen({ navigation }) {
     []
   );
 
-  const fetchCategories = useCallback(async () => {
-    try {
-      const { data } = await getCategories();
-      setCategories(data.data || []);
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     fetchListings(1);
-    fetchCategories();
-  }, [fetchListings, fetchCategories]);
+  }, [fetchListings]);
 
   const onRefresh = () => {
     setRefreshing(true);
     setPage(1);
     setHasMore(true);
     if (tab === "listings") fetchListings(1);
-    else fetchCategories();
+    else refreshCategories();
   };
 
   const loadMore = () => {
@@ -298,8 +297,8 @@ export default function PropertiesScreen({ navigation }) {
       >
         <View className="flex-row">
           {imageUrl ? (
-            <Image
-              source={{ uri: imageUrl }}
+            <CachedImage
+              uri={imageUrl}
               className="w-28 h-28 rounded-l-2xl"
               resizeMode="cover"
             />

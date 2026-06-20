@@ -59,6 +59,7 @@ import {
   Building2,
 } from "lucide-react-native";
 
+import CachedImage from "../components/CachedImage";
 import { useTheme } from "../context/ThemeContext";
 import { getListing, updateListing, deleteListing } from "../api/listings";
 import { getCategories } from "../api/categories";
@@ -334,7 +335,7 @@ export default function ListingDetailScreen({ route, navigation }) {
   const loadData = async () => {
     try {
       const [listingRes, catRes] = await Promise.all([
-        getListing(listingId),
+        getListing(listingId, true),
         getCategories(),
       ]);
       const data = listingRes.data.data;
@@ -590,8 +591,8 @@ export default function ListingDetailScreen({ route, navigation }) {
                 : `${API_BASE_URL}/${img}`;
               return (
                 <View key={`exist-${idx}`} style={{ marginRight: 10 }}>
-                  <Image
-                    source={{ uri }}
+                  <CachedImage
+                    uri={uri}
                     style={{
                       width: 100,
                       height: 100,

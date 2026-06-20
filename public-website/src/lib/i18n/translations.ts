@@ -113,8 +113,7 @@ export const translations: Record<Locale, TranslationKeys> = {
     "hero.badge": "A new chapter in residence",
     "hero.title": "Architecture,",
     "hero.titleAccent": "distilled",
-    "hero.description":
-      "A quiet portfolio of residences in the places that matter \u2014 chosen for light, line, and lasting craft.",
+    "hero.description": "",
     "hero.cta": "Explore the collection",
     "hero.featured": "Featured",
 
@@ -196,8 +195,7 @@ export const translations: Record<Locale, TranslationKeys> = {
     "hero.badge": "Bagaayyee haaraa mannaa keessa",
     "hero.title": "Mimilaanii,",
     "hero.titleAccent": "cunqurfame",
-    "hero.description":
-      "Galmee nagaa mannaa iddoo barbaachisaa keessa \u2014 cuunqurfaman ifa, sarara, fi akkasumas hiikaa waamaraa godhamuudha.",
+    "hero.description": "",
     "hero.cta": "Tolee hordofii argadhu",
     "hero.featured": "Filatame",
 
@@ -280,8 +278,7 @@ export const translations: Record<Locale, TranslationKeys> = {
       "\u1265\u1293\u122D\u12AB\u1295 \u1235\u1228\u134A \u1348\u1275\u1237\u123B\u1228\u1235 \u1270\u1228\u1276",
     "hero.title": "\u1260\u1228\u1295\u12F5\u1233\u1293\u1295,",
     "hero.titleAccent": "\u12E8\u121B\u122A\u1295\u12CD\u1295",
-    "hero.description":
-      "\u1273\u1275\u1228\u122A\u12EB \u1348\u1275\u1237\u123B\u1228\u1235\u1233\u1293\u1295 \u1270\u1218\u1293\u1236\u1295\u1237\u1228\u1235 \u1275\u122B\u1293\u1295\u1349\u1235 \u2014 \u12F3\u1295\u1228\u1295\u1233, \u1265\u121B\u1295, \u12AB\u1293\u12D3\u122E \u1270\u12AB\u1276\u12CD\u122A\u1349\u1235\u1237\u1228\u1235 \u12E8\u1320\u1293\u12CD\u1295\u1297\u12EB\u1295.",
+    "hero.description": "",
     "hero.cta": "\u1218\u12F5\u121B\u1295\u12E8 \u1308\u1235\u123D\u12F3\u1228\u1235",
     "hero.featured": "\u1270\u1265\u1293\u122D\u12AB\u1295",
 

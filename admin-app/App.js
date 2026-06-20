@@ -10,10 +10,14 @@ import { AuthProvider, useAuth } from "./src/context/AuthContext";
 
 import MainNavigator from "./src/navigation/MainNavigator";
 import AuthNavigator from "./src/navigation/AuthNavigator";
+import useNotifications from "./src/hooks/useNotifications";
 
 function RootNavigator() {
   const { isAuthenticated, loading } = useAuth();
   const { colors } = useTheme();
+
+  // Initialize push notifications when authenticated
+  useNotifications();
 
   if (loading) {
     return (

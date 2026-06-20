@@ -8,7 +8,8 @@ import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperties } from "@/hooks/use-properties";
 import { useDebounce } from "@/hooks/use-debounce";
-import { CATEGORIES, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
+import { fetchCategories, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
+import type { Category } from "@/lib/api/properties";
 import { useLocale } from "@/providers/locale";
 import {
   FilterPanel,
@@ -45,7 +46,16 @@ function Catalog() {
   const navigate = useNavigate({ from: "/catalog" });
   const [layout, setLayout] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   const { t, locale } = useLocale();
+
+  useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {});
+  }, []);
+
+  const categoryNames = useMemo(() => {
+    return ["All", ...categories.map((c) => c.displayName)];
+  }, [categories]);
 
   const [qInput, setQInput] = useState(q);
   const debouncedQ = useDebounce(qInput, 300);
@@ -217,7 +227,7 @@ function Catalog() {
         <div className="-mx-5 mt-8 overflow-x-auto px-5 no-scrollbar md:mx-0 md:px-0">
           <LayoutGroup id="category-switcher">
             <div className="flex w-max gap-2 md:flex-wrap">
-              {CATEGORIES.map((c) => {
+              {categoryNames.map((c) => {
                 const active = (category ?? "All") === c;
                 return (
                   <button

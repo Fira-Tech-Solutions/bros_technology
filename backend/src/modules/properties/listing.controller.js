@@ -1,6 +1,7 @@
 import prisma from '../../config/prisma.js';
 import listingEmitter from '../../core/listingEmitter.js';
 import { cleanupImages } from '../../utils/imageProcessor.js';
+import { createNotification } from '../notifications/notification.controller.js';
 
 const LISTING_INCLUDE = {
   category: true,
@@ -59,6 +60,15 @@ export async function createListing(req, res, next) {
     });
 
     listingEmitter.emit('listing:created', listing.id);
+
+    // Create notification for the agent
+    createNotification(
+      agentId,
+      'New Listing Created',
+      `"${listing.title}" has been created successfully`,
+      'LISTING_CREATED',
+      { listingId: listing.id }
+    );
 
     return res.status(201).json({
       success: true,
@@ -230,6 +240,16 @@ export async function updateListing(req, res, next) {
     });
 
     listingEmitter.emit('listing:updated', updated.id);
+
+    if (agentId) {
+      createNotification(
+        agentId,
+        'Listing Updated',
+        `"${updated.title}" has been updated`,
+        'LISTING_UPDATED',
+        { listingId: updated.id }
+      );
+    }
 
     return res.status(200).json({
       success: true,
