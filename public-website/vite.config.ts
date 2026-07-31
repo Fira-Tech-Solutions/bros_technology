@@ -12,4 +12,12 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      allowedHosts: [
+        "life-dream-birds-calls.trycloudflare.com",
+        "figure-charles-ongoing-lens.trycloudflare.com",
+      ],
+    },
+  },
 });

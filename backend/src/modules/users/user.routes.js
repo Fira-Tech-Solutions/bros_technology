@@ -8,20 +8,24 @@ import { authenticate } from './auth.middleware.js';
 const router = Router();
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.resolve('../../uploads');
+const IS_SERVERLESS = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
-const storage = multer.diskStorage({
-  destination: async (_req, _file, cb) => {
-    const fs = await import('fs/promises');
-    await fs.mkdir(UPLOAD_DIR, { recursive: true });
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname) || '.webp';
-    const timestamp = Date.now();
-    const random = crypto.randomBytes(8).toString('hex');
-    cb(null, `temp-${timestamp}-${random}${ext}`);
-  },
-});
+// Use memory storage in serverless environments, disk storage otherwise
+const storage = IS_SERVERLESS
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: async (_req, _file, cb) => {
+        const fs = await import('fs/promises');
+        await fs.mkdir(UPLOAD_DIR, { recursive: true });
+        cb(null, UPLOAD_DIR);
+      },
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname) || '.webp';
+        const timestamp = Date.now();
+        const random = crypto.randomBytes(8).toString('hex');
+        cb(null, `temp-${timestamp}-${random}${ext}`);
+      },
+    });
 
 const upload = multer({
   storage,

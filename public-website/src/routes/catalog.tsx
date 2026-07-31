@@ -23,9 +23,6 @@ const searchSchema = z.object({
   q: z.string().optional(),
   priceMin: z.number().optional(),
   priceMax: z.number().optional(),
-  beds: z.number().optional(),
-  baths: z.number().optional(),
-  amenities: z.array(z.string()).optional(),
 });
 type Search = z.infer<typeof searchSchema>;
 
@@ -33,8 +30,8 @@ export const Route = createFileRoute("/catalog")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Catalog — Adama Property" },
-      { name: "description", content: "Browse premium properties and residences in Adama, Ethiopia." },
+      { title: "Products — BROS Technology" },
+      { name: "description", content: "Browse electronics accessories at BROS Technology." },
     ],
   }),
   component: Catalog,
@@ -50,7 +47,9 @@ function Catalog() {
   const { t, locale } = useLocale();
 
   useEffect(() => {
-    fetchCategories().then(setCategories).catch(() => {});
+    fetchCategories()
+      .then(setCategories)
+      .catch(() => {});
   }, []);
 
   const categoryNames = useMemo(() => {
@@ -88,11 +87,8 @@ function Catalog() {
     () => ({
       priceMin: search.priceMin ?? DEFAULT_FILTERS.priceMin,
       priceMax: search.priceMax ?? DEFAULT_FILTERS.priceMax,
-      beds: search.beds ?? 0,
-      baths: search.baths ?? 0,
-      amenities: search.amenities ?? [],
     }),
-    [search.priceMin, search.priceMax, search.beds, search.baths, search.amenities],
+    [search.priceMin, search.priceMax],
   );
   const activeCount = countActiveFilters(filters);
 
@@ -102,9 +98,6 @@ function Catalog() {
         ...s,
         priceMin: next.priceMin > PRICE_BOUNDS.min ? next.priceMin : undefined,
         priceMax: next.priceMax < PRICE_BOUNDS.max ? next.priceMax : undefined,
-        beds: next.beds || undefined,
-        baths: next.baths || undefined,
-        amenities: next.amenities.length ? next.amenities : undefined,
       }),
       replace: true,
     });
@@ -134,9 +127,6 @@ function Catalog() {
     q: debouncedQ,
     priceMin: search.priceMin,
     priceMax: search.priceMax,
-    beds: search.beds,
-    baths: search.baths,
-    amenities: search.amenities,
   });
 
   const count = data?.length ?? 0;
@@ -152,7 +142,7 @@ function Catalog() {
               {t("catalog.badge")}
             </p>
             <h1 className="mt-2 font-display text-4xl md:text-6xl">
-              {category === "All" ? t("catalog.allResidences") : category}
+              {category === "All" ? t("catalog.allProducts") : category}
             </h1>
             <motion.p
               key={`${count}-${isLoading}`}
@@ -164,7 +154,7 @@ function Catalog() {
                 ? t("catalog.gathering")
                 : t("catalog.showing", { count }) +
                   " " +
-                  t(count === 1 ? "catalog.property" : "catalog.properties")}
+                  t(count === 1 ? "catalog.product" : "catalog.products")}
               {isFetching && !isLoading && (
                 <span className="ml-2 text-gold/80">{t("catalog.updating")}</span>
               )}
@@ -305,13 +295,15 @@ function Catalog() {
                     <div className="flex flex-1 flex-col justify-between py-2">
                       <div>
                         <p className="text-xs uppercase tracking-widest text-muted-foreground">
-                          {p.location}
+                          {p.brand || p.category}
                         </p>
                         <h3 className="font-display text-2xl">{p.title}</h3>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">
-                          {p.beds} bd · {p.baths} ba · {p.area.toLocaleString()} ft²
+                        <span
+                          className={`text-xs ${p.inStock ? "text-green-500" : "text-red-500"}`}
+                        >
+                          {p.inStock ? t("property.inStock") : t("property.outOfStock")}
                         </span>
                         <span className="text-gradient-gold font-display text-lg">
                           {formatPrice(p.price)}
@@ -370,9 +362,9 @@ function Catalog() {
                     <h3 className="font-display text-2xl">{t("catalog.refine")}</h3>
                     <p className="text-xs text-muted-foreground">
                       {isLoading
-                        ? "…"
-                        : `${count} ${t(count === 1 ? "catalog.property" : "catalog.properties")}`}
-                      {activeCount > 0 ? ` · ${activeCount} ${t("catalog.active")}` : ""}
+                        ? "\u2026"
+                        : `${count} ${t(count === 1 ? "catalog.product" : "catalog.products")}`}
+                      {activeCount > 0 ? ` \u00B7 ${activeCount} ${t("catalog.active")}` : ""}
                     </p>
                   </div>
                   <button
@@ -393,7 +385,7 @@ function Catalog() {
               >
                 {t("catalog.showResults", {
                   count,
-                  type: t(count === 1 ? "catalog.property" : "catalog.properties"),
+                  type: t(count === 1 ? "catalog.product" : "catalog.products"),
                 })}
               </button>
             </motion.div>

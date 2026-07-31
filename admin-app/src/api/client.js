@@ -2,7 +2,7 @@ import axios from "axios";
 import { getItemAsync, deleteItemAsync } from "../utils/storage";
 
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
+  process.env.EXPO_PUBLIC_API_URL || "http://10.229.255.221:5000";
 
 const client = axios.create({
   baseURL: API_BASE_URL,

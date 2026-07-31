@@ -9,8 +9,16 @@ function FloatingObject({ mouse }: { mouse: React.MutableRefObject<{ x: number; 
   useFrame((state, delta) => {
     if (!ref.current) return;
     ref.current.rotation.y += delta * 0.15;
-    ref.current.rotation.x = THREE.MathUtils.lerp(ref.current.rotation.x, mouse.current.y * 0.3, 0.05);
-    ref.current.position.x = THREE.MathUtils.lerp(ref.current.position.x, mouse.current.x * 0.4, 0.05);
+    ref.current.rotation.x = THREE.MathUtils.lerp(
+      ref.current.rotation.x,
+      mouse.current.y * 0.3,
+      0.05,
+    );
+    ref.current.position.x = THREE.MathUtils.lerp(
+      ref.current.position.x,
+      mouse.current.x * 0.4,
+      0.05,
+    );
   });
   return (
     <Float speed={1.2} rotationIntensity={0.4} floatIntensity={1.2}>
@@ -31,10 +39,7 @@ function FloatingObject({ mouse }: { mouse: React.MutableRefObject<{ x: number; 
 function Wireframe({ mobile }: { mobile: boolean }) {
   const group = useRef<THREE.Group>(null);
   const count = mobile ? 8 : 14;
-  const items = useMemo(
-    () => Array.from({ length: count }, (_, i) => i),
-    [count]
-  );
+  const items = useMemo(() => Array.from({ length: count }, (_, i) => i), [count]);
   useFrame((s, d) => {
     if (group.current) group.current.rotation.y += d * 0.05;
   });
@@ -44,7 +49,10 @@ function Wireframe({ mobile }: { mobile: boolean }) {
         const r = 3 + (i % 3) * 0.4;
         const angle = (i / count) * Math.PI * 2;
         return (
-          <mesh key={i} position={[Math.cos(angle) * r, (i - count / 2) * 0.15, Math.sin(angle) * r]}>
+          <mesh
+            key={i}
+            position={[Math.cos(angle) * r, (i - count / 2) * 0.15, Math.sin(angle) * r]}
+          >
             <boxGeometry args={[0.05, 0.05, 0.6]} />
             <meshBasicMaterial color="#d9b35a" transparent opacity={0.35} />
           </mesh>

@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Info,
   ChevronDown,
+  Phone,
 } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
@@ -217,6 +218,41 @@ export default function SettingsScreen({ navigation }) {
             )}
           </View>
         </View>
+
+        {user?.role === "SUPER_ADMIN" && (
+          <View className="px-5 mb-6">
+            <Text
+              style={{ color: colors.textSecondary }}
+              className="text-sm font-semibold uppercase tracking-wide mb-3"
+            >
+              Store
+            </Text>
+            <View
+              className="rounded-2xl overflow-hidden"
+              style={{
+                backgroundColor: colors.card,
+                borderWidth: 1,
+                borderColor: colors.border,
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ContactSettings")}
+                className="flex-row items-center justify-between p-4"
+              >
+                <View className="flex-row items-center">
+                  <Phone size={20} color={colors.primary} />
+                  <Text
+                    style={{ color: colors.text }}
+                    className="ml-3 text-base font-medium"
+                  >
+                    Contact & Social Media
+                  </Text>
+                </View>
+                <ChevronRight size={18} color={colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
 
         <View className="px-5 mb-6">
           <Text

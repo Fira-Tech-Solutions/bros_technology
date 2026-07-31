@@ -1,5 +1,74 @@
 import prisma from '../../config/prisma.js';
 
+export async function getAssetStats(req, res, next) {
+  try {
+    const listings = await prisma.listing.findMany({
+      select: {
+        id: true,
+        price: true,
+        status: true,
+        categoryId: true,
+        category: {
+          select: { id: true, name: true, displayName: true },
+        },
+      },
+    });
+
+    const statusCounts = { AVAILABLE: 0, SOLD: 0, PENDING: 0, ARCHIVED: 0 };
+    let totalValue = 0;
+
+    const categoryMap = {};
+
+    for (const l of listings) {
+      const price = Number(l.price) || 0;
+      totalValue += price;
+
+      if (statusCounts[l.status] !== undefined) {
+        statusCounts[l.status]++;
+      }
+
+      const catId = l.categoryId;
+      const catName = l.category?.displayName || l.category?.name || 'Uncategorized';
+
+      if (!categoryMap[catId]) {
+        categoryMap[catId] = {
+          categoryId: catId,
+          categoryName: catName,
+          count: 0,
+          available: 0,
+          sold: 0,
+          pending: 0,
+          archived: 0,
+          totalValue: 0,
+        };
+      }
+
+      const cat = categoryMap[catId];
+      cat.count++;
+      cat.totalValue += price;
+
+      if (l.status === 'AVAILABLE') cat.available++;
+      else if (l.status === 'SOLD') cat.sold++;
+      else if (l.status === 'PENDING') cat.pending++;
+      else if (l.status === 'ARCHIVED') cat.archived++;
+    }
+
+    const byCategory = Object.values(categoryMap).sort((a, b) => b.count - a.count);
+
+    return res.json({
+      success: true,
+      data: {
+        totalAssets: listings.length,
+        totalValue: Math.round(totalValue * 100) / 100,
+        ...statusCounts,
+        byCategory,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function updateListingCommission(req, res, next) {
   try {
     const { id } = req.params;

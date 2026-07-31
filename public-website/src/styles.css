@@ -172,6 +172,49 @@ html[lang="om"] body {
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+  /* ── Frosted glass card ── */
+  .frosted {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  html.light .frosted {
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* ── Scroll-driven section reveal ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── Reduced motion: disable parallax, transforms, keep fades ── */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      transition: opacity 0.4s ease;
+      transform: none !important;
+    }
+  }
+
+  /* ── Category card hover lift ── */
+  .card-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px -8px oklch(0 0 0 / 0.2);
+  }
+  html.light .card-lift:hover {
+    box-shadow: 0 12px 32px -8px oklch(0 0 0 / 0.1);
+  }
+
   /* ── Oromo cultural accent utilities ── */
   .border-gadaa {
     border-image: linear-gradient(135deg, var(--gadaa-red), var(--gadaa-black), var(--gadaa-white)) 1;

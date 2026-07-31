@@ -767,7 +767,7 @@ Low mileage, single owner...
 👤 *Agent:* John Doe
 📞 *Phone:* +251911000000
 
-Listed on _RetailMeNot Marketplace_
+Listed on _BROS Technology_
 ```
 
 - Single image: sent as `sendPhoto`

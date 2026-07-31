@@ -1,10 +1,71 @@
 import { Router } from 'express';
+import axios from 'axios';
 import prisma from '../../config/prisma.js';
 import listingEmitter from '../../core/listingEmitter.js';
 import { authenticate, authorize } from '../users/auth.middleware.js';
 import TelegramBotService from './services/telegramBot.service.js';
 
 const router = Router();
+
+router.post('/telegram/webhook', async (req, res) => {
+  return res.sendStatus(200);
+});
+
+router.post('/telegram/setup-webhook', authenticate(), authorize('SUPER_ADMIN'), async (req, res, next) => {
+  try {
+    const { webhookUrl } = req.body;
+    if (!webhookUrl) {
+      return res.status(400).json({ success: false, error: 'webhookUrl is required' });
+    }
+
+    const config = await prisma.syndicationConfig.findUnique({
+      where: { platform: 'TELEGRAM' },
+    });
+
+    if (!config || !config.botToken) {
+      return res.status(400).json({ success: false, error: 'Telegram bot not configured' });
+    }
+
+    const { data } = await axios.post(
+      `https://api.telegram.org/bot${config.botToken}/setWebhook`,
+      { url: webhookUrl, allowed_updates: ['callback_query'] },
+      { timeout: 10000 },
+    );
+
+    if (!data.ok) {
+      return res.status(502).json({ success: false, error: data.description || 'Failed to set webhook' });
+    }
+
+    return res.json({ success: true, data: { url: webhookUrl } });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/telegram/webhook-info', authenticate(), authorize('SUPER_ADMIN'), async (req, res, next) => {
+  try {
+    const config = await prisma.syndicationConfig.findUnique({
+      where: { platform: 'TELEGRAM' },
+    });
+
+    if (!config || !config.botToken) {
+      return res.status(400).json({ success: false, error: 'Telegram bot not configured' });
+    }
+
+    const { data } = await axios.get(
+      `https://api.telegram.org/bot${config.botToken}/getWebhookInfo`,
+      { timeout: 10000 },
+    );
+
+    if (!data.ok) {
+      return res.status(502).json({ success: false, error: data.description || 'Failed to get webhook info' });
+    }
+
+    return res.json({ success: true, data: data.result });
+  } catch (err) {
+    next(err);
+  }
+});
 
 router.get('/config', authenticate(), async (req, res, next) => {
   try {

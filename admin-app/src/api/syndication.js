@@ -29,10 +29,10 @@ export const retrySyndication = (id) =>
 
 // Telegram webhook configuration
 export const setupTelegramWebhook = (webhookUrl) =>
-  client.post("/api/auth/telegram/setup-webhook", { webhookUrl });
+  client.post("/api/syndication/telegram/setup-webhook", { webhookUrl });
 
 export const getTelegramWebhookInfo = () =>
-  client.get("/api/auth/telegram/webhook-info");
+  client.get("/api/syndication/telegram/webhook-info");
 
 export const configureTelegramBot = () =>
   client.post("/api/auth/telegram/configure");

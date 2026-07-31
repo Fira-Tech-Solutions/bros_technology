@@ -13,6 +13,8 @@ import publicRoutes from './modules/properties/public.routes.js';
 import syndicationRoutes from './modules/syndication/syndication.routes.js';
 import notificationRoutes from './modules/notifications/notification.routes.js';
 import commissionRoutes from './modules/commissions/commission.routes.js';
+import settingsRoutes from './modules/settings/settings.routes.js';
+import seedCategoriesRoutes from './modules/properties/seedCategories.routes.js';
 import { DynamicValidationError } from './modules/properties/dynamic.validation.js';
 
 dotenv.config();
@@ -24,7 +26,12 @@ const app = express();
 
 app.use(helmet());
 
-const allowedOrigins = [
+// Parse allowed origins from environment variable
+const allowedOriginsEnv = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+  : [];
+
+const defaultOrigins = [
   'http://localhost:5000',
   'http://localhost:19006',
   'http://localhost:3000',
@@ -33,6 +40,8 @@ const allowedOrigins = [
   'http://10.0.2.2:19006',
   'http://127.0.0.1:5000',
 ];
+
+const allowedOrigins = allowedOriginsEnv.length > 0 ? allowedOriginsEnv : defaultOrigins;
 
 app.use(cors({
   origin(origin, callback) {
@@ -63,6 +72,8 @@ app.use('/api/public', publicRoutes);
 app.use('/api/syndication', syndicationRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/commissions', commissionRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/admin/seed-categories', seedCategoriesRoutes);
 
 if (process.env.STORAGE_PROVIDER !== 'cloudinary') {
   app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));

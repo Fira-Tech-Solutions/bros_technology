@@ -19,6 +19,7 @@ import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import CommissionScreen from "../screens/CommissionScreen";
+import ContactSettingsScreen from "../screens/ContactSettingsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -122,6 +123,11 @@ function SettingsStack() {
         component={ResetPasswordScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="ContactSettings"
+        component={ContactSettingsScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -175,10 +181,10 @@ export default function MainNavigator() {
       />
       {isAdmin && (
         <Tab.Screen
-          name="Commissions"
+          name="Finance"
           component={CommissionScreen}
           options={{
-            tabBarLabel: "Commissions",
+            tabBarLabel: "Finance",
             tabBarIcon: ({ color, size }) => (
               <DollarSign size={size} color={color} />
             ),

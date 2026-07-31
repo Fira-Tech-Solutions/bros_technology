@@ -15,36 +15,24 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   Plus,
-  MapPin,
   X,
   Tag,
-  Home,
-  Car,
   Smartphone,
   Laptop,
-  Building2,
-  Bike,
-  Truck,
-  Landmark,
-  Briefcase,
-  ShoppingBag,
-  Gem,
-  Sofa,
-  TreePine,
-  GraduationCap,
-  Heart,
-  Shield,
-  Wrench,
-  Palette,
   Pencil,
   Trash2,
   CircleCheck,
   CircleDollarSign,
+  Clock,
+  Search,
+  Headphones,
+  Watch,
+  Monitor,
+  ChevronDown,
   Handshake,
   PackageX,
-  Clock,
   ChevronRight,
-  Search,
+  MapPin,
 } from "lucide-react-native";
 
 import CachedImage from "../components/CachedImage";
@@ -65,25 +53,11 @@ const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
 
 const ICON_OPTIONS = [
-  { name: "home", Icon: Home, label: "House" },
-  { name: "building2", Icon: Building2, label: "Building" },
-  { name: "car", Icon: Car, label: "Car" },
-  { name: "bike", Icon: Bike, label: "Bike" },
-  { name: "truck", Icon: Truck, label: "Truck" },
   { name: "smartphone", Icon: Smartphone, label: "Phone" },
   { name: "laptop", Icon: Laptop, label: "Laptop" },
-  { name: "sofa", Icon: Sofa, label: "Furniture" },
-  { name: "gem", Icon: Gem, label: "Jewelry" },
-  { name: "shoppingBag", Icon: ShoppingBag, label: "Shopping" },
-  { name: "briefcase", Icon: Briefcase, label: "Business" },
-  { name: "landmark", Icon: Landmark, label: "Land" },
-  { name: "treePine", Icon: TreePine, label: "Nature" },
-  { name: "graduationCap", Icon: GraduationCap, label: "Education" },
-  { name: "heart", Icon: Heart, label: "Health" },
-  { name: "shield", Icon: Shield, label: "Security" },
-  { name: "wrench", Icon: Wrench, label: "Tools" },
-  { name: "palette", Icon: Palette, label: "Design" },
-  { name: "tag", Icon: Tag, label: "Other" },
+  { name: "headphones", Icon: Headphones, label: "Audio" },
+  { name: "watch", Icon: Watch, label: "Watch" },
+  { name: "tablet", Icon: Monitor, label: "Tablet" },
 ];
 
 function getIconComponent(iconName) {
@@ -115,8 +89,13 @@ export default function PropertiesScreen({ navigation }) {
   const [editingCategory, setEditingCategory] = useState(null);
   const [catName, setCatName] = useState("");
   const [catDisplayName, setCatDisplayName] = useState("");
-  const [catIcon, setCatIcon] = useState("tag");
+  const [catIcon, setCatIcon] = useState("smartphone");
   const [savingCat, setSavingCat] = useState(false);
+  const [catSchemaRules, setCatSchemaRules] = useState([]);
+  const [newRuleField, setNewRuleField] = useState("");
+  const [newRuleType, setNewRuleType] = useState("string");
+  const [newRuleRequired, setNewRuleRequired] = useState(false);
+  const [showRuleTypeDropdown, setShowRuleTypeDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -204,7 +183,8 @@ export default function PropertiesScreen({ navigation }) {
     setEditingCategory(cat);
     setCatName(cat.name);
     setCatDisplayName(cat.displayName);
-    setCatIcon(cat.icon || "tag");
+    setCatIcon(cat.icon || "smartphone");
+    setCatSchemaRules(Array.isArray(cat.schemaRules) ? cat.schemaRules : []);
     setShowAddCategory(true);
   };
 
@@ -212,7 +192,8 @@ export default function PropertiesScreen({ navigation }) {
     setEditingCategory(null);
     setCatName("");
     setCatDisplayName("");
-    setCatIcon("tag");
+    setCatIcon("smartphone");
+    setCatSchemaRules([]);
     setShowAddCategory(true);
   };
 
@@ -231,6 +212,7 @@ export default function PropertiesScreen({ navigation }) {
         name: catName.trim(),
         displayName: catDisplayName.trim(),
         icon: catIcon,
+        schemaRules: catSchemaRules,
       };
       if (editingCategory) {
         await updateCategory(editingCategory.id, payload);
@@ -239,10 +221,10 @@ export default function PropertiesScreen({ navigation }) {
       }
       setCatName("");
       setCatDisplayName("");
-      setCatIcon("tag");
+      setCatIcon("smartphone");
       setEditingCategory(null);
       setShowAddCategory(false);
-      fetchCategories();
+      refreshCategories();
     } catch (err) {
       const msg =
         err.response?.data?.error ||
@@ -583,7 +565,7 @@ export default function PropertiesScreen({ navigation }) {
                 setTab(item.key);
                 setSearchQuery("");
                 setSelectedCategory(null);
-                if (item.key === "categories") fetchCategories();
+                if (item.key === "categories") refreshCategories();
               }}
               style={{
                 flex: 1,
@@ -838,6 +820,124 @@ export default function PropertiesScreen({ navigation }) {
                     </TouchableOpacity>
                   );
                 })}
+              </View>
+
+              {/* Schema Rules Editor */}
+              <Text
+                style={{ color: colors.textSecondary }}
+                className="text-sm font-medium mb-2"
+              >
+                Category Fields
+              </Text>
+              <Text
+                style={{ color: colors.textMuted, fontSize: 11, marginBottom: 8 }}
+              >
+                Define what information is required when creating a listing in this category.
+              </Text>
+
+              {catSchemaRules.map((rule, idx) => (
+                <View
+                  key={idx}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: colors.input,
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    paddingHorizontal: 12,
+                    height: 44,
+                    marginBottom: 6,
+                  }}
+                >
+                  <Tag size={14} color={colors.textMuted} style={{ marginRight: 8 }} />
+                  <Text style={{ flex: 1, color: colors.text, fontSize: 13, fontWeight: "500" }}>
+                    {rule.field}
+                  </Text>
+                  <View style={{ backgroundColor: `${colors.primary}15`, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, marginRight: 6 }}>
+                    <Text style={{ color: colors.primary, fontSize: 10, fontWeight: "600" }}>{rule.type}</Text>
+                  </View>
+                  {rule.required && (
+                    <View style={{ backgroundColor: `${colors.danger}15`, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, marginRight: 6 }}>
+                      <Text style={{ color: colors.danger, fontSize: 10, fontWeight: "600" }}>Required</Text>
+                    </View>
+                  )}
+                  <TouchableOpacity
+                    onPress={() => setCatSchemaRules((prev) => prev.filter((_, i) => i !== idx))}
+                  >
+                    <X size={14} color={colors.danger} />
+                  </TouchableOpacity>
+                </View>
+              ))}
+
+              {/* Add new rule */}
+              <View style={{ flexDirection: "row", gap: 6, marginBottom: 20 }}>
+                <TextInput
+                  value={newRuleField}
+                  onChangeText={setNewRuleField}
+                  placeholder="Field name"
+                  placeholderTextColor={colors.textMuted}
+                  style={{
+                    flex: 1,
+                    backgroundColor: colors.input,
+                    borderWidth: 1,
+                    borderColor: colors.inputBorder,
+                    borderRadius: 10,
+                    paddingHorizontal: 12,
+                    height: 40,
+                    color: colors.text,
+                    fontSize: 13,
+                  }}
+                />
+                <View style={{ position: "relative" }}>
+                  <TouchableOpacity
+                    onPress={() => setShowRuleTypeDropdown(!showRuleTypeDropdown)}
+                    style={{
+                      backgroundColor: colors.input,
+                      borderWidth: 1,
+                      borderColor: colors.inputBorder,
+                      borderRadius: 10,
+                      paddingHorizontal: 12,
+                      height: 40,
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text style={{ color: colors.text, fontSize: 12 }}>{newRuleType}</Text>
+                    <ChevronDown size={12} color={colors.textMuted} style={{ marginLeft: 4 }} />
+                  </TouchableOpacity>
+                  {showRuleTypeDropdown && (
+                    <View style={{ position: "absolute", top: 42, right: 0, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1, borderColor: colors.border, overflow: "hidden", zIndex: 100, width: 120 }}>
+                      {["string", "number", "boolean", "select"].map((type) => (
+                        <TouchableOpacity
+                          key={type}
+                          onPress={() => { setNewRuleType(type); setShowRuleTypeDropdown(false); }}
+                          style={{ paddingHorizontal: 12, height: 36, justifyContent: "center", borderBottomWidth: 1, borderBottomColor: colors.border }}
+                        >
+                          <Text style={{ color: newRuleType === type ? colors.primary : colors.text, fontSize: 12, fontWeight: newRuleType === type ? "600" : "400" }}>{type}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (!newRuleField.trim()) return;
+                    setCatSchemaRules((prev) => [...prev, { field: newRuleField.trim(), type: newRuleType, required: newRuleRequired }]);
+                    setNewRuleField("");
+                    setNewRuleRequired(false);
+                  }}
+                  style={{
+                    backgroundColor: colors.primary,
+                    borderRadius: 10,
+                    width: 40,
+                    height: 40,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Plus size={18} color={colors.primaryText} />
+                </TouchableOpacity>
               </View>
 
               <TouchableOpacity

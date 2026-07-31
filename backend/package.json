@@ -1,5 +1,5 @@
 {
-  "name": "retailment-marketplace-backend",
+  "name": "brostechnology-backend",
   "version": "1.0.0",
   "description": "High-performance marketplace platform backend",
   "main": "src/server.js",
