@@ -7,21 +7,21 @@ const SALT_ROUNDS = 12;
 
 const DEFAULT_USERS = [
   {
-    email: 'admin@retailment.com',
+    email: 'admin@brostechnology.com',
     password: 'Admin@12345',
     name: 'Super Admin',
     phone: '+251911000001',
     role: 'SUPER_ADMIN',
   },
   {
-    email: 'agent@retailment.com',
+    email: 'agent@brostechnology.com',
     password: 'Agent@12345',
     name: 'Demo Agent',
     phone: '+251911000002',
     role: 'AGENT',
   },
   {
-    email: 'agent2@retailment.com',
+    email: 'agent2@brostechnology.com',
     password: 'Agent@12345',
     name: 'Second Agent',
     phone: '+251911000003',
@@ -51,9 +51,9 @@ async function main() {
   }
 
   console.log('[Seed] Default credentials:');
-  console.log('  Admin:  admin@retailment.com  / Admin@12345');
-  console.log('  Agent:  agent@retailment.com  / Agent@12345');
-  console.log('  Agent2: agent2@retailment.com / Agent@12345');
+  console.log('  Admin:  admin@brostechnology.com  / Admin@12345');
+  console.log('  Agent:  agent@brostechnology.com  / Agent@12345');
+  console.log('  Agent2: agent2@brostechnology.com / Agent@12345');
   console.log('[Seed] Done');
 }
 

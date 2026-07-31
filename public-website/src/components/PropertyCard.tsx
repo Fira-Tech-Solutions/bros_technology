@@ -2,9 +2,11 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import type { Property } from "@/lib/api/properties";
 import { formatPrice } from "@/lib/api/properties";
-import { Bed, Bath, Maximize2 } from "lucide-react";
+import { useLocale } from "@/providers/locale";
 
 export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) {
+  const { t } = useLocale();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -28,16 +30,29 @@ export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) 
           <span className="absolute left-4 top-4 rounded-full glass px-3 py-1 text-xs uppercase tracking-widest text-foreground/90">
             {p.category}
           </span>
+          {p.brand && (
+            <span className="absolute right-4 top-4 rounded-full bg-gold/90 px-3 py-1 text-xs font-medium text-primary-foreground">
+              {t("property.brandNew")}
+            </span>
+          )}
           <div className="absolute bottom-4 left-4 right-4">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground">{p.location}</p>
             <h3 className="font-display text-2xl text-foreground">{p.title}</h3>
+            {p.brand && <p className="text-xs text-muted-foreground">{p.brand}</p>}
           </div>
         </div>
         <div className="flex items-center justify-between p-5">
-          <div className="flex gap-4 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1.5"><Bed className="h-3.5 w-3.5" />{p.beds}</span>
-            <span className="flex items-center gap-1.5"><Bath className="h-3.5 w-3.5" />{p.baths}</span>
-            <span className="flex items-center gap-1.5"><Maximize2 className="h-3.5 w-3.5" />{p.area.toLocaleString()} ft²</span>
+          <div className="flex items-center gap-2">
+            {p.inStock ? (
+              <span className="flex items-center gap-1.5 text-xs text-green-500">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                {t("property.inStock")}
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 text-xs text-red-500">
+                <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                {t("property.outOfStock")}
+              </span>
+            )}
           </div>
           <span className="text-gradient-gold font-display text-lg">{formatPrice(p.price)}</span>
         </div>

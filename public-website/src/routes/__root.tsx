@@ -78,22 +78,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "Adama Property — Premium Real Estate in Adama, Ethiopia" },
+      {
+        name: "viewport",
+        content:
+          "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+      },
+      { title: "BROS Technology — Electronics Accessories in Ethiopia" },
       {
         name: "description",
         content:
-          "Adama Property \u2014 premium real estate and architectural residences in Adama, Ethiopia.",
+          "BROS Technology \u2014 quality electronics accessories at the best prices in Ethiopia.",
       },
       { name: "theme-color", content: "#c85a2a" },
-      { property: "og:title", content: "Adama Property — Premium Real Estate in Adama, Ethiopia" },
+      { property: "og:title", content: "BROS Technology — Electronics Accessories in Ethiopia" },
       {
         property: "og:description",
-        content: "Adama Property \u2014 premium real estate and architectural residences in Adama, Ethiopia.",
+        content:
+          "BROS Technology \u2014 quality electronics accessories at the best prices in Ethiopia.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -103,8 +107,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Ethiopic:wght@300;400;500;600&family=Noto+Serif+Ethiopic:wght@400;600&display=swap",
       },
-      { rel: "manifest", href: "/manifest.json" },
-      { rel: "apple-touch-icon", href: "/icons/icon-192x192.png" },
+      { rel: "icon", type: "image/png", href: "/images/favicon/favicon-96x96.png", sizes: "96x96" },
+      { rel: "icon", type: "image/svg+xml", href: "/images/favicon/favicon.svg" },
+      { rel: "shortcut icon", href: "/images/favicon/favicon.ico" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/images/favicon/apple-touch-icon.png" },
+      { rel: "manifest", href: "/images/favicon/site.webmanifest" },
+      {
+        rel: "preload",
+        as: "image",
+        href: "/images/bros_desktop_dark_HD.jpg",
+        media: "(min-width: 768px)",
+      },
+      {
+        rel: "preload",
+        as: "image",
+        href: "/images/bros_mobile_dark_HD.png",
+        media: "(max-width: 767px)",
+      },
+      { rel: "script", src: "https://telegram.org/js/telegram-web-app.js" },
     ],
   }),
   shellComponent: RootShell,
@@ -120,6 +140,11 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body className="transition-colors duration-300">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var tg=window.Telegram&&window.Telegram.WebApp;if(tg){document.documentElement.classList.toggle('dark',tg.colorScheme==='dark');document.documentElement.classList.toggle('light',tg.colorScheme==='light');if(tg.themeParams&&tg.themeParams.bg_color){document.documentElement.style.setProperty('--background',tg.themeParams.bg_color)}}}catch(e){}})()`,
+          }}
+        />
         {children}
         <Scripts />
       </body>

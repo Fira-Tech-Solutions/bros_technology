@@ -1,12 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Search, Home, LayoutGrid, Phone } from "lucide-react";
+import { Search, Home, LayoutGrid, Phone, MapPin } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LanguagePicker } from "@/components/LanguagePicker";
 import { useLocale } from "@/providers/locale";
+import { isTelegramMiniApp } from "@/lib/telegram";
+import { useSettings, DEFAULT_SETTINGS } from "@/hooks/use-settings";
 
 export function Nav() {
   const { t } = useLocale();
+  const { data: s = DEFAULT_SETTINGS } = useSettings();
+  if (isTelegramMiniApp()) return null;
+
+  const mapLabel = s.shopMapAddress || s.location;
 
   return (
     <>
@@ -19,7 +25,7 @@ export function Nav() {
       >
         <div className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full glass px-6 py-3">
           <Link to="/" className="font-display text-xl tracking-wide">
-            Adama<span className="text-gradient-gold"> Property</span>
+            BROS<span className="text-gradient-gold"> Technology</span>
           </Link>
           <nav className="flex items-center gap-8 text-sm">
             <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -37,6 +43,17 @@ export function Nav() {
             >
               {t("nav.contact")}
             </a>
+            {s.shopGoogleMapUrl && (
+              <a
+                href={s.shopGoogleMapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-muted-foreground hover:text-gold transition-colors"
+              >
+                <MapPin className="h-3.5 w-3.5" />
+                <span>{mapLabel}</span>
+              </a>
+            )}
           </nav>
           <div className="flex items-center gap-2">
             <LanguagePicker />
@@ -54,7 +71,7 @@ export function Nav() {
       {/* Mobile top brand */}
       <div className="fixed top-0 z-50 flex w-full items-center justify-between px-5 py-4 md:hidden glass">
         <Link to="/" className="font-display text-xl">
-          Adama<span className="text-gradient-gold"> Property</span>
+          BROS<span className="text-gradient-gold"> Technology</span>
         </Link>
         <div className="flex items-center gap-2">
           <LanguagePicker />
@@ -82,6 +99,16 @@ export function Nav() {
         >
           <Phone className="h-5 w-5" /> {t("nav.contact")}
         </a>
+        {s.shopGoogleMapUrl && (
+          <a
+            href={s.shopGoogleMapUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-center gap-0.5 rounded-full px-4 py-1.5 text-[10px] text-muted-foreground"
+          >
+            <MapPin className="h-5 w-5" /> Map
+          </a>
+        )}
       </nav>
     </>
   );

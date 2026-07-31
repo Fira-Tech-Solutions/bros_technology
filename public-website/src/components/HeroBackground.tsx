@@ -1,83 +1,175 @@
-import { useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useLocale } from "@/providers/locale";
+import { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { useTheme } from "@/providers/theme";
 
-const images = [
-  {
-    src: "/images/aba-geda.jpg",
-    titleKey: "hero.bg.abaGeda.title" as const,
-    descKey: "hero.bg.abaGeda.description" as const,
+type Theme = "light" | "dark";
+
+const IMAGES: Record<Theme, { desktop: string; mobile: string }> = {
+  dark: {
+    desktop: "/images/bros_desktop_dark_HD.jpg",
+    mobile: "/images/bros_mobile_dark_HD.png",
   },
-  {
-    src: "/images/posta.jpg",
-    titleKey: "hero.bg.posta.title" as const,
-    descKey: "hero.bg.posta.description" as const,
+  light: {
+    desktop: "/images/bros_desktop_light_HD.jpg",
+    mobile: "/images/bros_mobile_light_HD.png",
   },
-];
+};
 
-export function HeroBackground() {
-  const [current, setCurrent] = useState(0);
-  const { t } = useLocale();
-
-  const next = useCallback(() => {
-    setCurrent((prev) => (prev + 1) % images.length);
-  }, []);
-
+function useImagePreloader(src: string) {
+  const [loaded, setLoaded] = useState(false);
   useEffect(() => {
-    const timer = setInterval(next, 6000);
-    return () => clearInterval(timer);
-  }, [next]);
+    setLoaded(false);
+    const img = new Image();
+    img.src = src;
+    img.onload = () => setLoaded(true);
+  }, [src]);
+  return loaded;
+}
+
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) return null;
 
   return (
-    <div className="absolute inset-0 z-0 overflow-hidden">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 1.2, ease: "easeInOut" }}
-          className="absolute inset-0"
-        >
-          <img
-            src={images[current].src}
-            alt={t(images[current].titleKey)}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
-        </motion.div>
-      </AnimatePresence>
+    <motion.div
+      className="fixed top-0 left-0 right-0 z-[100] h-[2px] origin-left"
+      style={{
+        scaleX,
+        background: "var(--gradient-gold)",
+      }}
+    />
+  );
+}
 
-      <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 gap-3">
-        {images.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === current ? "w-8 bg-gold" : "w-2 bg-white/40 hover:bg-white/60"
-            }`}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
+function ScrollArrow() {
+  const shouldReduceMotion = useReducedMotion();
 
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="absolute bottom-16 left-6 z-10 max-w-xs text-white/80 md:left-12"
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.5, duration: 0.6 }}
+      className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2"
+    >
+      <motion.div
+        animate={shouldReduceMotion ? {} : { y: [0, 8, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        className="flex flex-col items-center gap-2"
+      >
+        <span className="text-[10px] uppercase tracking-[0.3em] text-white/50">Scroll</span>
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 20 20"
+          fill="none"
+          className="text-white/40"
         >
-          <p className="text-xs uppercase tracking-[0.2em] text-gold">
-            {t(images[current].titleKey)}
-          </p>
-          <p className="mt-1 text-sm text-white/60">
-            {t(images[current].descKey)}
-          </p>
+          <path
+            d="M10 4v12m0 0l-4-4m4 4l4-4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export function HeroBackground() {
+  const { theme } = useTheme();
+  const heroRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  const currentImage = IMAGES[theme];
+  const desktopLoaded = useImagePreloader(currentImage.desktop);
+  const mobileLoaded = useImagePreloader(currentImage.mobile);
+  const isLoaded = desktopLoaded && mobileLoaded;
+
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, 200]);
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  const bgRotateX = useTransform(scrollYProgress, [0, 1], [0, 2]);
+
+  const parallaxStyle = shouldReduceMotion
+    ? {}
+    : {
+        y: bgY,
+        scale: bgScale,
+        rotateX: bgRotateX,
+        transformPerspective: 1000,
+      };
+
+  return (
+    <>
+      <ScrollProgress />
+
+      <section
+        ref={heroRef}
+        className="relative h-[100svh] overflow-hidden"
+        style={{ position: "sticky", top: 0, zIndex: 0 }}
+      >
+        {/* Image layer */}
+        <motion.div className="absolute inset-0 z-0" style={parallaxStyle}>
+          {/* Desktop */}
+          <picture className="hidden md:block">
+            <source srcSet={currentImage.desktop} media="(min-width: 768px)" />
+            <img
+              src={currentImage.desktop}
+              alt="BROS Technology showroom"
+              fetchPriority="high"
+              className={`h-full w-full object-cover transition-opacity duration-700 ${
+                isLoaded ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          </picture>
+
+          {/* Mobile */}
+          <picture className="block md:hidden">
+            <source srcSet={currentImage.mobile} media="(max-width: 767px)" />
+            <img
+              src={currentImage.mobile}
+              alt="BROS Technology showroom"
+              fetchPriority="high"
+              className={`h-full w-full object-cover transition-opacity duration-700 ${
+                isLoaded ? "opacity-100" : "opacity-0"
+              }`}
+            />
+          </picture>
+
+          {/* LQIP blur-up crossfade */}
+          {!isLoaded && (
+            <div className="absolute inset-0 z-[1]">
+              <img
+                src={currentImage.mobile}
+                alt=""
+                aria-hidden="true"
+                className="h-full w-full object-cover scale-110 blur-xl"
+                style={{ imageRendering: "auto" }}
+              />
+            </div>
+          )}
         </motion.div>
-      </AnimatePresence>
-    </div>
+
+        {/* Subtle vignette for depth — no text scrim needed */}
+        <div
+          className="absolute inset-0 z-[1] pointer-events-none"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)",
+          }}
+        />
+
+        <ScrollArrow />
+      </section>
+    </>
   );
 }

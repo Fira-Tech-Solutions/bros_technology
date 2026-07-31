@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const CLOUDINARY_FOLDER = process.env.CLOUDINARY_FOLDER || 'retailment/listings';
+const CLOUDINARY_FOLDER = process.env.CLOUDINARY_FOLDER || 'brostechnology/listings';
 
 export async function uploadToCloudinary(filePath, options = {}) {
   const result = await cloudinary.uploader.upload(filePath, {

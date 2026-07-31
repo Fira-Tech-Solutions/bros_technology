@@ -120,7 +120,13 @@ export function validateListingAttributes() {
 
       req.category = category;
 
-      const rawAttributes = req.body.attributes || {};
+      const rawAttributes = (() => {
+        const raw = req.body.attributes || {};
+        if (typeof raw === 'string') {
+          try { return JSON.parse(raw); } catch { return {}; }
+        }
+        return raw;
+      })();
       const hasRules =
         category.schemaRules &&
         Array.isArray(category.schemaRules) &&

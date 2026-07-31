@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "Adama Property",
+    "name": "BROS Technology",
     "slug": "admin-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "retailment-admin",
+    "scheme": "brostechnology-admin",
     "userInterfaceStyle": "automatic",
     "splash": {
       "backgroundColor": "#2563eb"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.retailment.admin"
+      "bundleIdentifier": "com.brostechnology.admin"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.retailment.admin"
+      "package": "com.brostechnology.admin"
     },
     "web": {
       "favicon": "./assets/favicon.png"

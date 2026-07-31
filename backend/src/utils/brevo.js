@@ -20,7 +20,7 @@ export async function sendEmail({ to, subject, htmlContent, textContent, from })
       subject,
       htmlContent,
       textContent,
-      sender: from || { email: process.env.BREVO_FROM_EMAIL || 'noreply@retailment.com', name: 'Retailment Marketplace' },
+      sender: from || { email: process.env.BREVO_FROM_EMAIL || 'noreply@brostechnology.com', name: 'BROS Technology' },
     });
     console.log('[Brevo] Email sent successfully:', result.messageId);
     return { success: true, messageId: result.messageId };
@@ -121,6 +121,6 @@ export async function sendPasswordResetEmail(to, resetCode) {
     subject,
     htmlContent,
     textContent,
-    from: { email: process.env.BREVO_FROM_EMAIL || 'noreply@retailment.com', name: 'Retailment Marketplace' },
+    from: { email: process.env.BREVO_FROM_EMAIL || 'noreply@brostechnology.com', name: 'BROS Technology' },
   });
 }

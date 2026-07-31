@@ -14,6 +14,50 @@ async function getTelegramConfig() {
   return config;
 }
 
+async function getMiniAppUrl() {
+  try {
+    const setting = await prisma.setting.findUnique({ where: { key: 'miniAppUrl' } });
+    if (setting?.value) return setting.value;
+  } catch {}
+  return process.env.TELEGRAM_MINI_APP_URL || '';
+}
+
+async function getAdminTelegram() {
+  try {
+    const setting = await prisma.setting.findUnique({ where: { key: 'adminTelegramUsername' } });
+    if (setting?.value) return setting.value;
+  } catch {}
+  return '';
+}
+
+async function getShopGoogleMapUrl() {
+  try {
+    const setting = await prisma.setting.findUnique({ where: { key: 'shopGoogleMapUrl' } });
+    if (setting?.value) return setting.value;
+  } catch {}
+  return '';
+}
+
+function buildInlineKeyboard(listingId, listingTitle, firstImage, miniAppUrl, adminTelegram, shopGoogleMapUrl) {
+  const buttons = [];
+
+  if (shopGoogleMapUrl) {
+    buttons.push([{ text: '📍 Location', url: shopGoogleMapUrl }]);
+  }
+
+  if (miniAppUrl) {
+    buttons.push([{ text: '🛍 Explore', url: `${miniAppUrl}/property/${listingId}` }]);
+  }
+
+  if (adminTelegram) {
+    const message = encodeURIComponent(firstImage || '');
+    buttons.push([{ text: '📩 Order Now', url: `https://t.me/${adminTelegram}?text=${message}` }]);
+  }
+
+  if (buttons.length === 0) return null;
+  return { inline_keyboard: buttons };
+}
+
 async function resolveFileUrl(fileId, botToken) {
   try {
     const { data } = await axios.get(
@@ -31,8 +75,37 @@ function formatPrice(price) {
   if (!price) return 'Price on request';
   const num = Number(price);
   if (Number.isNaN(num)) return 'Price on request';
-  return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${num.toLocaleString('en-US')} ETB`;
 }
+
+const FIELD_LABELS = {
+  brand: '📱 Brand',
+  model: '📦 Model',
+  storage: '💾 Storage',
+  ram: '🧠 RAM',
+  color: '🎨 Color',
+  condition: '✅ Condition',
+  processor: '⚡ Processor',
+  gpu: '🎮 GPU',
+  screenSize: '🖥 Screen',
+  os: '💻 OS',
+  batteryHealth: '🔋 Battery',
+  carrier: '📡 Carrier',
+  caseSize: '⌚ Size',
+  connectivity: '📶 Connectivity',
+  hasWarranty: '🛡 Warranty',
+  hasAppleCare: '🍎 AppleCare',
+  year: '📅 Year',
+  storageType: '💿 Storage Type',
+};
+
+const CATEGORY_CAPTIONS = {
+  IPHONES_SAMSUNG: ['brand', 'model', 'storage', 'ram', 'color', 'condition', 'batteryHealth', 'carrier', 'hasWarranty'],
+  IPADS_MACBOOKS: ['brand', 'model', 'storage', 'ram', 'color', 'condition', 'screenSize', 'processor', 'connectivity', 'hasWarranty'],
+  LAPTOPS: ['brand', 'model', 'processor', 'ram', 'storage', 'gpu', 'screenSize', 'color', 'condition', 'os', 'hasWarranty'],
+  AIRPODS: ['brand', 'model', 'color', 'condition', 'hasAppleCare', 'hasWarranty'],
+  SMARTWATCHES: ['brand', 'model', 'caseSize', 'storage', 'color', 'connectivity', 'condition', 'hasWarranty'],
+};
 
 function formatAttributes(attributes, schemaRules) {
   if (!attributes || typeof attributes !== 'object') return [];
@@ -58,47 +131,39 @@ function buildCaption(listing) {
 
   const title = listing.title || 'Untitled Listing';
   const price = formatPrice(listing.price);
-  const city = listing.city || '';
-  const neighborhood = listing.neighborhood || '';
-  const location = [neighborhood, city].filter(Boolean).join(', ') || 'Location not specified';
-  const phone = listing.agent?.phone || 'N/A';
-  const agentName = listing.agent?.name || 'N/A';
-  const category = listing.category?.displayName || listing.category?.name || '';
-  const status = listing.status || 'AVAILABLE';
+  const categoryName = listing.category?.name || '';
+  const fields = CATEGORY_CAPTIONS[categoryName];
+  const attributes = listing.attributes && typeof listing.attributes === 'object'
+    ? listing.attributes
+    : {};
 
-  const attrLines = formatAttributes(listing.attributes, listing.category?.schemaRules);
+  const sections = [
+    `*${title}*`,
+    '',
+    `💰 *Price:* ${price}`,
+  ];
+
+  if (fields && fields.length > 0) {
+    for (const field of fields) {
+      const value = attributes[field];
+      if (value === undefined || value === null || value === '') continue;
+      const label = FIELD_LABELS[field] || field;
+      const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+      sections.push(`${label}: ${displayValue}`);
+    }
+  }
+
   const description = listing.description
     ? listing.description.length > 200
       ? `${listing.description.slice(0, 200)}...`
       : listing.description
     : '';
 
-  const sections = [
-    `*${title}*`,
-    '',
-    `💰 *Price:* ${price}`,
-    `📍 *Location:* ${location}`,
-    `🏷 *Category:* ${category}`,
-    `📋 *Status:* ${status}`,
-  ];
-
-  if (attrLines.length > 0) {
-    sections.push('', '*Details:*');
-    sections.push(...attrLines);
-  }
-
   if (description) {
     sections.push('', description);
   }
 
-  sections.push(
-    '',
-    '─────────────────',
-    `👤 *Agent:* ${agentName}`,
-    `📞 *Phone:* ${phone}`,
-    '',
-    'Listed on _RetailMeNot Marketplace_',
-  );
+  sections.push('', '─────────────────', 'Listed on _BROS Technology_');
 
   return sections.join('\n');
 }
@@ -106,20 +171,33 @@ function buildCaption(listing) {
 function buildMediaCaption(listing) {
   const full = buildCaption(listing);
   if (full.length <= MAX_CAPTION_LENGTH) return full;
+
   const title = listing.title || 'Untitled Listing';
   const price = formatPrice(listing.price);
-  const city = listing.city || '';
-  const neighborhood = listing.neighborhood || '';
-  const location = [neighborhood, city].filter(Boolean).join(', ');
-  const phone = listing.agent?.phone || 'N/A';
-  return [
-    `*${title}*`,
-    `💰 ${price}`,
-    `📍 ${location}`,
-    `📞 ${phone}`,
-    '',
-    '_Full details in the listing post_',
-  ].join('\n');
+  const categoryName = listing.category?.name || '';
+  const fields = CATEGORY_CAPTIONS[categoryName];
+  const attributes = listing.attributes && typeof listing.attributes === 'object'
+    ? listing.attributes
+    : {};
+
+  const short = [`*${title}*`, `💰 ${price}`];
+
+  if (fields && fields.length > 0) {
+    const shown = fields.filter((f) => {
+      const v = attributes[f];
+      return v !== undefined && v !== null && v !== '';
+    }).slice(0, 3);
+    for (const field of shown) {
+      const label = FIELD_LABELS[field] || field;
+      const displayValue = typeof attributes[field] === 'boolean'
+        ? (attributes[field] ? 'Yes' : 'No')
+        : attributes[field];
+      short.push(`${label}: ${displayValue}`);
+    }
+  }
+
+  short.push('', '_Full details in the listing post_');
+  return short.join('\n');
 }
 
 async function readImageBuffer(imagePath) {
@@ -155,7 +233,7 @@ async function readImageBuffer(imagePath) {
   }
 }
 
-async function sendSinglePhoto(caption, imagePath, telegramApi, channelId) {
+async function sendSinglePhoto(caption, imagePath, telegramApi, channelId, replyMarkup) {
   const imageData = await readImageBuffer(imagePath);
   if (!imageData) {
     throw new Error(`Image file not found or unreadable: ${imagePath}`);
@@ -169,6 +247,10 @@ async function sendSinglePhoto(caption, imagePath, telegramApi, channelId) {
   });
   form.append('caption', caption);
   form.append('parse_mode', 'Markdown');
+
+  if (replyMarkup) {
+    form.append('reply_markup', JSON.stringify(replyMarkup));
+  }
 
   const { data } = await axios.post(`${telegramApi}/sendPhoto`, form, {
     timeout: REQUEST_TIMEOUT_MS,
@@ -371,13 +453,34 @@ export default class TelegramBotService {
 
     const fullCaption = images.length > 1 ? buildCaption(listingObj) : caption;
 
+    const miniAppUrl = await getMiniAppUrl();
+    const adminTelegram = await getAdminTelegram();
+    const shopGoogleMapUrl = await getShopGoogleMapUrl();
+    const keyboard = buildInlineKeyboard(
+      listingData.id,
+      listingData.title,
+      images[0] || null,
+      miniAppUrl,
+      adminTelegram,
+      shopGoogleMapUrl,
+    );
+
     let result;
     if (images.length === 0) {
       throw new Error('Listing must have at least one image to send to Telegram channel');
     } else if (images.length === 1) {
-      result = await sendSinglePhoto(caption, images[0], telegramApi, channelId);
+      result = await sendSinglePhoto(caption, images[0], telegramApi, channelId, keyboard);
     } else {
       result = await sendMediaGroup(caption, images, telegramApi, channelId);
+
+      if (keyboard) {
+        await axios.post(`${telegramApi}/sendMessage`, {
+          chat_id: channelId,
+          text: '─────────────────\n🛍 *Explore* this product or *Order Now*',
+          parse_mode: 'Markdown',
+          reply_markup: keyboard,
+        }, { timeout: REQUEST_TIMEOUT_MS });
+      }
     }
 
     console.log(

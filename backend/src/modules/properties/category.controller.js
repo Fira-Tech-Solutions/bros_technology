@@ -90,7 +90,7 @@ export async function createCategory(req, res, next) {
       data: {
         name: name.toUpperCase().trim(),
         displayName: displayName.trim(),
-        icon: icon || 'tag',
+        icon: icon || 'smartphone',
         schemaRules: schemaRules || [],
       },
     });

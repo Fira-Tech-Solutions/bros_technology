@@ -1,7 +1,7 @@
 {
-  "name": "Æther Residences — Maddaa Mannoota",
-  "short_name": "Æther",
-  "description": "A curated portfolio of architectural residences and retreats. Cinematic, immersive, mobile-first. Inspired by Oromummaa.",
+  "name": "BROS Technology",
+  "short_name": "BROS Tech",
+  "description": "Quality electronics at the best prices in Ethiopia. Shop iPhones, Samsungs, iPads, MacBooks, Laptops, AirPods, and Smartwatches.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1726",
@@ -10,7 +10,7 @@
   "scope": "/",
   "lang": "en",
   "dir": "ltr",
-  "categories": ["lifestyle", "real estate", "architecture"],
+  "categories": ["shopping", "electronics"],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -67,14 +67,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "Æther Residences on desktop"
+      "label": "BROS Technology on desktop"
     },
     {
       "src": "/screenshots/narrow.png",
       "sizes": "720x1280",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Æther Residences on mobile"
+      "label": "BROS Technology on mobile"
     }
   ],
   "shortcuts": [
@@ -82,13 +82,13 @@
       "name": "Browse Catalog",
       "short_name": "Catalog",
       "url": "/catalog",
-      "description": "Explore the full collection of curated residences"
+      "description": "Explore our full collection of electronics"
     },
     {
-      "name": "Featured Properties",
+      "name": "Featured Products",
       "short_name": "Featured",
       "url": "/#featured",
-      "description": "View currently featured residences"
+      "description": "View currently featured products"
     }
   ],
   "prefer_related_applications": false

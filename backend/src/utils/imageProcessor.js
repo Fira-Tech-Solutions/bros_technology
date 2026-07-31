@@ -19,7 +19,9 @@ const MAX_WIDTH = 1200;
 const WEBP_QUALITY = 80;
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MAX_FILES = 10;
-const STORAGE_PROVIDER = process.env.STORAGE_PROVIDER || 'local';
+// Force cloudinary in serverless environments (Vercel)
+const STORAGE_PROVIDER = process.env.STORAGE_PROVIDER || (process.env.VERCEL ? 'cloudinary' : 'local');
+const IS_SERVERLESS = process.env.VERCEL === '1' || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
@@ -65,6 +67,11 @@ function getExtensionForMime(mimeType) {
 }
 
 async function processSingleImageLocal(file) {
+  // In serverless environments, local storage is not available
+  if (IS_SERVERLESS) {
+    throw new Error('Local storage is not available in serverless environments. Please configure STORAGE_PROVIDER=cloudinary');
+  }
+
   const uploadDir = await ensureUploadDir();
   const inputPath = file.path;
 
@@ -119,8 +126,43 @@ async function processSingleImageLocal(file) {
 }
 
 async function processSingleImageCloudinary(file) {
-  const inputPath = file.path;
+  let inputPath = file.path;
+  let buffer = file.buffer;
 
+  // Handle memory storage (serverless)
+  if (IS_SERVERLESS && buffer) {
+    try {
+      // Create a temporary file path for Cloudinary upload
+      const tempDir = '/tmp';
+      const ext = getExtensionForMime(file.mimetype);
+      const timestamp = Date.now();
+      const random = crypto.randomBytes(8).toString('hex');
+      const tempFilename = `temp-${timestamp}-${random}${ext}`;
+      inputPath = path.join(tempDir, tempFilename);
+
+      await fs.writeFile(inputPath, buffer);
+
+      const result = await uploadToCloudinary(inputPath);
+
+      await fs.unlink(inputPath).catch(() => {});
+
+      return {
+        path: result.url,
+        publicId: result.publicId,
+        width: result.width,
+        height: result.height,
+        originalName: file.originalname,
+        size: result.bytes,
+      };
+    } catch (err) {
+      if (inputPath && inputPath.startsWith('/tmp')) {
+        await fs.unlink(inputPath).catch(() => {});
+      }
+      throw new Error(`Failed to upload "${file.originalname}" to Cloudinary: ${err.message}`);
+    }
+  }
+
+  // Handle disk storage (local dev)
   const inputStat = await fs.stat(inputPath).catch(() => null);
   if (!inputStat || !inputStat.isFile()) {
     throw new Error(`Uploaded file not found: ${inputPath}`);
@@ -240,24 +282,30 @@ async function cleanupTempFiles() {
   } catch {}
 }
 
-cleanupTempFiles();
+// Only run cleanup in non-serverless environments
+if (!IS_SERVERLESS) {
+  cleanupTempFiles();
+}
 
-const storage = multer.diskStorage({
-  destination: async (_req, _file, cb) => {
-    try {
-      const dir = await ensureUploadDir();
-      cb(null, dir);
-    } catch (err) {
-      cb(err);
-    }
-  },
-  filename: (_req, file, cb) => {
-    const ext = getExtensionForMime(file.mimetype);
-    const timestamp = Date.now();
-    const random = crypto.randomBytes(8).toString('hex');
-    cb(null, `temp-${timestamp}-${random}${ext}`);
-  },
-});
+// Use memory storage in serverless environments, disk storage otherwise
+const storage = IS_SERVERLESS
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: async (_req, _file, cb) => {
+        try {
+          const dir = await ensureUploadDir();
+          cb(null, dir);
+        } catch (err) {
+          cb(err);
+        }
+      },
+      filename: (_req, file, cb) => {
+        const ext = getExtensionForMime(file.mimetype);
+        const timestamp = Date.now();
+        const random = crypto.randomBytes(8).toString('hex');
+        cb(null, `temp-${timestamp}-${random}${ext}`);
+      },
+    });
 
 function fileFilter(_req, file, cb) {
   if (ALLOWED_MIME_TYPES.has(file.mimetype)) {
