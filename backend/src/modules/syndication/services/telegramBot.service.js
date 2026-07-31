@@ -39,23 +39,23 @@ async function getShopGoogleMapUrl() {
 }
 
 function buildInlineKeyboard(listingId, listingTitle, firstImage, miniAppUrl, adminTelegram, shopGoogleMapUrl) {
-  const buttons = [];
+  const row = [];
 
   if (shopGoogleMapUrl) {
-    buttons.push([{ text: '📍 Location', url: shopGoogleMapUrl }]);
+    row.push({ text: '📍 Location', url: shopGoogleMapUrl });
   }
 
   if (miniAppUrl) {
-    buttons.push([{ text: '🛍 Explore', url: `${miniAppUrl}/property/${listingId}` }]);
+    row.push({ text: '🛍 Explore', url: `${miniAppUrl}/property/${listingId}` });
   }
 
   if (adminTelegram) {
     const message = encodeURIComponent(firstImage || '');
-    buttons.push([{ text: '📩 Order Now', url: `https://t.me/${adminTelegram}?text=${message}` }]);
+    row.push({ text: '📩 Order Now', url: `https://t.me/${adminTelegram}?text=${message}` });
   }
 
-  if (buttons.length === 0) return null;
-  return { inline_keyboard: buttons };
+  if (row.length === 0) return null;
+  return { inline_keyboard: [row] };
 }
 
 async function resolveFileUrl(fileId, botToken) {
