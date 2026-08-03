@@ -80,10 +80,10 @@ export const Route = createFileRoute("/catalog")({
           "Browse laptops, iPhones, Samsung, iPads, MacBooks, AirPods & smartwatches at best prices in Ethiopia.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://brostechnology.com/catalog" },
+      { property: "og:url", content: "https://bros-technology.vercel.app/catalog" },
       { property: "og:image", content: "/images/hero/desktop-dark-1920.jpg" },
     ],
-    links: [{ rel: "canonical", href: "https://brostechnology.com/catalog" }],
+    links: [{ rel: "canonical", href: "https://bros-technology.vercel.app/catalog" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -93,11 +93,11 @@ export const Route = createFileRoute("/catalog")({
           name: "Buy Laptops, iPhones, Samsung & Electronics — BROS Technology Ethiopia",
           description:
             "Browse and buy laptops, iPhones, Samsung phones, iPads, MacBooks, AirPods, and smartwatches at BROS Technology in Addis Ababa, Ethiopia.",
-          url: "https://brostechnology.com/catalog",
+          url: "https://bros-technology.vercel.app/catalog",
           isPartOf: {
             "@type": "WebSite",
             name: "BROS Technology",
-            url: "https://brostechnology.com",
+            url: "https://bros-technology.vercel.app",
           },
           breadcrumb: {
             "@type": "BreadcrumbList",
@@ -106,13 +106,13 @@ export const Route = createFileRoute("/catalog")({
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://brostechnology.com",
+                item: "https://bros-technology.vercel.app",
               },
               {
                 "@type": "ListItem",
                 position: 2,
                 name: "Products",
-                item: "https://brostechnology.com/catalog",
+                item: "https://bros-technology.vercel.app/catalog",
               },
             ],
           },

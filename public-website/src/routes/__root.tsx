@@ -126,7 +126,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           name: "BROS Technology",
           description:
             "Buy laptops, iPhones, Samsung phones, iPads, MacBooks, AirPods, and smartwatches at best prices in Addis Ababa, Ethiopia. Warranty included.",
-          url: "https://brostechnology.com",
+          url: "https://bros-technology.vercel.app",
           logo: "/images/favicon/favicon-96x96.png",
           image: "/images/hero/desktop-dark-1920.jpg",
           telephone: ["+251972195934", "+251980564814"],
@@ -189,12 +189,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "BROS Technology",
-          url: "https://brostechnology.com",
+          url: "https://bros-technology.vercel.app",
           potentialAction: {
             "@type": "SearchAction",
             target: {
               "@type": "EntryPoint",
-              urlTemplate: "https://brostechnology.com/catalog?q={search_term_string}",
+              urlTemplate: "https://bros-technology.vercel.app/catalog?q={search_term_string}",
             },
             "query-input": "required name=search_term_string",
           },
@@ -203,7 +203,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "canonical", href: "https://brostechnology.com" },
+      { rel: "canonical", href: "https://bros-technology.vercel.app" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

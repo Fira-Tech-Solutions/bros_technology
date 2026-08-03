@@ -15,13 +15,13 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://brostechnology.com",
+        item: "https://bros-technology.vercel.app",
       },
       ...items.map((item, i) => ({
         "@type": "ListItem",
         position: i + 2,
         name: item.label,
-        ...(item.href ? { item: `https://brostechnology.com${item.href}` } : {}),
+        ...(item.href ? { item: `https://bros-technology.vercel.app${item.href}` } : {}),
       })),
     ],
   };
