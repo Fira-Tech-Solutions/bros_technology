@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import userRoutes from './modules/users/user.routes.js';
+import agentCodeRoutes from './modules/users/agentCode.routes.js';
 import categoryRoutes from './modules/properties/category.routes.js';
 import listingRoutes from './modules/properties/listing.routes.js';
 import publicRoutes from './modules/properties/public.routes.js';
@@ -66,6 +67,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/auth', userRoutes);
+app.use('/api/auth', agentCodeRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/public', publicRoutes);

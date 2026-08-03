@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import {
   DollarSign,
   Package,
@@ -22,9 +23,7 @@ import {
   Headphones,
   Watch,
   Tag,
-  ChevronRight,
 } from "lucide-react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../context/ThemeContext";
 import { getAssetStats } from "../api/commissions";
 
@@ -37,46 +36,39 @@ const CATEGORY_ICONS = {
 };
 
 const STATUS_CONFIG = [
-  { key: "available", label: "Available", color: "#6366f1", icon: Package },
-  { key: "sold", label: "Sold", color: "#22c55e", icon: ShoppingCart },
-  { key: "pending", label: "Pending", color: "#eab308", icon: Clock },
-  { key: "archived", label: "Archived", color: "#ef4444", icon: Archive },
+  { key: "available", label: "Available", color: "#6366F1" },
+  { key: "sold", label: "Sold", color: "#22C55E" },
+  { key: "pending", label: "Pending", color: "#F59E0B" },
+  { key: "archived", label: "Archived", color: "#EF4444" },
 ];
 
-function SummaryCard({ icon: Icon, label, value, color, colors }) {
+function SummaryCard({ icon: Icon, label, value, color, colors, radii, index }) {
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: colors.card,
-        borderRadius: 14,
-        padding: 14,
-        borderWidth: 1,
-        borderColor: colors.border,
-      }}
-    >
+    <Animated.View entering={FadeInDown.delay(index * 50).duration(200)} style={{ flex: 1 }}>
       <View
         style={{
-          width: 36,
-          height: 36,
-          borderRadius: 18,
-          backgroundColor: `${color}18`,
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 10,
+          backgroundColor: colors.card,
+          borderRadius: radii.lg,
+          padding: 14,
+          borderWidth: 1,
+          borderColor: colors.border,
         }}
       >
-        <Icon size={18} color={color} />
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
+          <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: `${color}15`, alignItems: "center", justifyContent: "center" }}>
+            <Icon size={16} color={color} strokeWidth={1.75} />
+          </View>
+        </View>
+        <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "600" }}>{label}</Text>
+        <Text style={{ color: colors.text, fontSize: 17, fontWeight: "700", marginTop: 2 }}>
+          {value}
+        </Text>
       </View>
-      <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "500" }}>{label}</Text>
-      <Text style={{ color: colors.text, fontSize: 17, fontWeight: "700", marginTop: 2 }}>
-        {value}
-      </Text>
-    </View>
+    </Animated.View>
   );
 }
 
-function CategoryCard({ category, colors }) {
+function CategoryCard({ category, colors, radii }) {
   const Icon = CATEGORY_ICONS[category.categoryId] || Tag;
   const total = category.count;
   const soldPct = total > 0 ? Math.round((category.sold / total) * 100) : 0;
@@ -85,7 +77,7 @@ function CategoryCard({ category, colors }) {
     <View
       style={{
         backgroundColor: colors.card,
-        borderRadius: 14,
+        borderRadius: radii.lg,
         padding: 16,
         marginBottom: 10,
         borderWidth: 1,
@@ -94,24 +86,14 @@ function CategoryCard({ category, colors }) {
     >
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
         <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-          <View
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              backgroundColor: `${colors.primary}12`,
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: 12,
-            }}
-          >
-            <Icon size={20} color={colors.primary} />
+          <View style={{ width: 40, height: 40, borderRadius: radii.sm, backgroundColor: colors.primaryTint, alignItems: "center", justifyContent: "center", marginRight: 14 }}>
+            <Icon size={19} color={colors.primary} strokeWidth={1.75} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={{ color: colors.text, fontSize: 14, fontWeight: "600" }}>
               {category.categoryName}
             </Text>
-            <Text style={{ color: colors.textMuted, fontSize: 11, marginTop: 2 }}>
+            <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: 2 }}>
               {total} {total === 1 ? "product" : "products"}
             </Text>
           </View>
@@ -121,14 +103,14 @@ function CategoryCard({ category, colors }) {
             {Number(category.totalValue).toLocaleString()} ETB
           </Text>
           {soldPct > 0 && (
-            <Text style={{ color: "#22c55e", fontSize: 11, fontWeight: "600", marginTop: 2 }}>
+            <Text style={{ color: "#22C55E", fontSize: 11, fontWeight: "600", marginTop: 2 }}>
               {soldPct}% sold
             </Text>
           )}
         </View>
       </View>
 
-      {/* Status bars */}
+      {/* Status pills */}
       <View style={{ flexDirection: "row", gap: 6, marginTop: 14 }}>
         {STATUS_CONFIG.map((s) => {
           const count = category[s.key] || 0;
@@ -139,7 +121,7 @@ function CategoryCard({ category, colors }) {
               style={{
                 flex: 1,
                 backgroundColor: `${s.color}12`,
-                borderRadius: 8,
+                borderRadius: radii.sm,
                 padding: 8,
                 alignItems: "center",
               }}
@@ -156,18 +138,10 @@ function CategoryCard({ category, colors }) {
       {/* Progress bar */}
       {total > 0 && (
         <View style={{ flexDirection: "row", height: 4, borderRadius: 2, overflow: "hidden", marginTop: 12, backgroundColor: `${colors.textMuted}15` }}>
-          {category.available > 0 && (
-            <View style={{ flex: category.available, backgroundColor: "#6366f1" }} />
-          )}
-          {category.sold > 0 && (
-            <View style={{ flex: category.sold, backgroundColor: "#22c55e" }} />
-          )}
-          {category.pending > 0 && (
-            <View style={{ flex: category.pending, backgroundColor: "#eab308" }} />
-          )}
-          {category.archived > 0 && (
-            <View style={{ flex: category.archived, backgroundColor: "#ef4444" }} />
-          )}
+          {category.available > 0 && <View style={{ flex: category.available, backgroundColor: "#6366F1" }} />}
+          {category.sold > 0 && <View style={{ flex: category.sold, backgroundColor: "#22C55E" }} />}
+          {category.pending > 0 && <View style={{ flex: category.pending, backgroundColor: "#F59E0B" }} />}
+          {category.archived > 0 && <View style={{ flex: category.archived, backgroundColor: "#EF4444" }} />}
         </View>
       )}
     </View>
@@ -175,7 +149,7 @@ function CategoryCard({ category, colors }) {
 }
 
 export default function FinanceScreen() {
-  const { colors } = useTheme();
+  const { colors, radii } = useTheme();
 
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -185,8 +159,7 @@ export default function FinanceScreen() {
     try {
       const res = await getAssetStats();
       setStats(res.data.data);
-    } catch {
-    } finally {
+    } catch {} finally {
       setLoading(false);
       setRefreshing(false);
     }
@@ -219,128 +192,50 @@ export default function FinanceScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-        <LinearGradient
-          colors={[`${colors.primary}08`, "transparent"]}
-          style={{ position: "absolute", top: 0, left: 0, right: 0, height: 200 }}
-        />
-
+      <SafeAreaView style={{ flex: 1 }}>
         <FlatList
           data={[]}
           renderItem={null}
-          contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={colors.primary}
-            />
-          }
+          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
           ListHeaderComponent={
             <>
-              {/* Header */}
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 20 }}>
-                <View
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 8,
-                    backgroundColor: `${colors.primary}18`,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    marginRight: 10,
-                    borderWidth: 1,
-                    borderColor: `${colors.primary}30`,
-                  }}
-                >
-                  <DollarSign size={18} color={colors.primary} />
-                </View>
-                <View>
-                  <Text style={{ color: colors.text, fontSize: 15, fontWeight: "700", letterSpacing: -0.2 }}>
-                    Finance
-                  </Text>
-                  <Text style={{ color: colors.textMuted, fontSize: 10 }}>
-                    Asset Tracking & Overview
-                  </Text>
-                </View>
-              </View>
+              <Animated.View entering={FadeInDown.duration(300)} style={{ marginBottom: 24 }}>
+                <Text style={{ color: colors.text, fontSize: 24, fontWeight: "700", letterSpacing: -0.5 }}>
+                  Finance
+                </Text>
+                <Text style={{ color: colors.textMuted, fontSize: 13, marginTop: 4 }}>
+                  Asset Tracking & Overview
+                </Text>
+              </Animated.View>
 
-              {/* Summary Cards */}
               {stats && (
                 <>
-                  <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-                    <SummaryCard
-                      icon={Package}
-                      label="Total Assets"
-                      value={stats.totalAssets}
-                      color={colors.primary}
-                      colors={colors}
-                    />
-                    <SummaryCard
-                      icon={TrendingUp}
-                      label="Total Value"
-                      value={formatCurrency(stats.totalValue)}
-                      color="#22c55e"
-                      colors={colors}
-                    />
+                  <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
+                    <SummaryCard icon={Package} label="Total Assets" value={stats.totalAssets} color={colors.primary} colors={colors} radii={radii} index={0} />
+                    <SummaryCard icon={TrendingUp} label="Total Value" value={formatCurrency(stats.totalValue)} color="#22C55E" colors={colors} radii={radii} index={1} />
                   </View>
-                  <View style={{ flexDirection: "row", gap: 8, marginBottom: 20 }}>
-                    <SummaryCard
-                      icon={CheckCircle2}
-                      label="Available"
-                      value={stats.AVAILABLE || 0}
-                      color="#6366f1"
-                      colors={colors}
-                    />
-                    <SummaryCard
-                      icon={ShoppingCart}
-                      label="Sold"
-                      value={stats.SOLD || 0}
-                      color="#22c55e"
-                      colors={colors}
-                    />
-                    <SummaryCard
-                      icon={Clock}
-                      label="Pending"
-                      value={stats.PENDING || 0}
-                      color="#eab308"
-                      colors={colors}
-                    />
-                    <SummaryCard
-                      icon={Archive}
-                      label="Archived"
-                      value={stats.ARCHIVED || 0}
-                      color="#ef4444"
-                      colors={colors}
-                    />
+                  <View style={{ flexDirection: "row", gap: 10, marginBottom: 28 }}>
+                    <SummaryCard icon={CheckCircle2} label="Available" value={stats.AVAILABLE || 0} color="#6366F1" colors={colors} radii={radii} index={2} />
+                    <SummaryCard icon={ShoppingCart} label="Sold" value={stats.SOLD || 0} color="#22C55E" colors={colors} radii={radii} index={3} />
+                    <SummaryCard icon={Clock} label="Pending" value={stats.PENDING || 0} color="#F59E0B" colors={colors} radii={radii} index={4} />
+                    <SummaryCard icon={Archive} label="Archived" value={stats.ARCHIVED || 0} color="#EF4444" colors={colors} radii={radii} index={5} />
                   </View>
                 </>
               )}
 
-              {/* Category Breakdown */}
-              <View style={{ marginBottom: 12 }}>
-                <Text
-                  style={{
-                    color: colors.textMuted,
-                    fontSize: 10,
-                    fontWeight: "600",
-                    textTransform: "uppercase",
-                    letterSpacing: 0.5,
-                    marginBottom: 10,
-                  }}
-                >
-                  Assets by Category
-                </Text>
-              </View>
+              <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 14 }}>
+                Assets by Category
+              </Text>
 
               {stats?.byCategory?.length > 0 ? (
                 stats.byCategory.map((cat) => (
-                  <CategoryCard key={cat.categoryId} category={cat} colors={colors} />
+                  <CategoryCard key={cat.categoryId} category={cat} colors={colors} radii={radii} />
                 ))
               ) : (
                 <View style={{ padding: 40, alignItems: "center" }}>
-                  <Package size={40} color={`${colors.textMuted}30`} />
-                  <Text style={{ color: colors.textMuted, fontSize: 13, marginTop: 12, textAlign: "center" }}>
+                  <Package size={40} color={colors.textMuted} strokeWidth={1} />
+                  <Text style={{ color: colors.textMuted, fontSize: 14, marginTop: 12, textAlign: "center" }}>
                     No assets found.
                   </Text>
                 </View>

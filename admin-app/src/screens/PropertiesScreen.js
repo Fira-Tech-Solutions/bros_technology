@@ -5,7 +5,6 @@ import {
   FlatList,
   RefreshControl,
   TouchableOpacity,
-  Image,
   ActivityIndicator,
   Modal,
   TextInput,
@@ -13,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import {
   Plus,
   X,
@@ -21,21 +21,14 @@ import {
   Laptop,
   Pencil,
   Trash2,
-  CircleCheck,
-  CircleDollarSign,
-  Clock,
   Search,
   Headphones,
   Watch,
   Monitor,
   ChevronDown,
-  Handshake,
-  PackageX,
   ChevronRight,
-  MapPin,
 } from "lucide-react-native";
 
-import CachedImage from "../components/CachedImage";
 import useSuspenseCache from "../hooks/useSuspenseCache";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -46,11 +39,8 @@ import {
   updateCategory,
   deleteCategory,
 } from "../api/categories";
-import Card from "../components/Card";
+import ListingCard from "../components/ListingCard";
 import { ListingCardSkeleton } from "../components/ShimmerLoader";
-
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
 
 const ICON_OPTIONS = [
   { name: "smartphone", Icon: Smartphone, label: "Phone" },
@@ -65,16 +55,8 @@ function getIconComponent(iconName) {
   return found ? found.Icon : Tag;
 }
 
-const STATUS_MAP = {
-  AVAILABLE: { label: "Available", color: "#22c55e", Icon: CircleCheck },
-  PENDING: { label: "Pending", color: "#eab308", Icon: Clock },
-  SOLD: { label: "Sold", color: "#ef4444", Icon: CircleDollarSign },
-  RENTED: { label: "Rented", color: "#6366f1", Icon: Handshake },
-  RESERVED: { label: "Reserved", color: "#f97316", Icon: PackageX },
-};
-
 export default function PropertiesScreen({ navigation }) {
-  const { colors } = useTheme();
+  const { colors, radii, shadows } = useTheme();
   const { t } = useLanguage();
 
   const [tab, setTab] = useState("listings");
@@ -150,14 +132,6 @@ export default function PropertiesScreen({ navigation }) {
     fetchListings(nextPage, true);
   };
 
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
   const filteredListings = listings.filter((item) => {
     if (selectedCategory) {
       if (item.categoryId !== selectedCategory) return false;
@@ -171,13 +145,6 @@ export default function PropertiesScreen({ navigation }) {
       item.category?.displayName?.toLowerCase().includes(q)
     );
   });
-
-  const getImageUrl = (images) => {
-    if (!images || images.length === 0) return null;
-    const path = images[0];
-    if (path.startsWith("http")) return path;
-    return `${API_BASE_URL}/${path}`;
-  };
 
   const openEditCategory = (cat) => {
     setEditingCategory(cat);
@@ -247,7 +214,7 @@ export default function PropertiesScreen({ navigation }) {
           onPress: async () => {
             try {
               await deleteCategory(item.id);
-              setCategories((prev) => prev.filter((c) => c.id !== item.id));
+              refreshCategories();
             } catch (err) {
               const msg =
                 err.response?.data?.error || "Failed to delete category";
@@ -259,120 +226,6 @@ export default function PropertiesScreen({ navigation }) {
     );
   };
 
-  const renderListing = ({ item }) => {
-    const imageUrl = getImageUrl(item.images);
-    const status = item.status || "AVAILABLE";
-    const statusCfg = STATUS_MAP[status] || {
-      label: status,
-      color: colors.textMuted,
-      Icon: Tag,
-    };
-    const listingType = item.attributes?.listingType || "sell";
-
-    return (
-      <Card
-        onPress={() =>
-          navigation.navigate("ListingDetail", { listingId: item.id })
-        }
-        className="mb-3"
-        padding={false}
-      >
-        <View className="flex-row">
-          {imageUrl ? (
-            <CachedImage
-              uri={imageUrl}
-              className="w-28 h-28 rounded-l-2xl"
-              resizeMode="cover"
-            />
-          ) : (
-            <View
-              className="w-28 h-28 rounded-l-2xl items-center justify-center"
-              style={{ backgroundColor: colors.bgTertiary }}
-            >
-              <Text style={{ color: colors.textMuted }} className="text-xs">
-                No Image
-              </Text>
-            </View>
-          )}
-          <View className="flex-1 p-3 justify-between">
-            <View>
-              <Text
-                style={{ color: colors.text }}
-                className="text-base font-semibold mb-1"
-                numberOfLines={1}
-              >
-                {item.title}
-              </Text>
-              <View className="flex-row items-center mb-1">
-                <MapPin size={12} color={colors.textMuted} />
-                <Text
-                  style={{ color: colors.textSecondary }}
-                  className="text-xs ml-1"
-                  numberOfLines={1}
-                >
-                  {item.neighborhood}, {item.city}
-                </Text>
-              </View>
-              <View className="flex-row items-center">
-                {item.category?.icon &&
-                  React.createElement(getIconComponent(item.category.icon), {
-                    size: 10,
-                    color: colors.textMuted,
-                  })}
-                <Text
-                  style={{ color: colors.textMuted }}
-                  className="text-xs ml-1"
-                >
-                  {item.category?.displayName}
-                </Text>
-              </View>
-            </View>
-            <View className="flex-row items-center justify-between mt-2">
-              <Text
-                style={{ color: colors.primary }}
-                className="text-lg font-bold"
-              >
-                {formatPrice(item.price)}
-                {listingType === "RENT" ? (
-                  <Text style={{ color: colors.textMuted, fontSize: 11 }}>
-                    {" "}
-                    /mo
-                  </Text>
-                ) : null}
-              </Text>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <View
-                  style={{
-                    backgroundColor: `${statusCfg.color}18`,
-                    paddingHorizontal: 8,
-                    paddingVertical: 4,
-                    borderRadius: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginRight: 6,
-                  }}
-                >
-                  <statusCfg.Icon size={10} color={statusCfg.color} />
-                  <Text
-                    style={{
-                      color: statusCfg.color,
-                      fontSize: 9,
-                      fontWeight: "700",
-                      marginLeft: 4,
-                    }}
-                  >
-                    {statusCfg.label}
-                  </Text>
-                </View>
-                <ChevronRight size={16} color={colors.textMuted} />
-              </View>
-            </View>
-          </View>
-        </View>
-      </Card>
-    );
-  };
-
   const renderCategory = ({ item }) => {
     const IconComp = getIconComponent(item.icon);
     return (
@@ -381,45 +234,40 @@ export default function PropertiesScreen({ navigation }) {
           flexDirection: "row",
           alignItems: "center",
           backgroundColor: colors.card,
-          borderRadius: 12,
+          borderRadius: radii.lg,
           padding: 14,
-          marginBottom: 8,
+          marginBottom: 10,
           borderWidth: 1,
           borderColor: colors.border,
+          ...shadows.sm(),
         }}
       >
         <View
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            backgroundColor: `${colors.primary}15`,
+            width: 44,
+            height: 44,
+            borderRadius: radii.md,
+            backgroundColor: colors.primaryTint,
             alignItems: "center",
             justifyContent: "center",
-            marginRight: 12,
+            marginRight: 14,
           }}
         >
-          <IconComp size={18} color={colors.primary} />
+          <IconComp size={20} color={colors.primary} strokeWidth={1.75} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: colors.text, fontSize: 14, fontWeight: "600" }}>
+          <Text style={{ color: colors.text, fontSize: 15, fontWeight: "600", letterSpacing: -0.2 }}>
             {item.displayName}
           </Text>
-          <Text style={{ color: colors.textMuted, fontSize: 11, marginTop: 2 }}>
-            {item.listingCount || 0} properties · {item.name}
+          <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: 3 }}>
+            {item.listingCount || 0} products · {item.name}
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => openEditCategory(item)}
-          style={{ padding: 6 }}
-        >
-          <Pencil size={16} color={colors.primary} />
+        <TouchableOpacity onPress={() => openEditCategory(item)} style={{ padding: 8 }}>
+          <Pencil size={16} color={colors.textMuted} strokeWidth={1.75} />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleDeleteCategory(item)}
-          style={{ padding: 6, marginLeft: 4 }}
-        >
-          <Trash2 size={16} color={colors.danger} />
+        <TouchableOpacity onPress={() => handleDeleteCategory(item)} style={{ padding: 8, marginLeft: 4 }}>
+          <Trash2 size={16} color={colors.textMuted} strokeWidth={1.75} />
         </TouchableOpacity>
       </View>
     );
@@ -427,242 +275,231 @@ export default function PropertiesScreen({ navigation }) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-      <View className="flex-1">
-        {/* Header */}
-        <View className="px-5 pt-4 pb-2">
-          <Text style={{ color: colors.text }} className="text-2xl font-bold">
-            {t("propertiesTitle")}
-          </Text>
-        </View>
+      {/* ─── Header ─── */}
+      <Animated.View
+        entering={FadeInDown.duration(300)}
+        style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}
+      >
+        <Text style={{ color: colors.text, fontSize: 24, fontWeight: "700", letterSpacing: -0.5 }}>
+          {t("propertiesTitle")}
+        </Text>
+      </Animated.View>
 
-        {/* Search Bar */}
-        {tab === "listings" && (
-          <View className="px-5 mb-2">
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                backgroundColor: colors.input,
-                borderRadius: 12,
-                borderWidth: 1,
-                borderColor: colors.inputBorder,
-                paddingHorizontal: 12,
-                height: 44,
-              }}
-            >
-              <Search size={16} color={colors.textMuted} />
-              <TextInput
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder="Search properties..."
-                placeholderTextColor={colors.textMuted}
-                style={{
-                  flex: 1,
-                  marginLeft: 8,
-                  color: colors.text,
-                  fontSize: 14,
-                }}
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchQuery("")}>
-                  <X size={16} color={colors.textMuted} />
-                </TouchableOpacity>
-              )}
-            </View>
-          </View>
-        )}
-
-        {/* Category Filter Chips */}
-        {tab === "listings" && categories.length > 0 && (
-          <View style={{ marginBottom: 8 }}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
-            >
-              <TouchableOpacity
-                onPress={() => setSelectedCategory(null)}
-                style={{
-                  paddingHorizontal: 14,
-                  paddingVertical: 7,
-                  borderRadius: 20,
-                  backgroundColor:
-                    selectedCategory === null ? colors.primary : colors.bgTertiary,
-                  borderWidth: 1,
-                  borderColor:
-                    selectedCategory === null ? colors.primary : colors.border,
-                }}
-              >
-                <Text
-                  style={{
-                    color:
-                      selectedCategory === null ? colors.primaryText : colors.textMuted,
-                    fontSize: 12,
-                    fontWeight: "600",
-                  }}
-                >
-                  All
-                </Text>
+      {/* ─── Search Bar ─── */}
+      {tab === "listings" && (
+        <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: colors.input,
+              borderRadius: radii.md,
+              borderWidth: 1,
+              borderColor: colors.inputBorder,
+              paddingHorizontal: 14,
+              height: 48,
+            }}
+          >
+            <Search size={17} color={colors.textMuted} strokeWidth={1.75} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search products..."
+              placeholderTextColor={colors.textMuted}
+              style={{ flex: 1, marginLeft: 10, color: colors.text, fontSize: 14 }}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery("")}>
+                <X size={16} color={colors.textMuted} strokeWidth={1.75} />
               </TouchableOpacity>
-              {categories.map((cat) => {
-                const isActive = selectedCategory === cat.id;
-                return (
-                  <TouchableOpacity
-                    key={cat.id}
-                    onPress={() => setSelectedCategory(isActive ? null : cat.id)}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      paddingHorizontal: 14,
-                      paddingVertical: 7,
-                      borderRadius: 20,
-                      backgroundColor: isActive ? colors.primary : colors.bgTertiary,
-                      borderWidth: 1,
-                      borderColor: isActive ? colors.primary : colors.border,
-                    }}
-                  >
-                    {cat.icon &&
-                      React.createElement(getIconComponent(cat.icon), {
-                        size: 12,
-                        color: isActive ? colors.primaryText : colors.textMuted,
-                      })}
-                    <Text
-                      style={{
-                        color: isActive ? colors.primaryText : colors.textMuted,
-                        fontSize: 12,
-                        fontWeight: "600",
-                        marginLeft: cat.icon ? 5 : 0,
-                      }}
-                    >
-                      {cat.displayName}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+            )}
           </View>
-        )}
+        </View>
+      )}
 
-        {/* Tab Bar */}
-        <View
-          style={{
-            flexDirection: "row",
-            marginHorizontal: 20,
-            marginTop: 8,
-            marginBottom: 4,
-            backgroundColor: colors.bgTertiary,
-            borderRadius: 10,
-            padding: 3,
-          }}
-        >
-          {[
-            { key: "listings", label: "Listings" },
-            { key: "categories", label: "Categories" },
-          ].map((item) => (
+      {/* ─── Category Filter Chips ─── */}
+      {tab === "listings" && categories.length > 0 && (
+        <View style={{ marginBottom: 12 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
+          >
             <TouchableOpacity
-              key={item.key}
-              onPress={() => {
-                setTab(item.key);
-                setSearchQuery("");
-                setSelectedCategory(null);
-                if (item.key === "categories") refreshCategories();
-              }}
+              onPress={() => setSelectedCategory(null)}
               style={{
-                flex: 1,
+                paddingHorizontal: 16,
                 paddingVertical: 8,
-                borderRadius: 8,
-                backgroundColor:
-                  tab === item.key ? colors.primary : "transparent",
-                alignItems: "center",
+                borderRadius: 9999,
+                backgroundColor: selectedCategory === null ? colors.primary : colors.bgTertiary,
+                borderWidth: 1,
+                borderColor: selectedCategory === null ? colors.primary : colors.border,
               }}
             >
               <Text
                 style={{
-                  color:
-                    tab === item.key ? colors.primaryText : colors.textMuted,
+                  color: selectedCategory === null ? colors.white : colors.textMuted,
                   fontSize: 13,
                   fontWeight: "600",
                 }}
               >
-                {item.label}
+                All
               </Text>
             </TouchableOpacity>
-          ))}
+            {categories.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              return (
+                <TouchableOpacity
+                  key={cat.id}
+                  onPress={() => setSelectedCategory(isActive ? null : cat.id)}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 9999,
+                    backgroundColor: isActive ? colors.primary : colors.bgTertiary,
+                    borderWidth: 1,
+                    borderColor: isActive ? colors.primary : colors.border,
+                  }}
+                >
+                  {cat.icon &&
+                    React.createElement(getIconComponent(cat.icon), {
+                      size: 13,
+                      color: isActive ? colors.white : colors.textMuted,
+                      strokeWidth: 1.75,
+                    })}
+                  <Text
+                    style={{
+                      color: isActive ? colors.white : colors.textMuted,
+                      fontSize: 13,
+                      fontWeight: "600",
+                      marginLeft: cat.icon ? 6 : 0,
+                    }}
+                  >
+                    {cat.displayName}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
+      )}
 
-        {/* Listings Tab */}
-        {tab === "listings" &&
-          (loading ? (
-            <View className="px-5 pt-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <ListingCardSkeleton key={i} />
-              ))}
-            </View>
-          ) : (
-            <FlatList
-              data={filteredListings}
-              renderItem={renderListing}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-              onEndReached={loadMore}
-              onEndReachedThreshold={0.3}
-              ListFooterComponent={
-                loadingMore ? (
-                  <View className="py-4 items-center">
-                    <ActivityIndicator color={colors.primary} />
-                  </View>
-                ) : null
-              }
-              ListEmptyComponent={
-                <View className="items-center mt-20">
-                  <Text
-                    style={{ color: colors.textSecondary }}
-                    className="text-base"
-                  >
-                    {searchQuery || selectedCategory
-                      ? "No matching properties"
-                      : t("noResults")}
-                  </Text>
-                </View>
-              }
-            />
-          ))}
-
-        {/* Categories Tab */}
-        {tab === "categories" &&
-          (loading ? (
-            <View className="px-5 pt-4">
-              {[1, 2, 3].map((i) => (
-                <ListingCardSkeleton key={i} />
-              ))}
-            </View>
-          ) : (
-            <FlatList
-              data={categories}
-              renderItem={renderCategory}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-              ListEmptyComponent={
-                <View className="items-center mt-20">
-                  <Text
-                    style={{ color: colors.textSecondary }}
-                    className="text-base"
-                  >
-                    No categories yet
-                  </Text>
-                </View>
-              }
-            />
-          ))}
+      {/* ─── Tab Bar ─── */}
+      <View
+        style={{
+          flexDirection: "row",
+          marginHorizontal: 20,
+          marginBottom: 4,
+          backgroundColor: colors.bgTertiary,
+          borderRadius: radii.md,
+          padding: 3,
+        }}
+      >
+        {[
+          { key: "listings", label: "Listings" },
+          { key: "categories", label: "Categories" },
+        ].map((item) => (
+          <TouchableOpacity
+            key={item.key}
+            onPress={() => {
+              setTab(item.key);
+              setSearchQuery("");
+              setSelectedCategory(null);
+              if (item.key === "categories") refreshCategories();
+            }}
+            style={{
+              flex: 1,
+              paddingVertical: 9,
+              borderRadius: radii.sm,
+              backgroundColor: tab === item.key ? colors.primary : "transparent",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: tab === item.key ? colors.white : colors.textMuted,
+                fontSize: 13,
+                fontWeight: "600",
+              }}
+            >
+              {item.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
 
-      {/* Floating Add Button */}
+      {/* ─── Listings Tab ─── */}
+      {tab === "listings" &&
+        (loading ? (
+          <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <ListingCardSkeleton key={i} />
+            ))}
+          </View>
+        ) : (
+          <FlatList
+            data={filteredListings}
+            renderItem={({ item, index }) => (
+              <ListingCard
+                listing={item}
+                index={index}
+                onPress={() => navigation.navigate("ListingDetail", { listingId: item.id })}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 100 }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+            }
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.3}
+            ListFooterComponent={
+              loadingMore ? (
+                <View style={{ paddingVertical: 16, alignItems: "center" }}>
+                  <ActivityIndicator color={colors.primary} />
+                </View>
+              ) : null
+            }
+            ListEmptyComponent={
+              <View style={{ alignItems: "center", marginTop: 60 }}>
+                <Text style={{ color: colors.textMuted, fontSize: 15, fontWeight: "500" }}>
+                  {searchQuery || selectedCategory ? "No matching products" : t("noResults")}
+                </Text>
+              </View>
+            }
+          />
+        ))}
+
+      {/* ─── Categories Tab ─── */}
+      {tab === "categories" &&
+        (loading ? (
+          <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+            {[1, 2, 3].map((i) => (
+              <ListingCardSkeleton key={i} />
+            ))}
+          </View>
+        ) : (
+          <FlatList
+            data={categories}
+            renderItem={renderCategory}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 100 }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+            }
+            ListEmptyComponent={
+              <View style={{ alignItems: "center", marginTop: 60 }}>
+                <Text style={{ color: colors.textMuted, fontSize: 15, fontWeight: "500" }}>
+                  No categories yet
+                </Text>
+              </View>
+            }
+          />
+        ))}
+
+      {/* ─── Floating Add Button ─── */}
       <TouchableOpacity
         onPress={() => {
           if (tab === "listings") navigation.navigate("AddListing");
@@ -670,120 +507,94 @@ export default function PropertiesScreen({ navigation }) {
         }}
         style={{
           position: "absolute",
-          bottom: 24,
+          bottom: 28,
           right: 24,
-          width: 56,
-          height: 56,
-          borderRadius: 28,
+          width: 60,
+          height: 60,
+          borderRadius: 30,
           backgroundColor: colors.primary,
           alignItems: "center",
           justifyContent: "center",
-          shadowColor: colors.primary,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 8,
-          elevation: 8,
+          ...shadows.lg(colors.primary),
         }}
       >
-        <Plus size={24} color={colors.primaryText} />
+        <Plus size={26} color={colors.white} strokeWidth={2.25} />
       </TouchableOpacity>
 
-      {/* Add/Edit Category Modal */}
+      {/* ─── Add/Edit Category Modal ─── */}
       <Modal
         visible={showAddCategory}
         animationType="slide"
         transparent
         onRequestClose={() => setShowAddCategory(false)}
       >
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: "rgba(0,0,0,0.6)",
-            justifyContent: "flex-end",
-          }}
-        >
+        <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
           <View
             style={{
               backgroundColor: colors.bgSecondary,
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              padding: 20,
+              borderTopLeftRadius: radii.xl,
+              borderTopRightRadius: radii.xl,
+              padding: 24,
               maxHeight: "85%",
             }}
           >
-            <View className="flex-row items-center justify-between mb-5">
-              <Text style={{ color: colors.text }} className="text-lg font-bold">
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+              <Text style={{ color: colors.text, fontSize: 18, fontWeight: "700", letterSpacing: -0.3 }}>
                 {editingCategory ? "Edit Category" : "New Category"}
               </Text>
-              <TouchableOpacity onPress={() => setShowAddCategory(false)}>
-                <X size={22} color={colors.textMuted} />
+              <TouchableOpacity onPress={() => setShowAddCategory(false)} style={{ padding: 4 }}>
+                <X size={22} color={colors.textMuted} strokeWidth={1.75} />
               </TouchableOpacity>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text
-                style={{ color: colors.textSecondary }}
-                className="text-sm font-medium mb-2"
-              >
+              <Text style={{ color: colors.textSecondary, fontSize: 13, fontWeight: "600", marginBottom: 8 }}>
                 Name
               </Text>
               <TextInput
                 value={catName}
                 onChangeText={setCatName}
-                placeholder="e.g. REAL_ESTATE"
+                placeholder="e.g. PHONES_TABLETS"
                 placeholderTextColor={colors.textMuted}
                 style={{
                   backgroundColor: colors.input,
                   borderWidth: 1,
                   borderColor: colors.inputBorder,
-                  borderRadius: 12,
+                  borderRadius: radii.md,
                   paddingHorizontal: 16,
                   height: 48,
                   color: colors.text,
                   fontSize: 14,
-                  marginBottom: 16,
+                  marginBottom: 20,
                 }}
                 autoCapitalize="characters"
               />
 
-              <Text
-                style={{ color: colors.textSecondary }}
-                className="text-sm font-medium mb-2"
-              >
+              <Text style={{ color: colors.textSecondary, fontSize: 13, fontWeight: "600", marginBottom: 8 }}>
                 Display Name
               </Text>
               <TextInput
                 value={catDisplayName}
                 onChangeText={setCatDisplayName}
-                placeholder="e.g. Real Estate"
+                placeholder="e.g. Phones & Tablets"
                 placeholderTextColor={colors.textMuted}
                 style={{
                   backgroundColor: colors.input,
                   borderWidth: 1,
                   borderColor: colors.inputBorder,
-                  borderRadius: 12,
+                  borderRadius: radii.md,
                   paddingHorizontal: 16,
                   height: 48,
                   color: colors.text,
                   fontSize: 14,
-                  marginBottom: 16,
+                  marginBottom: 20,
                 }}
               />
 
-              <Text
-                style={{ color: colors.textSecondary }}
-                className="text-sm font-medium mb-2"
-              >
+              <Text style={{ color: colors.textSecondary, fontSize: 13, fontWeight: "600", marginBottom: 10 }}>
                 Icon
               </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  gap: 10,
-                  marginBottom: 24,
-                }}
-              >
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, marginBottom: 24 }}>
                 {ICON_OPTIONS.map((opt) => {
                   const isSelected = catIcon === opt.name;
                   return (
@@ -791,12 +602,10 @@ export default function PropertiesScreen({ navigation }) {
                       key={opt.name}
                       onPress={() => setCatIcon(opt.name)}
                       style={{
-                        width: 56,
-                        height: 56,
-                        borderRadius: 12,
-                        backgroundColor: isSelected
-                          ? `${colors.primary}20`
-                          : colors.bgTertiary,
+                        width: 60,
+                        height: 60,
+                        borderRadius: radii.md,
+                        backgroundColor: isSelected ? colors.primaryTint : colors.bgTertiary,
                         borderWidth: 1.5,
                         borderColor: isSelected ? colors.primary : colors.border,
                         alignItems: "center",
@@ -806,13 +615,14 @@ export default function PropertiesScreen({ navigation }) {
                       <opt.Icon
                         size={20}
                         color={isSelected ? colors.primary : colors.textMuted}
+                        strokeWidth={1.75}
                       />
                       <Text
                         style={{
                           color: isSelected ? colors.primary : colors.textMuted,
-                          fontSize: 8,
-                          marginTop: 3,
-                          fontWeight: isSelected ? "600" : "400",
+                          fontSize: 9,
+                          marginTop: 4,
+                          fontWeight: isSelected ? "600" : "500",
                         }}
                       >
                         {opt.label}
@@ -822,16 +632,10 @@ export default function PropertiesScreen({ navigation }) {
                 })}
               </View>
 
-              {/* Schema Rules Editor */}
-              <Text
-                style={{ color: colors.textSecondary }}
-                className="text-sm font-medium mb-2"
-              >
+              <Text style={{ color: colors.textSecondary, fontSize: 13, fontWeight: "600", marginBottom: 6 }}>
                 Category Fields
               </Text>
-              <Text
-                style={{ color: colors.textMuted, fontSize: 11, marginBottom: 8 }}
-              >
+              <Text style={{ color: colors.textMuted, fontSize: 11, marginBottom: 12 }}>
                 Define what information is required when creating a listing in this category.
               </Text>
 
@@ -841,37 +645,34 @@ export default function PropertiesScreen({ navigation }) {
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    backgroundColor: colors.input,
-                    borderRadius: 10,
+                    backgroundColor: colors.bgTertiary,
+                    borderRadius: radii.sm,
                     borderWidth: 1,
                     borderColor: colors.border,
                     paddingHorizontal: 12,
                     height: 44,
-                    marginBottom: 6,
+                    marginBottom: 8,
                   }}
                 >
-                  <Tag size={14} color={colors.textMuted} style={{ marginRight: 8 }} />
+                  <Tag size={14} color={colors.textMuted} strokeWidth={1.75} style={{ marginRight: 10 }} />
                   <Text style={{ flex: 1, color: colors.text, fontSize: 13, fontWeight: "500" }}>
                     {rule.field}
                   </Text>
-                  <View style={{ backgroundColor: `${colors.primary}15`, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, marginRight: 6 }}>
+                  <View style={{ backgroundColor: colors.primaryTint, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, marginRight: 8 }}>
                     <Text style={{ color: colors.primary, fontSize: 10, fontWeight: "600" }}>{rule.type}</Text>
                   </View>
                   {rule.required && (
-                    <View style={{ backgroundColor: `${colors.danger}15`, borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, marginRight: 6 }}>
+                    <View style={{ backgroundColor: `${colors.danger}15`, borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3, marginRight: 8 }}>
                       <Text style={{ color: colors.danger, fontSize: 10, fontWeight: "600" }}>Required</Text>
                     </View>
                   )}
-                  <TouchableOpacity
-                    onPress={() => setCatSchemaRules((prev) => prev.filter((_, i) => i !== idx))}
-                  >
-                    <X size={14} color={colors.danger} />
+                  <TouchableOpacity onPress={() => setCatSchemaRules((prev) => prev.filter((_, i) => i !== idx))}>
+                    <X size={14} color={colors.danger} strokeWidth={1.75} />
                   </TouchableOpacity>
                 </View>
               ))}
 
-              {/* Add new rule */}
-              <View style={{ flexDirection: "row", gap: 6, marginBottom: 20 }}>
+              <View style={{ flexDirection: "row", gap: 8, marginBottom: 20 }}>
                 <TextInput
                   value={newRuleField}
                   onChangeText={setNewRuleField}
@@ -882,9 +683,9 @@ export default function PropertiesScreen({ navigation }) {
                     backgroundColor: colors.input,
                     borderWidth: 1,
                     borderColor: colors.inputBorder,
-                    borderRadius: 10,
+                    borderRadius: radii.sm,
                     paddingHorizontal: 12,
-                    height: 40,
+                    height: 44,
                     color: colors.text,
                     fontSize: 13,
                   }}
@@ -896,9 +697,9 @@ export default function PropertiesScreen({ navigation }) {
                       backgroundColor: colors.input,
                       borderWidth: 1,
                       borderColor: colors.inputBorder,
-                      borderRadius: 10,
+                      borderRadius: radii.sm,
                       paddingHorizontal: 12,
-                      height: 40,
+                      height: 44,
                       flexDirection: "row",
                       alignItems: "center",
                     }}
@@ -907,12 +708,12 @@ export default function PropertiesScreen({ navigation }) {
                     <ChevronDown size={12} color={colors.textMuted} style={{ marginLeft: 4 }} />
                   </TouchableOpacity>
                   {showRuleTypeDropdown && (
-                    <View style={{ position: "absolute", top: 42, right: 0, backgroundColor: colors.card, borderRadius: 8, borderWidth: 1, borderColor: colors.border, overflow: "hidden", zIndex: 100, width: 120 }}>
+                    <View style={{ position: "absolute", top: 46, right: 0, backgroundColor: colors.card, borderRadius: radii.sm, borderWidth: 1, borderColor: colors.border, overflow: "hidden", zIndex: 100, width: 120 }}>
                       {["string", "number", "boolean", "select"].map((type) => (
                         <TouchableOpacity
                           key={type}
                           onPress={() => { setNewRuleType(type); setShowRuleTypeDropdown(false); }}
-                          style={{ paddingHorizontal: 12, height: 36, justifyContent: "center", borderBottomWidth: 1, borderBottomColor: colors.border }}
+                          style={{ paddingHorizontal: 12, height: 38, justifyContent: "center", borderBottomWidth: 1, borderBottomColor: colors.border }}
                         >
                           <Text style={{ color: newRuleType === type ? colors.primary : colors.text, fontSize: 12, fontWeight: newRuleType === type ? "600" : "400" }}>{type}</Text>
                         </TouchableOpacity>
@@ -929,14 +730,14 @@ export default function PropertiesScreen({ navigation }) {
                   }}
                   style={{
                     backgroundColor: colors.primary,
-                    borderRadius: 10,
-                    width: 40,
-                    height: 40,
+                    borderRadius: radii.sm,
+                    width: 44,
+                    height: 44,
                     alignItems: "center",
                     justifyContent: "center",
                   }}
                 >
-                  <Plus size={18} color={colors.primaryText} />
+                  <Plus size={18} color={colors.white} strokeWidth={2.25} />
                 </TouchableOpacity>
               </View>
 
@@ -945,7 +746,7 @@ export default function PropertiesScreen({ navigation }) {
                 disabled={savingCat}
                 style={{
                   backgroundColor: colors.primary,
-                  borderRadius: 28,
+                  borderRadius: 9999,
                   height: 52,
                   flexDirection: "row",
                   alignItems: "center",
@@ -955,18 +756,11 @@ export default function PropertiesScreen({ navigation }) {
                 }}
               >
                 {savingCat ? (
-                  <ActivityIndicator color={colors.primaryText} />
+                  <ActivityIndicator color={colors.white} />
                 ) : (
                   <>
-                    <Plus size={18} color={colors.primaryText} />
-                    <Text
-                      style={{
-                        color: colors.primaryText,
-                        fontSize: 15,
-                        fontWeight: "700",
-                        marginLeft: 8,
-                      }}
-                    >
+                    <Plus size={18} color={colors.white} strokeWidth={2.25} />
+                    <Text style={{ color: colors.white, fontSize: 15, fontWeight: "700", marginLeft: 8 }}>
                       {editingCategory ? "Update Category" : "Add Category"}
                     </Text>
                   </>

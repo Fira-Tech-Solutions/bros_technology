@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import axios from 'axios';
 import prisma from '../../config/prisma.js';
-import { getPublicListings, getPublicProperty, trackInquiryClick } from './public.controller.js';
+import { getPublicListings, getPublicProperty, trackInquiryClick, getFilterOptions } from './public.controller.js';
 
 const router = Router();
 
@@ -12,6 +12,7 @@ const BOT_INFO_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 router.get('/listings', getPublicListings);
 router.get('/listings/:id', getPublicProperty);
 router.post('/listings/:id/inquiry', trackInquiryClick);
+router.get('/filter-options', getFilterOptions);
 
 router.get('/telegram-bot', async (_req, res) => {
   try {

@@ -27,22 +27,19 @@ import {
   MessageCircle,
   ChevronRight,
   Bot,
-  Users,
   Check,
   X,
   Clock,
   Trash2,
   RefreshCw,
   Image as ImageIcon,
-  ExternalLink,
   CircleCheck,
   CircleX,
-  AlertTriangle,
-  Pencil,
   Settings,
 } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import {
   getSyndicationConfigs,
   saveSyndicationConfig,
@@ -172,7 +169,6 @@ function SettingsTab({ colors }) {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
-      {/* Bot Info Card */}
       {botInfo && (
         <View
           style={{
@@ -197,10 +193,7 @@ function SettingsTab({ colors }) {
                   borderColor: colors.primary,
                 }}
               >
-                <Image
-                  source={{ uri: botInfo.photoUrl }}
-                  style={{ width: 56, height: 56 }}
-                />
+                <Image source={{ uri: botInfo.photoUrl }} style={{ width: 56, height: 56 }} />
               </View>
             ) : (
               <View
@@ -230,19 +223,11 @@ function SettingsTab({ colors }) {
                 ID: {botInfo.id} · {botInfo.can_join_groups ? "Can join groups" : "Private"}
               </Text>
             </View>
-            <View
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-                backgroundColor: "#22c55e",
-              }}
-            />
+            <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#22c55e" }} />
           </View>
         </View>
       )}
 
-      {/* Channel Info Card */}
       {channelInfo && (
         <View
           style={{
@@ -267,10 +252,7 @@ function SettingsTab({ colors }) {
                   borderColor: colors.primary,
                 }}
               >
-                <Image
-                  source={{ uri: channelInfo.photoUrl }}
-                  style={{ width: 56, height: 56 }}
-                />
+                <Image source={{ uri: channelInfo.photoUrl }} style={{ width: 56, height: 56 }} />
               </View>
             ) : (
               <View
@@ -302,19 +284,11 @@ function SettingsTab({ colors }) {
                 </Text>
               )}
             </View>
-            <View
-              style={{
-                width: 10,
-                height: 10,
-                borderRadius: 5,
-                backgroundColor: "#22c55e",
-              }}
-            />
+            <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#22c55e" }} />
           </View>
         </View>
       )}
 
-      {/* Gear Button */}
       <TouchableOpacity
         onPress={() => setConfigOpen(true)}
         style={{
@@ -354,7 +328,6 @@ function SettingsTab({ colors }) {
         <ChevronRight size={16} color={colors.textMuted} />
       </TouchableOpacity>
 
-      {/* Config Modal */}
       <Modal visible={configOpen} transparent animationType="slide">
         <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "flex-end" }}>
           <View
@@ -366,14 +339,7 @@ function SettingsTab({ colors }) {
             }}
           >
             <View style={{ alignItems: "center", paddingTop: 12 }}>
-              <View
-                style={{
-                  width: 40,
-                  height: 4,
-                  borderRadius: 2,
-                  backgroundColor: colors.border,
-                }}
-              />
+              <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: colors.border }} />
             </View>
 
             <ScrollView contentContainerStyle={{ padding: 20 }} showsVerticalScrollIndicator={false}>
@@ -414,11 +380,7 @@ function SettingsTab({ colors }) {
                   style={{ flex: 1, color: colors.text, fontSize: 14 }}
                 />
                 <TouchableOpacity onPress={() => setShowToken(!showToken)} style={{ padding: 4 }}>
-                  {showToken ? (
-                    <EyeOff size={16} color={colors.textMuted} />
-                  ) : (
-                    <Eye size={16} color={colors.textMuted} />
-                  )}
+                  {showToken ? <EyeOff size={16} color={colors.textMuted} /> : <Eye size={16} color={colors.textMuted} />}
                 </TouchableOpacity>
               </View>
 
@@ -496,9 +458,7 @@ function SettingsTab({ colors }) {
                   ) : (
                     <>
                       <RefreshCw size={14} color={colors.textMuted} />
-                      <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: "600", marginLeft: 6 }}>
-                        Test
-                      </Text>
+                      <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: "600", marginLeft: 6 }}>Test</Text>
                     </>
                   )}
                 </TouchableOpacity>
@@ -1152,7 +1112,9 @@ function DetailRow({ label, value, colors, valueColor }) {
 
 export default function SyndicationConfigScreen() {
   const { colors } = useTheme();
-  const [tab, setTab] = useState("posts");
+  const { user } = useAuth();
+  const isAdmin = user?.role === "SUPER_ADMIN";
+  const [tab, setTab] = useState(isAdmin ? "settings" : "posts");
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -1163,51 +1125,53 @@ export default function SyndicationConfigScreen() {
           </Text>
         </View>
 
-        <View
-          style={{
-            flexDirection: "row",
-            marginHorizontal: 20,
-            marginTop: 8,
-            marginBottom: 4,
-            backgroundColor: colors.bgTertiary,
-            borderRadius: 10,
-            padding: 3,
-          }}
-        >
-          {[
-            { key: "settings", label: "Settings", icon: Send },
-            { key: "posts", label: "Posts", icon: MessageCircle },
-          ].map((item) => (
-            <TouchableOpacity
-              key={item.key}
-              onPress={() => setTab(item.key)}
-              style={{
-                flex: 1,
-                flexDirection: "row",
-                paddingVertical: 8,
-                borderRadius: 8,
-                backgroundColor: tab === item.key ? colors.primary : "transparent",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <item.icon
-                size={14}
-                color={tab === item.key ? colors.primaryText : colors.textMuted}
-              />
-              <Text
+        {isAdmin && (
+          <View
+            style={{
+              flexDirection: "row",
+              marginHorizontal: 20,
+              marginTop: 8,
+              marginBottom: 4,
+              backgroundColor: colors.bgTertiary,
+              borderRadius: 10,
+              padding: 3,
+            }}
+          >
+            {[
+              { key: "settings", label: "Settings", icon: Settings },
+              { key: "posts", label: "Posts", icon: MessageCircle },
+            ].map((item) => (
+              <TouchableOpacity
+                key={item.key}
+                onPress={() => setTab(item.key)}
                 style={{
-                  color: tab === item.key ? colors.primaryText : colors.textMuted,
-                  fontSize: 13,
-                  fontWeight: "600",
-                  marginLeft: 6,
+                  flex: 1,
+                  flexDirection: "row",
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  backgroundColor: tab === item.key ? colors.primary : "transparent",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+                <item.icon
+                  size={14}
+                  color={tab === item.key ? colors.primaryText : colors.textMuted}
+                />
+                <Text
+                  style={{
+                    color: tab === item.key ? colors.primaryText : colors.textMuted,
+                    fontSize: 13,
+                    fontWeight: "600",
+                    marginLeft: 6,
+                  }}
+                >
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
         {tab === "settings" ? <SettingsTab colors={colors} /> : <PostsTab colors={colors} />}
       </View>

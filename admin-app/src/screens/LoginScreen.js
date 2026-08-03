@@ -1,35 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
-  Image,
-  Alert,
-  ImageBackground,
   TouchableOpacity,
   Dimensions,
   StyleSheet,
   Linking,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Mail, Lock, ArrowLeft } from "lucide-react-native";
+import { Mail, Lock } from "lucide-react-native";
+import Animated, { FadeInUp } from "react-native-reanimated";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import Button from "../components/Button";
 import Input from "../components/Input";
+import DeviceIllustration from "../components/DeviceIllustration";
 
-const { height } = Dimensions.get("window");
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const HERO_HEIGHT = SCREEN_HEIGHT * 0.43;
 
 export default function LoginScreen({ navigation }) {
-  const { colors } = useTheme();
+  const { colors, radii } = useTheme();
   const { t } = useLanguage();
   const { signIn } = useAuth();
+
+  const passwordRef = useRef(null);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loginError, setLoginError] = useState("");
 
   const validate = () => {
     const newErrors = {};
@@ -40,23 +47,19 @@ export default function LoginScreen({ navigation }) {
   };
 
   const handleLogin = async () => {
+    Keyboard.dismiss();
+    setLoginError("");
     if (!validate()) return;
     setLoading(true);
     try {
       await signIn(email.trim(), password);
     } catch (err) {
       if (err.code === "ECONNABORTED") {
-        Alert.alert("Connection Error", "Request timed out. Check your network.");
+        setLoginError("Request timed out. Check your network.");
       } else if (!err.response) {
-        Alert.alert(
-          "Connection Error",
-          "Unable to reach the server. Make sure the backend is running and EXPO_PUBLIC_API_URL is set correctly."
-        );
+        setLoginError("Unable to reach the server. Check your connection.");
       } else {
-        Alert.alert(
-          t("error"),
-          err.response?.data?.error || t("invalidCredentials")
-        );
+        setLoginError(err.response?.data?.error || t("invalidCredentials"));
       }
     } finally {
       setLoading(false);
@@ -64,186 +67,242 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#000" }}>
-      <ImageBackground
-        source={require("../../assets/login-2.jpg")}
-        style={{ flex: 1 }}
-        resizeMode="cover"
-      >
-        <View
-          style={{
-            ...StyleSheet.absoluteFillObject,
-            backgroundColor: "rgba(0,0,0,0.35)",
-          }}
-        />
+    <View style={styles.root}>
+      {/* ══════════ STATIC HERO ══════════ */}
+      <View style={styles.hero}>
+        <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+          <View style={styles.heroContent}>
+            {/* Wordmark */}
+            <Text style={styles.heroWordmark}>BROS TECHNOLOGY</Text>
+            <View style={styles.heroPill}>
+              <Text style={styles.heroPillText}>ADMIN PANEL</Text>
+            </View>
 
-        <SafeAreaView style={{ flex: 1 }}>
-              {/* Logo + Back row */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingHorizontal: 20,
-                  paddingTop: 8,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => navigation.goBack()}
-                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                  style={{
-                    width: 42,
-                    height: 42,
-                    borderRadius: 21,
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <ArrowLeft size={22} color="#ffffff" strokeWidth={2} />
-                </TouchableOpacity>
-
-                <View
-                  style={{ flexDirection: "row", alignItems: "center", marginLeft: 16 }}
-                >
-                  <Image
-                    source={require("../../assets/android-chrome-192x192.png")}
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 10,
-                    }}
-                    resizeMode="cover"
-                  />
-                  <View style={{ marginLeft: 10 }}>
-                    <Text
-                      style={{
-                        fontFamily: "serif",
-                        fontStyle: "italic",
-                        color: colors.primary,
-                        fontSize: 18,
-                        fontWeight: "700",
-                        letterSpacing: 0.5,
-                      }}
-                      numberOfLines={1}
-                    >
-                      Retailment
-                    </Text>
-                    <Text
-                      style={{
-                        fontFamily: "serif",
-                        fontStyle: "italic",
-                        color: `${colors.primary}99`,
-                        fontSize: 9,
-                        letterSpacing: 2,
-                        fontWeight: "500",
-                        marginTop: 1,
-                      }}
-                      numberOfLines={1}
-                    >
-                      SECURE ACCESS
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "flex-end",
-                  paddingHorizontal: 24,
-                  paddingBottom: 250,
-                }}
-              >
-                {/* Spacer */}
-
-                {/* Form Card */}
-                <View
-                  style={{
-                    backgroundColor: "transparent",
-                    borderRadius: 0,
-                    padding: 0,
-                    shadowColor: "transparent",
-                    shadowOpacity: 0,
-                    elevation: 0,
-                  }}
-                >
-                  <View>
-                    <Input
-                      value={email}
-                      onChangeText={setEmail}
-                      placeholder="Email"
-                      keyboardType="email-address"
-                      icon={Mail}
-                      error={errors.email}
-                      rounded="full"
-                      small
-                      className="mb-4"
-                    />
-                  </View>
-
-                  <View>
-                    <Input
-                      value={password}
-                      onChangeText={setPassword}
-                      placeholder="Password"
-                      secureTextEntry
-                      icon={Lock}
-                      error={errors.password}
-                      rounded="full"
-                      small
-                      className="mb-4"
-                    />
-                  </View>
-
-                  <View>
-                    <Button
-                      title={t("loginButton")}
-                      onPress={handleLogin}
-                      loading={loading}
-                      size="lg"
-                      color={colors.primary}
-                      className="mt-2 rounded-[100px]"
-                    />
-                  </View>
-
-                  <View
-                    style={{ alignItems: "center", marginTop: 20 }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate("ForgotPassword")}
-                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                    >
-                      <Text
-                        style={{
-                          color: colors.primary,
-                          fontSize: 14,
-                          fontWeight: "600",
-                          letterSpacing: 0.3,
-                        }}
-                      >
-                        Forgot Password?
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  onPress={() => Linking.openURL("https://firatech.systems")}
-                >
-                  <Text
-                    style={{
-                      textAlign: "center",
-                      color: "rgba(255,255,255,0.35)",
-                      fontSize: 11,
-                      letterSpacing: 0.5,
-                      marginTop: 16,
-                    }}
-                  >
-                    fira tech solutions
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            {/* Device illustration */}
+            <View style={styles.illustrationWrap}>
+              <DeviceIllustration width={200} height={145} />
+            </View>
+          </View>
         </SafeAreaView>
-      </ImageBackground>
+      </View>
+
+      {/* ══════════ FORM SHEET ══════════ */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.sheet}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.sheetContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Grabber */}
+            <View style={styles.grabber} />
+
+            {/* Heading */}
+            <Animated.View entering={FadeInUp.duration(250).springify()}>
+              <Text style={styles.heading}>Welcome back</Text>
+              <Text style={styles.subheading}>Sign in to manage your store</Text>
+
+              {/* Error */}
+              {loginError ? (
+                <View style={styles.errorBox}>
+                  <Text style={styles.errorText}>{loginError}</Text>
+                </View>
+              ) : null}
+
+              {/* Inputs */}
+              <View style={{ marginTop: 20 }}>
+                <Input
+                  value={email}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    setLoginError("");
+                  }}
+                  placeholder="Email address"
+                  keyboardType="email-address"
+                  icon={Mail}
+                  error={errors.email}
+                  returnKeyType="next"
+                  onSubmitEditing={() => passwordRef.current?.focus()}
+                />
+              </View>
+
+              <View>
+                <Input
+                  ref={passwordRef}
+                  value={password}
+                  onChangeText={(text) => {
+                    setPassword(text);
+                    setLoginError("");
+                  }}
+                  placeholder="Password"
+                  secureTextEntry
+                  icon={Lock}
+                  error={errors.password}
+                  returnKeyType="done"
+                  onSubmitEditing={handleLogin}
+                />
+              </View>
+
+              {/* Forgot password */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("ForgotPassword")}
+                style={{ alignSelf: "flex-end", marginBottom: 16, marginTop: 2 }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={styles.forgotText}>Forgot password?</Text>
+              </TouchableOpacity>
+
+              {/* Button */}
+              <Button
+                title={t("loginButton")}
+                onPress={handleLogin}
+                loading={loading}
+                disabled={!email || !password}
+                size="lg"
+                color={colors.primary}
+              />
+
+              {/* Agent signup */}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("AgentSignup")}
+                style={{ alignItems: "center", marginTop: 22 }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Text style={styles.agentText}>
+                  Register as Agent
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+
+            {/* Footer */}
+            <TouchableOpacity onPress={() => Linking.openURL("https://firatech.systems")}>
+              <Text style={styles.footer}>
+                © fira tech solutions
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </KeyboardAvoidingView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+
+  /* ─── Hero ─── */
+  hero: {
+    height: HERO_HEIGHT,
+    backgroundColor: "#1878B4",
+    borderBottomLeftRadius: 36,
+    borderBottomRightRadius: 36,
+    overflow: "hidden",
+  },
+  heroContent: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  heroWordmark: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: 3,
+    marginTop: 14,
+  },
+  heroPill: {
+    marginTop: 8,
+    backgroundColor: "rgba(255,255,255,0.16)",
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    borderRadius: 20,
+  },
+  heroPillText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 2.5,
+  },
+  illustrationWrap: {
+    marginTop: 16,
+    alignItems: "center",
+  },
+
+  /* ─── Sheet ─── */
+  sheet: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    marginTop: -36,
+  },
+  sheetContent: {
+    padding: 24,
+    paddingTop: 16,
+    paddingBottom: 40,
+  },
+  grabber: {
+    width: 40,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: "#E7ECF1",
+    alignSelf: "center",
+    marginBottom: 20,
+  },
+
+  /* ─── Text ─── */
+  heading: {
+    fontSize: 24,
+    fontWeight: "800",
+    color: "#14181C",
+    letterSpacing: -0.5,
+  },
+  subheading: {
+    fontSize: 14,
+    color: "#6B7280",
+    marginTop: 6,
+    marginBottom: 4,
+  },
+  forgotText: {
+    color: "#1878B4",
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  agentText: {
+    color: "#1878B4",
+    fontSize: 14,
+    fontWeight: "600",
+    letterSpacing: 0.3,
+  },
+  footer: {
+    textAlign: "center",
+    color: "#9CA3AF",
+    fontSize: 11,
+    letterSpacing: 0.5,
+    marginTop: 40,
+  },
+
+  /* ─── Error ─── */
+  errorBox: {
+    backgroundColor: "#FEE2E2",
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginTop: 14,
+  },
+  errorText: {
+    color: "#EF4444",
+    fontSize: 13,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+});

@@ -25,10 +25,10 @@ export async function createListing(req, res, next) {
       status,
     } = req.body;
 
-    if (!title || !description || !price || !city || !neighborhood || !categoryId || !agentId) {
+    if (!title || !price || !categoryId || !agentId) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: title, description, price, city, neighborhood, categoryId, agentId',
+        error: 'Missing required fields: title, price, categoryId, agentId',
       });
     }
 
@@ -98,6 +98,11 @@ export async function getListings(req, res, next) {
     const skip = (pageNumber - 1) * limitNumber;
 
     const where = {};
+
+    // AGENT role: only see their own listings
+    if (req.user && req.user.role === 'AGENT') {
+      where.agentId = req.user.id;
+    }
 
     if (status) where.status = status;
     if (categoryId) where.categoryId = categoryId;

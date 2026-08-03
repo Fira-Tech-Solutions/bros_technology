@@ -34,10 +34,11 @@ export default function ShimmerLoader({ width, height = 20, className = "" }) {
 
   return (
     <View
-      className={`overflow-hidden rounded-lg ${className}`}
       style={{
         width: width || "100%",
         height,
+        borderRadius: 10,
+        overflow: "hidden",
         backgroundColor: colors.bgTertiary,
       }}
     >
@@ -49,7 +50,7 @@ export default function ShimmerLoader({ width, height = 20, className = "" }) {
           right: 0,
           bottom: 0,
           transform: [{ translateX }],
-          backgroundColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.06)",
+          backgroundColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)",
         }}
       />
     </View>
@@ -57,23 +58,26 @@ export default function ShimmerLoader({ width, height = 20, className = "" }) {
 }
 
 export function ListingCardSkeleton() {
-  const { colors } = useTheme();
+  const { colors, radii, shadows } = useTheme();
 
   return (
     <View
-      className="rounded-2xl p-4 mb-3"
       style={{
         backgroundColor: colors.card,
+        borderRadius: radii.lg,
+        padding: 14,
+        marginBottom: 10,
         borderWidth: 1,
         borderColor: colors.border,
+        ...shadows.sm(),
       }}
     >
-      <ShimmerLoader height={180} className="mb-3 rounded-xl" />
-      <ShimmerLoader height={18} width="70%" className="mb-2" />
-      <ShimmerLoader height={14} width="50%" className="mb-3" />
-      <View className="flex-row justify-between">
-        <ShimmerLoader height={14} width="30%" />
-        <ShimmerLoader height={14} width="20%" />
+      <ShimmerLoader height={160} className="mb-3" style={{ borderRadius: 12 }} />
+      <ShimmerLoader height={16} width="70%" style={{ marginBottom: 8 }} />
+      <ShimmerLoader height={12} width="50%" style={{ marginBottom: 12 }} />
+      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <ShimmerLoader height={12} width="30%" />
+        <ShimmerLoader height={12} width="20%" />
       </View>
     </View>
   );
@@ -81,10 +85,10 @@ export function ListingCardSkeleton() {
 
 export function DashboardCardSkeleton() {
   return (
-    <View className="flex-row flex-wrap justify-between">
+    <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
       {[1, 2, 3, 4].map((i) => (
-        <View key={i} className="w-[48%] mb-3">
-          <ShimmerLoader height={90} className="rounded-2xl" />
+        <View key={i} style={{ width: "48%", marginBottom: 10 }}>
+          <ShimmerLoader height={90} style={{ borderRadius: 16 }} />
         </View>
       ))}
     </View>

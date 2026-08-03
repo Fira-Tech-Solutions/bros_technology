@@ -2,11 +2,19 @@ import { env } from "@/lib/env";
 
 const API_BASE = env.API_URL;
 
+export type SchemaRule = {
+  field: string;
+  type: "string" | "number" | "select" | "boolean";
+  required?: boolean;
+  options?: string[];
+};
+
 export type Category = {
   id: string;
   name: string;
   displayName: string;
   icon: string;
+  schemaRules?: SchemaRule[];
 };
 
 export type Property = {
@@ -16,6 +24,8 @@ export type Property = {
   inStock: boolean;
   brand: string;
   category: string;
+  categoryId: string;
+  attributes: Record<string, unknown>;
   tags: string[];
   hero: string;
   gallery: string[];
@@ -28,8 +38,24 @@ export type PropertyFilters = {
   q?: string;
   priceMin?: number;
   priceMax?: number;
+  brand?: string;
+  condition?: string;
+  storage?: string;
+  ram?: string;
+  color?: string;
+  processor?: string;
+  screenSize?: string;
+  os?: string;
+  model?: string;
+  connectivity?: string;
+  caseSize?: string;
   limit?: string;
 };
+
+export type FilterOptions = Record<
+  string,
+  SchemaRule & { options: string[] }
+>;
 
 export async function fetchProperties(params?: PropertyFilters): Promise<Property[]> {
   const searchParams = new URLSearchParams();
@@ -37,6 +63,17 @@ export async function fetchProperties(params?: PropertyFilters): Promise<Propert
   if (params?.q) searchParams.set("q", params.q);
   if (typeof params?.priceMin === "number") searchParams.set("priceMin", String(params.priceMin));
   if (typeof params?.priceMax === "number") searchParams.set("priceMax", String(params.priceMax));
+  if (params?.brand) searchParams.set("brand", params.brand);
+  if (params?.condition) searchParams.set("condition", params.condition);
+  if (params?.storage) searchParams.set("storage", params.storage);
+  if (params?.ram) searchParams.set("ram", params.ram);
+  if (params?.color) searchParams.set("color", params.color);
+  if (params?.processor) searchParams.set("processor", params.processor);
+  if (params?.screenSize) searchParams.set("screenSize", params.screenSize);
+  if (params?.os) searchParams.set("os", params.os);
+  if (params?.model) searchParams.set("model", params.model);
+  if (params?.connectivity) searchParams.set("connectivity", params.connectivity);
+  if (params?.caseSize) searchParams.set("caseSize", params.caseSize);
   if (params?.limit) searchParams.set("limit", params.limit);
 
   const qs = searchParams.toString();
@@ -96,4 +133,17 @@ export async function fetchCategories(): Promise<Category[]> {
 
   const json = await res.json();
   return json.data || [];
+}
+
+export async function fetchFilterOptions(category?: string): Promise<FilterOptions> {
+  if (!category || category === "All") return {};
+
+  const searchParams = new URLSearchParams();
+  searchParams.set("category", category);
+
+  const res = await fetch(`${API_BASE}/api/public/filter-options?${searchParams.toString()}`);
+  if (!res.ok) return {};
+
+  const json = await res.json();
+  return json.data || {};
 }

@@ -25,7 +25,7 @@ export function Nav() {
       >
         <div className="mx-auto mt-4 flex max-w-7xl items-center justify-between rounded-full glass px-6 py-3">
           <Link to="/" className="font-display text-xl tracking-wide">
-            BROS<span className="text-gradient-gold"> Technology</span>
+            BROS<span className="text-gradient-brand"> Technology</span>
           </Link>
           <nav className="flex items-center gap-8 text-sm">
             <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -48,7 +48,7 @@ export function Nav() {
                 href={s.shopGoogleMapUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-muted-foreground hover:text-gold transition-colors"
+                className="flex items-center gap-1.5 text-muted-foreground hover:text-brand transition-colors"
               >
                 <MapPin className="h-3.5 w-3.5" />
                 <span>{mapLabel}</span>
@@ -60,7 +60,7 @@ export function Nav() {
             <ThemeToggle />
             <Link
               to="/catalog"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-gold px-4 py-2 text-sm font-medium text-primary-foreground"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-brand px-4 py-2 text-sm font-medium text-primary-foreground"
             >
               <Search className="h-4 w-4" /> {t("nav.discover")}
             </Link>
@@ -71,14 +71,14 @@ export function Nav() {
       {/* Mobile top brand */}
       <div className="fixed top-0 z-50 flex w-full items-center justify-between px-5 py-4 md:hidden glass">
         <Link to="/" className="font-display text-xl">
-          BROS<span className="text-gradient-gold"> Technology</span>
+          BROS<span className="text-gradient-brand"> Technology</span>
         </Link>
         <div className="flex items-center gap-2">
           <LanguagePicker />
           <ThemeToggle />
           <Link
             to="/catalog"
-            className="rounded-full bg-gradient-gold px-3 py-1.5 text-xs font-medium text-primary-foreground"
+            className="rounded-full bg-gradient-brand px-3 py-1.5 text-xs font-medium text-primary-foreground"
           >
             {t("nav.discover")}
           </Link>

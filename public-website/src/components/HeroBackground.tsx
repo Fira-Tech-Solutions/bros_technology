@@ -1,30 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useTheme } from "@/providers/theme";
-
-type Theme = "light" | "dark";
-
-const IMAGES: Record<Theme, { desktop: string; mobile: string }> = {
-  dark: {
-    desktop: "/images/bros_desktop_dark_HD.jpg",
-    mobile: "/images/bros_mobile_dark_HD.png",
-  },
-  light: {
-    desktop: "/images/bros_desktop_light_HD.jpg",
-    mobile: "/images/bros_mobile_light_HD.png",
-  },
-};
-
-function useImagePreloader(src: string) {
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    setLoaded(false);
-    const img = new Image();
-    img.src = src;
-    img.onload = () => setLoaded(true);
-  }, [src]);
-  return loaded;
-}
+import { heroSources, HERO_LQIP } from "@/lib/hero-images";
 
 function ScrollProgress() {
   const { scrollYProgress } = useScroll();
@@ -35,11 +12,9 @@ function ScrollProgress() {
 
   return (
     <motion.div
+      aria-hidden="true"
       className="fixed top-0 left-0 right-0 z-[100] h-[2px] origin-left"
-      style={{
-        scaleX,
-        background: "var(--gradient-gold)",
-      }}
+      style={{ scaleX, background: "var(--gradient-brand)" }}
     />
   );
 }
@@ -49,6 +24,7 @@ function ScrollArrow() {
 
   return (
     <motion.div
+      aria-hidden="true"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 1.5, duration: 0.6 }}
@@ -59,14 +35,8 @@ function ScrollArrow() {
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         className="flex flex-col items-center gap-2"
       >
-        <span className="text-[10px] uppercase tracking-[0.3em] text-white/50">Scroll</span>
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          className="text-white/40"
-        >
+        <span className="text-[10px] uppercase tracking-[0.3em] text-white/60">Scroll</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white/50">
           <path
             d="M10 4v12m0 0l-4-4m4 4l4-4"
             stroke="currentColor"
@@ -84,11 +54,10 @@ export function HeroBackground() {
   const { theme } = useTheme();
   const heroRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
+  const [loaded, setLoaded] = useState(false);
 
-  const currentImage = IMAGES[theme];
-  const desktopLoaded = useImagePreloader(currentImage.desktop);
-  const mobileLoaded = useImagePreloader(currentImage.mobile);
-  const isLoaded = desktopLoaded && mobileLoaded;
+  const sources = heroSources(theme);
+  const lqip = HERO_LQIP[theme];
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -97,16 +66,10 @@ export function HeroBackground() {
 
   const bgY = useTransform(scrollYProgress, [0, 1], [0, 200]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
-  const bgRotateX = useTransform(scrollYProgress, [0, 1], [0, 2]);
 
   const parallaxStyle = shouldReduceMotion
     ? {}
-    : {
-        y: bgY,
-        scale: bgScale,
-        rotateX: bgRotateX,
-        transformPerspective: 1000,
-      };
+    : { y: bgY, scale: bgScale, transformPerspective: 1000 };
 
   return (
     <>
@@ -114,57 +77,74 @@ export function HeroBackground() {
 
       <section
         ref={heroRef}
+        aria-label="BROS Technology showroom"
         className="relative h-[100svh] overflow-hidden"
         style={{ position: "sticky", top: 0, zIndex: 0 }}
       >
-        {/* Image layer */}
         <motion.div className="absolute inset-0 z-0" style={parallaxStyle}>
-          {/* Desktop */}
-          <picture className="hidden md:block">
-            <source srcSet={currentImage.desktop} media="(min-width: 768px)" />
+          {/*
+            Inline blurred placeholder — costs no request and paints before the
+            hero decodes. Faded out by the opacity transition once it lands.
+          */}
+          <img
+            src={lqip.mobile}
+            alt=""
+            aria-hidden="true"
+            className={`absolute inset-0 h-full w-full scale-110 object-cover blur-xl transition-opacity duration-500 md:hidden ${
+              loaded ? "opacity-0" : "opacity-100"
+            }`}
+          />
+          <img
+            src={lqip.desktop}
+            alt=""
+            aria-hidden="true"
+            className={`absolute inset-0 hidden h-full w-full scale-110 object-cover blur-xl transition-opacity duration-500 md:block ${
+              loaded ? "opacity-0" : "opacity-100"
+            }`}
+          />
+
+          {/*
+            One <picture>, so the browser downloads exactly one file: the
+            portrait crop under 768px, the landscape crop above it, in the best
+            format it supports. Previously both crops were fetched in full.
+          */}
+          <picture>
+            <source
+              type="image/avif"
+              media="(max-width: 767px)"
+              srcSet={sources.mobile.avif}
+              sizes="100vw"
+            />
+            <source
+              type="image/webp"
+              media="(max-width: 767px)"
+              srcSet={sources.mobile.webp}
+              sizes="100vw"
+            />
+            <source media="(max-width: 767px)" srcSet={sources.mobile.fallback} />
+            <source type="image/avif" srcSet={sources.desktop.avif} sizes="100vw" />
+            <source type="image/webp" srcSet={sources.desktop.webp} sizes="100vw" />
             <img
-              src={currentImage.desktop}
-              alt="BROS Technology showroom"
+              src={sources.desktop.fallback}
+              alt=""
+              width={sources.desktop.width}
+              height={sources.desktop.height}
               fetchPriority="high"
-              className={`h-full w-full object-cover transition-opacity duration-700 ${
-                isLoaded ? "opacity-100" : "opacity-0"
+              decoding="async"
+              onLoad={() => setLoaded(true)}
+              className={`relative h-full w-full object-cover transition-opacity duration-700 ${
+                loaded ? "opacity-100" : "opacity-0"
               }`}
             />
           </picture>
-
-          {/* Mobile */}
-          <picture className="block md:hidden">
-            <source srcSet={currentImage.mobile} media="(max-width: 767px)" />
-            <img
-              src={currentImage.mobile}
-              alt="BROS Technology showroom"
-              fetchPriority="high"
-              className={`h-full w-full object-cover transition-opacity duration-700 ${
-                isLoaded ? "opacity-100" : "opacity-0"
-              }`}
-            />
-          </picture>
-
-          {/* LQIP blur-up crossfade */}
-          {!isLoaded && (
-            <div className="absolute inset-0 z-[1]">
-              <img
-                src={currentImage.mobile}
-                alt=""
-                aria-hidden="true"
-                className="h-full w-full object-cover scale-110 blur-xl"
-                style={{ imageRendering: "auto" }}
-              />
-            </div>
-          )}
         </motion.div>
 
-        {/* Subtle vignette for depth — no text scrim needed */}
+        {/* Subtle vignette for depth */}
         <div
+          aria-hidden="true"
           className="absolute inset-0 z-[1] pointer-events-none"
           style={{
-            background:
-              "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)",
+            background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)",
           }}
         />
 

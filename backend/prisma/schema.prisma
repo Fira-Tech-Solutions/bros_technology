@@ -92,13 +92,13 @@ model Category {
 model Listing {
   id                    String           @id @default(uuid())
   title                 String
-  description           String           @db.Text
+  description           String?          @db.Text
   price                 Decimal          @db.Decimal(12, 2)
   status                ListingStatus    @default(AVAILABLE)
   
-  // High-priority core fields for quick search filtering
-  city                  String           // e.g., "Addis Ababa", "Adama"
-  neighborhood          String           // e.g., "Bole", "Bole Michael"
+  // Location fields (optional for device shop)
+  city                  String           @default("Addis Ababa")
+  neighborhood          String           @default("Addis Ababa")
   
   // Arrays store compressed WebP paths. Index [0] represents the cover photo
   images                String[]         
@@ -188,4 +188,19 @@ model Setting {
   updatedAt DateTime @updatedAt
 
   @@map("settings")
+}
+
+model AgentCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  createdById String  // Admin who generated the code
+  agentName String?  // Optional: name of the intended agent
+  agentPhone String? // Optional: phone of the intended agent
+  isUsed    Boolean  @default(false)
+  usedById  String?  // Agent who used the code to register
+  expiresAt DateTime // Code expires after 30 minutes
+  createdAt DateTime @default(now())
+
+  @@index([code])
+  @@map("agent_codes")
 }

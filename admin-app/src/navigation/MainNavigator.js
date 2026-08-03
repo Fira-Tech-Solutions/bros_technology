@@ -1,7 +1,9 @@
 import React from "react";
+import { View, Text } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { LayoutDashboard, Building2, Settings, Plus, Send, DollarSign } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LayoutDashboard, Building2, Settings, Send, DollarSign, Users } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -20,20 +22,21 @@ import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import CommissionScreen from "../screens/CommissionScreen";
 import ContactSettingsScreen from "../screens/ContactSettingsScreen";
+import AgentManagementScreen from "../screens/AgentManagementScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function DashboardStack() {
   const { colors } = useTheme();
-  const { t } = useLanguage();
 
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: colors.bgSecondary },
+        headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.text,
         headerShadowVisible: false,
+        headerTitleStyle: { fontWeight: "600", fontSize: 17 },
       }}
     >
       <Stack.Screen
@@ -44,7 +47,7 @@ function DashboardStack() {
       <Stack.Screen
         name="Syndication"
         component={SyndicationScreen}
-        options={{ title: t("syndication") }}
+        options={{ title: "Syndication" }}
       />
       <Stack.Screen
         name="Profile"
@@ -62,14 +65,14 @@ function DashboardStack() {
 
 function PropertiesStack() {
   const { colors } = useTheme();
-  const { t } = useLanguage();
 
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: colors.bgSecondary },
+        headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.text,
         headerShadowVisible: false,
+        headerTitleStyle: { fontWeight: "600", fontSize: 17 },
       }}
     >
       <Stack.Screen
@@ -80,7 +83,7 @@ function PropertiesStack() {
       <Stack.Screen
         name="AddListing"
         component={AddListingScreen}
-        options={{ title: t("addListingTitle") }}
+        options={{ title: "Add Listing" }}
       />
       <Stack.Screen
         name="ListingDetail"
@@ -93,14 +96,14 @@ function PropertiesStack() {
 
 function SettingsStack() {
   const { colors } = useTheme();
-  const { t } = useLanguage();
 
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: { backgroundColor: colors.bgSecondary },
+        headerStyle: { backgroundColor: colors.bg },
         headerTintColor: colors.text,
         headerShadowVisible: false,
+        headerTitleStyle: { fontWeight: "600", fontSize: 17 },
       }}
     >
       <Stack.Screen
@@ -132,10 +135,28 @@ function SettingsStack() {
   );
 }
 
+function TabIcon({ icon: Icon, color, focused, size }) {
+  return (
+    <View
+      style={{
+        width: 48,
+        height: 30,
+        borderRadius: 15,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: focused ? color + "18" : "transparent",
+      }}
+    >
+      <Icon size={size || 20} color={color} strokeWidth={focused ? 2.2 : 1.75} />
+    </View>
+  );
+}
+
 export default function MainNavigator() {
   const { colors, isDark } = useTheme();
   const { t } = useLanguage();
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
 
   const isAdmin = user?.role === "SUPER_ADMIN";
 
@@ -146,16 +167,23 @@ export default function MainNavigator() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.tabBarInactive,
         tabBarStyle: {
-          backgroundColor: colors.tabBar,
+          backgroundColor: isDark ? colors.bg : "#FFFFFF",
           borderTopColor: colors.border,
-          borderTopWidth: 1,
-          height: 85,
-          paddingBottom: 25,
-          paddingTop: 8,
+          borderTopWidth: 0.5,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom + 4,
+          paddingTop: 6,
+          elevation: 0,
+          shadowOpacity: 0,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: "600",
+          letterSpacing: 0.2,
+          marginTop: 2,
+        },
+        tabBarItemStyle: {
+          paddingVertical: 2,
         },
       }}
     >
@@ -164,8 +192,8 @@ export default function MainNavigator() {
         component={DashboardStack}
         options={{
           tabBarLabel: t("dashboard"),
-          tabBarIcon: ({ color, size }) => (
-            <LayoutDashboard size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon icon={LayoutDashboard} color={color} focused={focused} size={size} />
           ),
         }}
       />
@@ -174,8 +202,8 @@ export default function MainNavigator() {
         component={PropertiesStack}
         options={{
           tabBarLabel: t("properties"),
-          tabBarIcon: ({ color, size }) => (
-            <Building2 size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon icon={Building2} color={color} focused={focused} size={size} />
           ),
         }}
       />
@@ -185,8 +213,20 @@ export default function MainNavigator() {
           component={CommissionScreen}
           options={{
             tabBarLabel: "Finance",
-            tabBarIcon: ({ color, size }) => (
-              <DollarSign size={size} color={color} />
+            tabBarIcon: ({ color, size, focused }) => (
+              <TabIcon icon={DollarSign} color={color} focused={focused} size={size} />
+            ),
+          }}
+        />
+      )}
+      {isAdmin && (
+        <Tab.Screen
+          name="Agents"
+          component={AgentManagementScreen}
+          options={{
+            tabBarLabel: "Agents",
+            tabBarIcon: ({ color, size, focused }) => (
+              <TabIcon icon={Users} color={color} focused={focused} size={size} />
             ),
           }}
         />
@@ -196,8 +236,8 @@ export default function MainNavigator() {
         component={SyndicationConfigScreen}
         options={{
           tabBarLabel: "Syndication",
-          tabBarIcon: ({ color, size }) => (
-            <Send size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon icon={Send} color={color} focused={focused} size={size} />
           ),
         }}
       />
@@ -206,8 +246,8 @@ export default function MainNavigator() {
         component={SettingsStack}
         options={{
           tabBarLabel: t("settings"),
-          tabBarIcon: ({ color, size }) => (
-            <Settings size={size} color={color} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon icon={Settings} color={color} focused={focused} size={size} />
           ),
         }}
       />

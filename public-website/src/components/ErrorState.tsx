@@ -14,7 +14,7 @@ export function ErrorState({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="rounded-full bg-gradient-gold px-4 py-2 text-sm font-medium text-primary-foreground"
+          className="rounded-full bg-gradient-brand px-4 py-2 text-sm font-medium text-primary-foreground"
         >
           Try again
         </button>
