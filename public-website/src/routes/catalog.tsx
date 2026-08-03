@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { LayoutGrid, List, SlidersHorizontal, Search, X, Command, SearchX } from "lucide-react";
 import { Nav } from "@/components/Nav";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperties } from "@/hooks/use-properties";
@@ -59,24 +60,61 @@ export const Route = createFileRoute("/catalog")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Products — BROS Technology" },
-      { name: "description", content: "Browse electronics accessories at BROS Technology." },
-      { property: "og:title", content: "Products — BROS Technology" },
-      { property: "og:description", content: "Browse electronics accessories at BROS Technology." },
+      {
+        title: "Buy Laptops, iPhones, Samsung, iPads, MacBooks & Accessories — BROS Technology Ethiopia",
+      },
+      {
+        name: "description",
+        content:
+          "Browse and buy laptops, iPhones, Samsung phones, iPads, MacBooks, AirPods, and smartwatches at BROS Technology. Best prices in Addis Ababa, Ethiopia with warranty.",
+      },
+      {
+        name: "keywords",
+        content:
+          "buy laptop Ethiopia, iPhone price Ethiopia, Samsung phone Addis Ababa, MacBook price, iPad Ethiopia, AirPods price, smartwatch Ethiopia, electronics store",
+      },
+      { property: "og:title", content: "Buy Laptops, iPhones, Samsung & Electronics — BROS Technology" },
+      {
+        property: "og:description",
+        content:
+          "Browse laptops, iPhones, Samsung, iPads, MacBooks, AirPods & smartwatches at best prices in Ethiopia.",
+      },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://brostechnology.com/catalog" },
+      { property: "og:image", content: "/images/hero/desktop-dark-1920.jpg" },
     ],
+    links: [{ rel: "canonical", href: "https://brostechnology.com/catalog" }],
     scripts: [
       {
         type: "application/ld+json",
         innerHTML: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: "Products — BROS Technology",
-          description: "Browse electronics accessories at BROS Technology",
+          name: "Buy Laptops, iPhones, Samsung & Electronics — BROS Technology Ethiopia",
+          description:
+            "Browse and buy laptops, iPhones, Samsung phones, iPads, MacBooks, AirPods, and smartwatches at BROS Technology in Addis Ababa, Ethiopia.",
           url: "https://brostechnology.com/catalog",
           isPartOf: {
             "@type": "WebSite",
             name: "BROS Technology",
             url: "https://brostechnology.com",
+          },
+          breadcrumb: {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://brostechnology.com",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Products",
+                item: "https://brostechnology.com/catalog",
+              },
+            ],
           },
         }),
       },
@@ -247,6 +285,13 @@ function Catalog() {
     <div className="min-h-screen bg-background pb-32 pt-24 md:pt-32">
       <Nav />
       <div className="mx-auto max-w-7xl px-5 md:px-6">
+        <Breadcrumbs
+          items={
+            category === "All"
+              ? [{ label: "Products" }]
+              : [{ label: "Products", href: "/catalog" }, { label: category }]
+          }
+        />
         {/* Header + Global search */}
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
