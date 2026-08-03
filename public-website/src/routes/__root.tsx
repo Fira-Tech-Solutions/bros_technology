@@ -172,7 +172,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "/images/hero/mobile-dark-828.avif",
         media: "(max-width: 767px)",
       },
-      { rel: "script", src: "https://telegram.org/js/telegram-web-app.js" },
     ],
   }),
   shellComponent: RootShell,
