@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useTheme } from "@/providers/theme";
 import { heroSources, HERO_LQIP } from "@/lib/hero-images";
 
-function ScrollProgress() {
+function ScrollProgressInner() {
   const { scrollYProgress } = useScroll();
   const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const shouldReduceMotion = useReducedMotion();
@@ -17,6 +17,13 @@ function ScrollProgress() {
       style={{ scaleX, background: "var(--gradient-brand)" }}
     />
   );
+}
+
+function ScrollProgress() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return <ScrollProgressInner />;
 }
 
 function ScrollArrow() {
