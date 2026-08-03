@@ -329,6 +329,60 @@ function Index() {
         {/* STATS */}
         <StatsSection />
 
+        {/* SEO CONTENT */}
+        <section className="mx-auto max-w-7xl px-6 py-16">
+          <RevealSection>
+            <div className="rounded-3xl border border-border bg-card p-8 md:p-12">
+              <div className="grid gap-10 lg:grid-cols-2">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-brand">
+                    About BROS Technology
+                  </p>
+                  <h2 className="mt-3 font-display text-2xl md:text-4xl">
+                    Your Trusted Electronics Store in Addis Ababa
+                  </h2>
+                  <p className="mt-4 leading-relaxed text-muted-foreground">
+                    BROS Technology is Ethiopia&apos;s premier destination for laptops, smartphones,
+                    tablets, and accessories. Whether you&apos;re looking for a brand-new MacBook,
+                    a Samsung Galaxy, an iPhone, or a reliable Dell laptop for work, we have
+                    something for every budget and need.
+                  </p>
+                  <p className="mt-3 leading-relaxed text-muted-foreground">
+                    All our products come with warranty, and our expert team in Addis Ababa is
+                    ready to help you find the perfect device. We stock top brands including
+                    Apple, Samsung, Dell, Lenovo, HP, and more.
+                  </p>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="font-display text-lg">What We Offer</h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                      Laptops — Dell, Lenovo, HP, MacBook for students and professionals
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                      iPhones & Samsung — Latest models with warranty
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                      iPads & MacBooks — For creatives and students
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                      AirPods & Smartwatches — Premium audio and wearables
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
+                      Nationwide delivery across Ethiopia
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </RevealSection>
+        </section>
+
         <ContactSection />
       </div>
     </div>
