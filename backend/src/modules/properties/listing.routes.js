@@ -12,8 +12,8 @@ import {
 
 const router = Router();
 
-router.get('/', getListings);
-router.get('/:id', getListingById);
+router.get('/', authenticate(), getListings);
+router.get('/:id', authenticate(), getListingById);
 
 const protectedWriteMiddleware = [
   authenticate(),

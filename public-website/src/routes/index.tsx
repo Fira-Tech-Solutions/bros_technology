@@ -78,7 +78,7 @@ function StatsSection() {
     <section className="mx-auto max-w-7xl px-6 py-16">
       <div className="rounded-3xl border border-border bg-card p-8 md:p-12">
         <div className="mb-8 text-center">
-          <p className="text-xs uppercase tracking-[0.25em] text-gold">
+          <p className="text-xs uppercase tracking-[0.25em] text-brand">
             Why Choose Us
           </p>
           <h2 className="mt-3 font-display text-3xl md:text-5xl">
@@ -99,7 +99,7 @@ function StatsSection() {
               transition={{ delay: i * 0.1, type: "spring", stiffness: 80, damping: 18 }}
               className="text-center"
             >
-              <p className="font-display text-4xl text-gradient-gold md:text-5xl">
+              <p className="font-display text-4xl text-gradient-brand md:text-5xl">
                 <AnimatedCounter target={stat.value} suffix={stat.suffix} />
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
@@ -251,7 +251,7 @@ function Index() {
                     search={{ category: c.name === "All" ? undefined : c.displayName }}
                     className="card-lift flex items-center gap-3 whitespace-nowrap rounded-2xl border border-border bg-card px-5 py-5"
                   >
-                    <IconComp size={22} className="text-gold shrink-0" />
+                    <IconComp size={22} className="text-brand shrink-0" />
                     <span className="font-display text-base md:text-lg">{c.displayName}</span>
                   </Link>
                 </RevealSection>

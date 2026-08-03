@@ -100,7 +100,7 @@ export function ContactSection() {
       <div className="rounded-3xl border border-border bg-card p-8 md:p-16">
         {/* Header */}
         <div className="mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-gold">
+          <p className="text-xs uppercase tracking-[0.2em] text-brand">
             {t("footer.badge")}
           </p>
           <h2 className="mt-3 font-display text-3xl md:text-5xl">
@@ -123,7 +123,7 @@ export function ContactSection() {
                     href={`tel:${p.number}`}
                     className="flex items-center gap-3 group"
                   >
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold transition-colors group-hover:bg-gold/20">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand transition-colors group-hover:bg-brand/20">
                       <Phone className="h-4 w-4" />
                     </span>
                     <div>
@@ -186,7 +186,7 @@ export function ContactSection() {
                 href={`mailto:${CONTACT.email}`}
                 className="flex items-center gap-3 group"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold transition-colors group-hover:bg-gold/20">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand transition-colors group-hover:bg-brand/20">
                   <Mail className="h-4 w-4" />
                 </span>
                 <div>
@@ -231,22 +231,22 @@ export function ContactSection() {
                 rel="noopener noreferrer"
                 className="flex items-start gap-3 group"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold transition-colors group-hover:bg-gold/20">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand transition-colors group-hover:bg-brand/20">
                   <MapPin className="h-4 w-4" />
                 </span>
                 <div>
                   <h4 className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                     Location
                   </h4>
-                  <p className="mt-1 font-medium text-foreground group-hover:text-gold transition-colors">
+                  <p className="mt-1 font-medium text-foreground group-hover:text-brand transition-colors">
                     {CONTACT.mapAddress || CONTACT.location}
                   </p>
-                  <p className="text-xs text-gold">Open in Google Maps</p>
+                  <p className="text-xs text-brand">Open in Google Maps</p>
                 </div>
               </a>
             ) : (
               <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
                   <MapPin className="h-4 w-4" />
                 </span>
                 <div>
@@ -260,7 +260,7 @@ export function ContactSection() {
 
             {/* Hours */}
             <div className="flex items-start gap-3">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-gold">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
                 <Clock className="h-4 w-4" />
               </span>
               <div>
@@ -281,7 +281,7 @@ export function ContactSection() {
               href="https://firatech.systems"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-2 hover:text-gold transition-colors"
+              className="underline underline-offset-2 hover:text-brand transition-colors"
             >
               FiraTech Systems
             </a>

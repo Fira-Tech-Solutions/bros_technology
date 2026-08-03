@@ -31,7 +31,7 @@ export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) 
             {p.category}
           </span>
           {p.brand && (
-            <span className="absolute right-4 top-4 rounded-full bg-gold/90 px-3 py-1 text-xs font-medium text-primary-foreground">
+            <span className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
               {t("property.brandNew")}
             </span>
           )}
@@ -54,7 +54,7 @@ export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) 
               </span>
             )}
           </div>
-          <span className="text-gradient-gold font-display text-lg">{formatPrice(p.price)}</span>
+          <span className="text-gradient-brand font-display text-lg">{formatPrice(p.price)}</span>
         </div>
       </Link>
     </motion.div>

@@ -3,60 +3,46 @@ import { View, Text } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 
 const STATUS_CONFIG = {
-  SUCCESS: {
-    bgLight: "#dcfce7",
-    bgDark: "#14532d",
-    textLight: "#166534",
-    textDark: "#86efac",
-    label: "Success",
-  },
-  FAILED: {
-    bgLight: "#fee2e2",
-    bgDark: "#7f1d1d",
-    textLight: "#991b1b",
-    textDark: "#fca5a5",
-    label: "Failed",
-  },
-  PENDING: {
-    bgLight: "#fef3c7",
-    bgDark: "#78350f",
-    textLight: "#92400e",
-    textDark: "#fcd34d",
-    label: "Pending",
-  },
+  AVAILABLE: { color: "#22C55E", bg: "#DCFCE7", darkBg: "#0D2E1A", label: "Available" },
+  PENDING: { color: "#F59E0B", bg: "#FEF3C7", darkBg: "#2D2006", label: "Pending" },
+  SOLD: { color: "#EF4444", bg: "#FEE2E2", darkBg: "#2D1215", label: "Sold" },
+  ARCHIVED: { color: "#6B7280", bg: "#F3F4F6", darkBg: "#1F2429", label: "Archived" },
+  SUCCESS: { color: "#22C55E", bg: "#DCFCE7", darkBg: "#0D2E1A", label: "Success" },
+  FAILED: { color: "#EF4444", bg: "#FEE2E2", darkBg: "#2D1215", label: "Failed" },
+  ACTIVE: { color: "#1878B4", bg: "#EAF4FB", darkBg: "#0D2A3D", label: "Active" },
+  INACTIVE: { color: "#6B7280", bg: "#F3F4F6", darkBg: "#1F2429", label: "Inactive" },
 };
 
-export default function StatusBadge({ status, size = "md" }) {
+export default function StatusBadge({ status, size = "md", label: customLabel }) {
   const { isDark } = useTheme();
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.PENDING;
 
-  const sizeClasses = {
-    sm: "px-2 py-0.5",
-    md: "px-3 py-1",
-    lg: "px-4 py-1.5",
+  const sizeStyles = {
+    sm: { paddingHorizontal: 8, paddingVertical: 3 },
+    md: { paddingHorizontal: 10, paddingVertical: 4 },
+    lg: { paddingHorizontal: 14, paddingVertical: 6 },
   };
 
-  const textSizes = {
-    sm: "text-xs",
-    md: "text-sm",
-    lg: "text-base",
-  };
+  const fontSizes = { sm: 11, md: 12, lg: 14 };
 
   return (
     <View
-      className={`rounded-full self-start ${sizeClasses[size]}`}
       style={{
-        backgroundColor: isDark ? config.bgDark : config.bgLight,
+        alignSelf: "flex-start",
+        borderRadius: 9999,
+        backgroundColor: isDark ? config.darkBg : config.bg,
+        ...sizeStyles[size],
       }}
     >
       <Text
         style={{
-          color: isDark ? config.textDark : config.textLight,
-          fontSize: size === "sm" ? 11 : size === "lg" ? 15 : 13,
+          color: config.color,
+          fontSize: fontSizes[size],
           fontWeight: "600",
+          letterSpacing: 0.2,
         }}
       >
-        {config.label}
+        {customLabel || config.label}
       </Text>
     </View>
   );

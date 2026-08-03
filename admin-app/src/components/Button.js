@@ -1,5 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, ActivityIndicator } from "react-native";
+import { TouchableOpacity, Text, ActivityIndicator, View } from "react-native";
 import Animated, {
   FadeIn,
   useSharedValue,
@@ -8,29 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTheme } from "../context/ThemeContext";
 
-const variants = {
-  primary: "active:opacity-80",
-  secondary: "active:opacity-80",
-  danger: "active:opacity-80",
-  success: "active:opacity-80",
-  outline: "bg-transparent border",
-  ghost: "bg-transparent",
-};
-
-const textVariants = {
-  primary: "text-white font-semibold",
-  secondary: "font-semibold",
-  danger: "text-white font-semibold",
-  success: "text-white font-semibold",
-  outline: "text-white font-semibold",
-  ghost: "font-semibold",
-};
-
-const sizes = {
-  sm: "py-2 px-3 rounded-lg",
-  md: "py-3 px-5 rounded-xl",
-  lg: "py-4 px-6 rounded-xl",
-};
+const Pressable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function Button({
   title,
@@ -42,100 +20,94 @@ export default function Button({
   icon: Icon,
   className = "",
   color,
+  fullWidth = false,
 }) {
-  const { colors } = useTheme();
+  const { colors, radii, shadows } = useTheme();
   const scale = useSharedValue(1);
 
-  const handlePressIn = () => {
-    scale.value = withSpring(0.96);
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1);
-  };
+  const handlePressIn = () => { scale.value = withSpring(0.97, { damping: 15, stiffness: 400 }); };
+  const handlePressOut = () => { scale.value = withSpring(1, { damping: 15, stiffness: 400 }); };
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
-  const bgColor =
-    variant === "outline"
-      ? "transparent"
-      : variant === "ghost"
-        ? "transparent"
-        : color || colors.primary;
+  const sizeStyles = {
+    sm: { paddingVertical: 8, paddingHorizontal: 14, minHeight: 36 },
+    md: { paddingVertical: 12, paddingHorizontal: 20, minHeight: 48 },
+    lg: { paddingVertical: 16, paddingHorizontal: 24, minHeight: 54 },
+  };
 
-  const borderColor =
-    variant === "outline" ? colors.border : "transparent";
+  const fontSizes = { sm: 13, md: 15, lg: 16 };
+
+  const getBg = () => {
+    if (variant === "outline" || variant === "ghost") return "transparent";
+    return color || colors.primary;
+  };
+
+  const getBorder = () => {
+    if (variant === "outline") return { borderWidth: 1.5, borderColor: colors.border };
+    return {};
+  };
+
+  const getTextColor = () => {
+    if (variant === "primary" || variant === "danger" || variant === "success") return "#FFFFFF";
+    if (variant === "outline") return colors.text;
+    return colors.primary;
+  };
+
+  const getShadow = () => {
+    if (variant === "ghost") return {};
+    if (variant === "outline") return {};
+    return shadows.md();
+  };
 
   return (
-    <Animated.View
-      entering={FadeIn.springify()}
-      style={animatedStyle}
-    >
+    <Animated.View style={[animatedStyle, fullWidth && { flex: 1 }]}>
       <TouchableOpacity
         onPress={onPress}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
         activeOpacity={0.9}
-        className={`flex-row items-center justify-center ${sizes[size]} ${
-          disabled ? "opacity-50" : ""
-        } ${className}`}
-        style={{
-          backgroundColor:
-            variant === "primary" || variant === "danger" || variant === "success"
-              ? bgColor
-              : variant === "outline"
-                ? "transparent"
-                : colors.bgSecondary,
-          borderWidth: variant === "outline" ? 1.5 : 0,
-          borderColor,
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.15,
-          shadowRadius: 8,
-          elevation: 5,
-        }}
+        style={[
+          {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            borderRadius: radii.lg,
+            backgroundColor: getBg(),
+            opacity: disabled ? 0.5 : 1,
+          },
+          sizeStyles[size],
+          getBorder(),
+          getShadow(),
+        ]}
       >
         {loading ? (
-          <ActivityIndicator
-            color={
-              variant === "primary" || variant === "danger" || variant === "success"
-                ? "#ffffff"
-                : colors.primary
-            }
-            size="small"
-          />
+          <ActivityIndicator color={getTextColor()} size="small" />
         ) : (
           <>
             {Icon && (
               <Icon
-                size={20}
-                color={
-                  variant === "primary" || variant === "danger" || variant === "success"
-                    ? "#ffffff"
-                    : colors.primary
-                }
-                style={{ marginRight: 10 }}
-                strokeWidth={1.5}
+                size={18}
+                color={getTextColor()}
+                style={{ marginRight: title ? 8 : 0 }}
+                strokeWidth={2}
               />
             )}
-            <Text
-              style={{
-                color:
-                  variant === "primary" || variant === "danger" || variant === "success"
-                    ? "#ffffff"
-                    : variant === "outline"
-                      ? colors.text
-                      : colors.primary,
-                fontSize: size === "sm" ? 14 : 16,
-                fontWeight: "700",
-                letterSpacing: 0.3,
-              }}
-            >
-              {title}
-            </Text>
+            {title && (
+              <Text
+                style={{
+                  color: getTextColor(),
+                  fontSize: fontSizes[size],
+                  fontWeight: "600",
+                  letterSpacing: 0.2,
+                }}
+              >
+                {title}
+              </Text>
+            )}
           </>
         )}
       </TouchableOpacity>

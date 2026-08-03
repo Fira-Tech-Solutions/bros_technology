@@ -56,6 +56,46 @@ function Detail() {
     trackInquiryClick(id, method).catch(() => {});
   };
 
+  useEffect(() => {
+    if (!p) return;
+    document.title = `${p.title} — BROS Technology`;
+
+    const meta = {
+      description: p.description || `${p.title} available at BROS Technology`,
+    };
+    document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
+
+    const ogTags = [
+      { property: "og:title", content: `${p.title} — BROS Technology` },
+      { property: "og:description", content: meta.description },
+      { property: "og:type", content: "product" },
+      { property: "og:image", content: p.gallery?.[0] || "" },
+    ];
+    ogTags.forEach(({ property, content }) => {
+      const el = document.querySelector(`meta[property="${property}"]`);
+      if (el) el.setAttribute("content", content);
+    });
+
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: p.title,
+      description: meta.description,
+      image: p.gallery,
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "ETB",
+        price: p.price,
+        availability: p.status === "AVAILABLE" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      },
+    };
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.textContent = JSON.stringify(jsonLd);
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, [p]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background pt-24">
@@ -121,7 +161,7 @@ function Detail() {
                 {p.category}
               </span>
               {p.brand && (
-                <span className="rounded-full bg-gold/90 px-3 py-1 text-xs font-medium text-primary-foreground">
+                <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
                   {t("property.brandNew")}
                 </span>
               )}
@@ -149,7 +189,7 @@ function Detail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, type: "spring", stiffness: 80, damping: 18 }}
-              className="mt-3 font-display text-3xl text-gradient-gold"
+              className="mt-3 font-display text-3xl text-gradient-brand"
             >
               {formatPrice(p.price)}
             </motion.p>
@@ -240,7 +280,7 @@ function Detail() {
             <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
               {t("property.orderNow")}
             </p>
-            <p className="mt-3 font-display text-3xl text-gradient-gold">{formatPrice(p.price)}</p>
+            <p className="mt-3 font-display text-3xl text-gradient-brand">{formatPrice(p.price)}</p>
 
             <div className="mt-6 space-y-3">
               {/* Telegram */}
@@ -291,7 +331,7 @@ function Detail() {
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
                   {t("property.from")}
                 </p>
-                <p className="font-display text-lg text-gradient-gold">{formatPrice(p.price)}</p>
+                <p className="font-display text-lg text-gradient-brand">{formatPrice(p.price)}</p>
               </div>
               <div className="flex gap-2">
                 <a

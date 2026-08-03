@@ -8,8 +8,8 @@ import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperties } from "@/hooks/use-properties";
 import { useDebounce } from "@/hooks/use-debounce";
-import { fetchCategories, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
-import type { Category } from "@/lib/api/properties";
+import { fetchCategories, fetchFilterOptions, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
+import type { Category, FilterOptions } from "@/lib/api/properties";
 import { useLocale } from "@/providers/locale";
 import {
   FilterPanel,
@@ -23,8 +23,37 @@ const searchSchema = z.object({
   q: z.string().optional(),
   priceMin: z.number().optional(),
   priceMax: z.number().optional(),
+  brand: z.string().optional(),
+  condition: z.string().optional(),
+  storage: z.string().optional(),
+  ram: z.string().optional(),
+  color: z.string().optional(),
+  processor: z.string().optional(),
+  screenSize: z.string().optional(),
+  os: z.string().optional(),
+  model: z.string().optional(),
+  connectivity: z.string().optional(),
+  caseSize: z.string().optional(),
+  hasWarranty: z.boolean().optional(),
+  hasAppleCare: z.boolean().optional(),
 });
 type Search = z.infer<typeof searchSchema>;
+
+const ATTRIBUTE_KEYS = [
+  "brand",
+  "condition",
+  "storage",
+  "ram",
+  "color",
+  "processor",
+  "screenSize",
+  "os",
+  "model",
+  "connectivity",
+  "caseSize",
+  "hasWarranty",
+  "hasAppleCare",
+] as const;
 
 export const Route = createFileRoute("/catalog")({
   validateSearch: searchSchema,
@@ -32,6 +61,25 @@ export const Route = createFileRoute("/catalog")({
     meta: [
       { title: "Products — BROS Technology" },
       { name: "description", content: "Browse electronics accessories at BROS Technology." },
+      { property: "og:title", content: "Products — BROS Technology" },
+      { property: "og:description", content: "Browse electronics accessories at BROS Technology." },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        innerHTML: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          name: "Products — BROS Technology",
+          description: "Browse electronics accessories at BROS Technology",
+          url: "https://brostechnology.com/catalog",
+          isPartOf: {
+            "@type": "WebSite",
+            name: "BROS Technology",
+            url: "https://brostechnology.com",
+          },
+        }),
+      },
     ],
   }),
   component: Catalog,
@@ -44,6 +92,7 @@ function Catalog() {
   const [layout, setLayout] = useState<"grid" | "list">("grid");
   const [filterOpen, setFilterOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
   const { t, locale } = useLocale();
 
   useEffect(() => {
@@ -51,6 +100,16 @@ function Catalog() {
       .then(setCategories)
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (category === "All") {
+      setFilterOptions({});
+      return;
+    }
+    fetchFilterOptions(category)
+      .then(setFilterOptions)
+      .catch(() => setFilterOptions({}));
+  }, [category]);
 
   const categoryNames = useMemo(() => {
     return ["All", ...categories.map((c) => c.displayName)];
@@ -87,18 +146,57 @@ function Catalog() {
     () => ({
       priceMin: search.priceMin ?? DEFAULT_FILTERS.priceMin,
       priceMax: search.priceMax ?? DEFAULT_FILTERS.priceMax,
+      brand: search.brand,
+      condition: search.condition,
+      storage: search.storage,
+      ram: search.ram,
+      color: search.color,
+      processor: search.processor,
+      screenSize: search.screenSize,
+      os: search.os,
+      model: search.model,
+      connectivity: search.connectivity,
+      caseSize: search.caseSize,
+      hasWarranty: search.hasWarranty,
+      hasAppleCare: search.hasAppleCare,
     }),
-    [search.priceMin, search.priceMax],
+    [
+      search.priceMin,
+      search.priceMax,
+      search.brand,
+      search.condition,
+      search.storage,
+      search.ram,
+      search.color,
+      search.processor,
+      search.screenSize,
+      search.os,
+      search.model,
+      search.connectivity,
+      search.caseSize,
+      search.hasWarranty,
+      search.hasAppleCare,
+    ],
   );
   const activeCount = countActiveFilters(filters);
 
   const setFilters = (next: FilterState) =>
     navigate({
-      search: (s: Search) => ({
-        ...s,
-        priceMin: next.priceMin > PRICE_BOUNDS.min ? next.priceMin : undefined,
-        priceMax: next.priceMax < PRICE_BOUNDS.max ? next.priceMax : undefined,
-      }),
+      search: (s: Search) => {
+        const params: Record<string, unknown> = {
+          category: s.category,
+          q: s.q,
+        };
+        if (next.priceMin > PRICE_BOUNDS.min) params.priceMin = next.priceMin;
+        if (next.priceMax < PRICE_BOUNDS.max) params.priceMax = next.priceMax;
+        for (const key of ATTRIBUTE_KEYS) {
+          const val = next[key];
+          if (val !== undefined && val !== "" && val !== null) {
+            params[key] = val;
+          }
+        }
+        return params as Search;
+      },
       replace: true,
     });
 
@@ -118,7 +216,10 @@ function Catalog() {
 
   const setCategory = (c: string) =>
     navigate({
-      search: (s: Search) => ({ ...s, category: c === "All" ? undefined : c }),
+      search: (s: Search) => ({
+        category: c === "All" ? undefined : c,
+        q: s.q,
+      }),
       replace: true,
     });
 
@@ -127,6 +228,17 @@ function Catalog() {
     q: debouncedQ,
     priceMin: search.priceMin,
     priceMax: search.priceMax,
+    brand: search.brand,
+    condition: search.condition,
+    storage: search.storage,
+    ram: search.ram,
+    color: search.color,
+    processor: search.processor,
+    screenSize: search.screenSize,
+    os: search.os,
+    model: search.model,
+    connectivity: search.connectivity,
+    caseSize: search.caseSize,
   });
 
   const count = data?.length ?? 0;
@@ -156,7 +268,7 @@ function Catalog() {
                   " " +
                   t(count === 1 ? "catalog.product" : "catalog.products")}
               {isFetching && !isLoading && (
-                <span className="ml-2 text-gold/80">{t("catalog.updating")}</span>
+                <span className="ml-2 text-brand/80">{t("catalog.updating")}</span>
               )}
             </motion.p>
           </div>
@@ -169,7 +281,7 @@ function Catalog() {
                 value={qInput}
                 onChange={(e) => setQInput(e.target.value)}
                 placeholder={t("catalog.searchPlaceholder")}
-                className="w-full rounded-full border border-border bg-card py-3 pl-11 pr-24 text-sm transition-colors focus:border-gold focus:outline-none"
+                className="w-full rounded-full border border-border bg-card py-3 pl-11 pr-24 text-sm transition-colors focus:border-brand focus:outline-none"
               />
               <AnimatePresence>
                 {qInput && (
@@ -229,7 +341,7 @@ function Catalog() {
                       <motion.span
                         layoutId="category-pill"
                         transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                        className="absolute inset-0 rounded-full bg-gradient-gold shadow-glow"
+                        className="absolute inset-0 rounded-full bg-gradient-brand shadow-glow"
                       />
                     )}
                     <span
@@ -256,12 +368,17 @@ function Catalog() {
               <div className="mb-5 flex items-center justify-between">
                 <h3 className="font-display text-xl">{t("catalog.refine")}</h3>
                 {activeCount > 0 && (
-                  <span className="rounded-full bg-gold/15 px-2 py-0.5 text-xs text-gold">
+                  <span className="rounded-full bg-brand/12 px-2 py-0.5 text-xs text-brand">
                     {activeCount} {t("catalog.active")}
                   </span>
                 )}
               </div>
-              <FilterPanel value={filters} onChange={setFilters} onReset={resetFilters} />
+              <FilterPanel
+                value={filters}
+                onChange={setFilters}
+                onReset={resetFilters}
+                filterOptions={filterOptions}
+              />
             </div>
           </aside>
 
@@ -284,7 +401,7 @@ function Catalog() {
                     key={p.id}
                     to="/property/$id"
                     params={{ id: p.id }}
-                    className="group flex gap-5 overflow-hidden rounded-2xl border border-border bg-card p-3 transition-colors hover:border-gold"
+                    className="group flex gap-5 overflow-hidden rounded-2xl border border-border bg-card p-3 transition-colors hover:border-brand"
                   >
                     <img
                       src={p.hero}
@@ -305,7 +422,7 @@ function Catalog() {
                         >
                           {p.inStock ? t("property.inStock") : t("property.outOfStock")}
                         </span>
-                        <span className="text-gradient-gold font-display text-lg">
+                        <span className="text-gradient-brand font-display text-lg">
                           {formatPrice(p.price)}
                         </span>
                       </div>
@@ -330,7 +447,7 @@ function Catalog() {
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.2 }}
-        className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-gold px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
+        className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
       >
         <SlidersHorizontal className="h-4 w-4" />
         {t("catalog.filters")}
@@ -377,11 +494,16 @@ function Catalog() {
                 </div>
               </div>
 
-              <FilterPanel value={filters} onChange={setFilters} onReset={resetFilters} />
+              <FilterPanel
+                value={filters}
+                onChange={setFilters}
+                onReset={resetFilters}
+                filterOptions={filterOptions}
+              />
 
               <button
                 onClick={() => setFilterOpen(false)}
-                className="mt-8 w-full rounded-full bg-gradient-gold py-3.5 text-sm font-medium text-primary-foreground"
+                className="mt-8 w-full rounded-full bg-gradient-brand py-3.5 text-sm font-medium text-primary-foreground"
               >
                 {t("catalog.showResults", {
                   count,
@@ -408,7 +530,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <motion.div
         animate={{ rotate: [0, -8, 8, -4, 0] }}
         transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 2.5 }}
-        className="mb-5 grid h-16 w-16 place-content-center rounded-full bg-gradient-gold/10 text-gold"
+        className="mb-5 grid h-16 w-16 place-content-center rounded-full bg-brand/10 text-brand"
       >
         <SearchX className="h-7 w-7" />
       </motion.div>
@@ -416,7 +538,7 @@ function EmptyState({ onReset }: { onReset: () => void }) {
       <p className="mt-2 max-w-sm px-6 text-sm text-muted-foreground">{t("empty.description")}</p>
       <button
         onClick={onReset}
-        className="mt-6 rounded-full bg-gradient-gold px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-glow"
+        className="mt-6 rounded-full bg-gradient-brand px-6 py-2.5 text-sm font-medium text-primary-foreground shadow-glow"
       >
         {t("empty.resetAll")}
       </button>

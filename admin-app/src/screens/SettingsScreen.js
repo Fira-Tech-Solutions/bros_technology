@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import {
   Sun,
   Moon,
@@ -24,7 +25,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 
 export default function SettingsScreen({ navigation }) {
-  const { isDark, toggleTheme, colors } = useTheme();
+  const { isDark, toggleTheme, colors, radii } = useTheme();
   const { language, setLanguage, t, languages } = useLanguage();
   const { user, signOut } = useAuth();
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
@@ -43,11 +44,7 @@ export default function SettingsScreen({ navigation }) {
         text: t("logout"),
         style: "destructive",
         onPress: async () => {
-          try {
-            await signOut();
-          } catch {
-            // signOut clears local state even if storage fails
-          }
+          try { await signOut(); } catch {}
         },
       },
     ]);
@@ -56,84 +53,64 @@ export default function SettingsScreen({ navigation }) {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
-        <View className="px-5 pt-4 pb-6">
-          <Text
-            style={{ color: colors.text }}
-            className="text-2xl font-bold mb-1"
-          >
+        <Animated.View entering={FadeInDown.duration(300)} style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 24 }}>
+          <Text style={{ color: colors.text, fontSize: 24, fontWeight: "700", letterSpacing: -0.5 }}>
             {t("settingsTitle")}
           </Text>
-        </View>
+        </Animated.View>
 
+        {/* Profile Card */}
         {user && (
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Profile")}
-            className="px-5 mb-6"
-          >
+          <TouchableOpacity onPress={() => navigation.navigate("Profile")} style={{ paddingHorizontal: 20, marginBottom: 28 }}>
             <View
-              className="flex-row items-center p-4 rounded-2xl"
               style={{
+                flexDirection: "row",
+                alignItems: "center",
                 backgroundColor: colors.card,
+                borderRadius: radii.lg,
+                padding: 16,
                 borderWidth: 1,
                 borderColor: colors.border,
               }}
             >
               <View
-                className="w-12 h-12 rounded-full items-center justify-center mr-3"
-                style={{ backgroundColor: colors.primary }}
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: colors.primary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 14,
+                }}
               >
-                <Text
-                  style={{ color: colors.primaryText }}
-                  className="text-lg font-bold"
-                >
+                <Text style={{ color: colors.white, fontSize: 18, fontWeight: "700" }}>
                   {user.name?.charAt(0).toUpperCase()}
                 </Text>
               </View>
-              <View className="flex-1">
-                <Text
-                  style={{ color: colors.text }}
-                  className="text-base font-semibold"
-                >
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: colors.text, fontSize: 15, fontWeight: "600" }}>
                   {user.name}
                 </Text>
-                <Text
-                  style={{ color: colors.textSecondary }}
-                  className="text-sm"
-                >
+                <Text style={{ color: colors.textMuted, fontSize: 13, marginTop: 2 }}>
                   {user.email}
                 </Text>
               </View>
-              <ChevronRight size={18} color={colors.textMuted} />
+              <ChevronRight size={18} color={colors.textMuted} strokeWidth={1.75} />
             </View>
           </TouchableOpacity>
         )}
 
-        <View className="px-5 mb-6">
-          <Text
-            style={{ color: colors.textSecondary }}
-            className="text-sm font-semibold uppercase tracking-wide mb-3"
-          >
+        {/* Appearance */}
+        <View style={{ paddingHorizontal: 20, marginBottom: 28 }}>
+          <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
             {t("appearance")}
           </Text>
-          <View
-            className="rounded-2xl overflow-hidden"
-            style={{
-              backgroundColor: colors.card,
-              borderWidth: 1,
-              borderColor: colors.border,
-            }}
-          >
-            <View className="flex-row items-center justify-between p-4">
-              <View className="flex-row items-center">
-                {isDark ? (
-                  <Moon size={20} color={colors.primary} />
-                ) : (
-                  <Sun size={20} color={colors.primary} />
-                )}
-                <Text
-                  style={{ color: colors.text }}
-                  className="ml-3 text-base font-medium"
-                >
+          <View style={{ backgroundColor: colors.card, borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, overflow: "hidden" }}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 14 }}>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                {isDark ? <Moon size={19} color={colors.primary} strokeWidth={1.75} /> : <Sun size={19} color={colors.primary} strokeWidth={1.75} />}
+                <Text style={{ color: colors.text, fontSize: 15, fontWeight: "500", marginLeft: 14 }}>
                   {isDark ? t("darkMode") : t("lightMode")}
                 </Text>
               </View>
@@ -141,47 +118,29 @@ export default function SettingsScreen({ navigation }) {
                 value={isDark}
                 onValueChange={toggleTheme}
                 trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={colors.primaryText}
+                thumbColor={colors.white}
               />
             </View>
           </View>
         </View>
 
-        <View className="px-5 mb-6">
-          <Text
-            style={{ color: colors.textSecondary }}
-            className="text-sm font-semibold uppercase tracking-wide mb-3"
-          >
+        {/* Language */}
+        <View style={{ paddingHorizontal: 20, marginBottom: 28 }}>
+          <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
             {t("language")}
           </Text>
-          <View
-            className="rounded-2xl overflow-hidden"
-            style={{
-              backgroundColor: colors.card,
-              borderWidth: 1,
-              borderColor: colors.border,
-            }}
-          >
+          <View style={{ backgroundColor: colors.card, borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, overflow: "hidden" }}>
             <TouchableOpacity
               onPress={() => setShowLanguageDropdown(!showLanguageDropdown)}
-              className="flex-row items-center justify-between p-4"
+              style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 14 }}
             >
-              <View className="flex-row items-center">
-                <Globe size={20} color={colors.primary} />
-                <Text
-                  style={{ color: colors.text }}
-                  className="ml-3 text-base font-medium"
-                >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Globe size={19} color={colors.primary} strokeWidth={1.75} />
+                <Text style={{ color: colors.text, fontSize: 15, fontWeight: "500", marginLeft: 14 }}>
                   {currentLanguage?.label || "English"}
                 </Text>
               </View>
-              <ChevronDown
-                size={18}
-                color={colors.textMuted}
-                style={{
-                  transform: [{ rotate: showLanguageDropdown ? "180deg" : "0deg" }],
-                }}
-              />
+              <ChevronDown size={18} color={colors.textMuted} strokeWidth={1.75} style={{ transform: [{ rotate: showLanguageDropdown ? "180deg" : "0deg" }] }} />
             </TouchableOpacity>
             {showLanguageDropdown && (
               <View style={{ borderTopWidth: 1, borderTopColor: colors.border }}>
@@ -189,27 +148,23 @@ export default function SettingsScreen({ navigation }) {
                   <TouchableOpacity
                     key={lang.code}
                     onPress={() => handleLanguageChange(lang.code)}
-                    className="flex-row items-center justify-between px-4 py-3"
                     style={{
-                      backgroundColor:
-                        language === lang.code ? `${colors.primary}10` : "transparent",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      paddingHorizontal: 16,
+                      paddingVertical: 12,
+                      backgroundColor: language === lang.code ? colors.primaryTint : "transparent",
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors.border,
                     }}
                   >
-                    <Text
-                      style={{
-                        color: language === lang.code ? colors.primary : colors.text,
-                        fontSize: 15,
-                        fontWeight: language === lang.code ? "600" : "400",
-                      }}
-                    >
+                    <Text style={{ color: language === lang.code ? colors.primary : colors.text, fontSize: 15, fontWeight: language === lang.code ? "600" : "400" }}>
                       {lang.label}
                     </Text>
                     {language === lang.code && (
-                      <View
-                        className="w-5 h-5 rounded-full items-center justify-center"
-                        style={{ backgroundColor: colors.primary }}
-                      >
-                        <View className="w-2 h-2 rounded-full bg-white" />
+                      <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" }}>
+                        <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.white }} />
                       </View>
                     )}
                   </TouchableOpacity>
@@ -219,83 +174,61 @@ export default function SettingsScreen({ navigation }) {
           </View>
         </View>
 
+        {/* Store */}
         {user?.role === "SUPER_ADMIN" && (
-          <View className="px-5 mb-6">
-            <Text
-              style={{ color: colors.textSecondary }}
-              className="text-sm font-semibold uppercase tracking-wide mb-3"
-            >
+          <View style={{ paddingHorizontal: 20, marginBottom: 28 }}>
+            <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
               Store
             </Text>
-            <View
-              className="rounded-2xl overflow-hidden"
-              style={{
-                backgroundColor: colors.card,
-                borderWidth: 1,
-                borderColor: colors.border,
-              }}
-            >
+            <View style={{ backgroundColor: colors.card, borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, overflow: "hidden" }}>
               <TouchableOpacity
                 onPress={() => navigation.navigate("ContactSettings")}
-                className="flex-row items-center justify-between p-4"
+                style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 14 }}
               >
-                <View className="flex-row items-center">
-                  <Phone size={20} color={colors.primary} />
-                  <Text
-                    style={{ color: colors.text }}
-                    className="ml-3 text-base font-medium"
-                  >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Phone size={19} color={colors.primary} strokeWidth={1.75} />
+                  <Text style={{ color: colors.text, fontSize: 15, fontWeight: "500", marginLeft: 14 }}>
                     Contact & Social Media
                   </Text>
                 </View>
-                <ChevronRight size={18} color={colors.textMuted} />
+                <ChevronRight size={18} color={colors.textMuted} strokeWidth={1.75} />
               </TouchableOpacity>
             </View>
           </View>
         )}
 
-        <View className="px-5 mb-6">
-          <Text
-            style={{ color: colors.textSecondary }}
-            className="text-sm font-semibold uppercase tracking-wide mb-3"
-          >
+        {/* About */}
+        <View style={{ paddingHorizontal: 20, marginBottom: 28 }}>
+          <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
             {t("about")}
           </Text>
-          <View
-            className="rounded-2xl overflow-hidden"
-            style={{
-              backgroundColor: colors.card,
-              borderWidth: 1,
-              borderColor: colors.border,
-            }}
-          >
-            <View className="flex-row items-center p-4">
-              <Info size={20} color={colors.primary} />
-              <Text
-                style={{ color: colors.text }}
-                className="ml-3 text-base font-medium"
-              >
+          <View style={{ backgroundColor: colors.card, borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, overflow: "hidden" }}>
+            <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 14 }}>
+              <Info size={19} color={colors.primary} strokeWidth={1.75} />
+              <Text style={{ color: colors.text, fontSize: 15, fontWeight: "500", marginLeft: 14 }}>
                 {t("version")} 1.0.0
               </Text>
             </View>
           </View>
         </View>
 
-        <View className="px-5">
+        {/* Logout */}
+        <View style={{ paddingHorizontal: 20 }}>
           <TouchableOpacity
             onPress={handleLogout}
-            className="flex-row items-center justify-center p-4 rounded-2xl"
             style={{
-              backgroundColor: `${colors.danger}12`,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              paddingVertical: 14,
+              borderRadius: radii.lg,
+              backgroundColor: `${colors.danger}10`,
               borderWidth: 1,
-              borderColor: `${colors.danger}30`,
+              borderColor: `${colors.danger}25`,
             }}
           >
-            <LogOut size={20} color={colors.danger} />
-            <Text
-              style={{ color: colors.danger }}
-              className="ml-2 text-base font-semibold"
-            >
+            <LogOut size={18} color={colors.danger} strokeWidth={1.75} />
+            <Text style={{ color: colors.danger, fontSize: 15, fontWeight: "600", marginLeft: 8 }}>
               {t("logout")}
             </Text>
           </TouchableOpacity>

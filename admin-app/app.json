@@ -4,11 +4,13 @@
     "slug": "admin-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/bros_icon_concept4_monogram_clean.png",
     "scheme": "brostechnology-admin",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "backgroundColor": "#2563eb"
+      "image": "./assets/bros_splash_full_concept4.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1878B4"
     },
     "ios": {
       "supportsTablet": true,
@@ -16,15 +18,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#2563eb",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/bros_icon_concept4_monogram_clean.png",
+        "backgroundColor": "#1878B4"
       },
       "package": "com.brostechnology.admin"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/bros_icon_concept4_monogram_clean.png"
     },
     "plugins": [
       [
@@ -37,8 +37,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/notification-icon.png",
-          "color": "#d4a04a"
+          "color": "#1878B4"
         }
       ]
     ]

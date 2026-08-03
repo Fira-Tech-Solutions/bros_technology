@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
-import Constants from "expo-constants";
 
 import { getNotifications } from "../api/notifications";
 
-// expo-notifications does not work in Expo Go (SDK 53+)
-const isExpoGo = Constants.executionEnvironment === "storeClient";
-const canUseNativeNotifications = !isExpoGo && Platform.OS !== "web";
-
 let lastNotificationCount = 0;
+let canUseNativeNotifications = false;
+
+try {
+  const Constants = require("expo-constants").default;
+  const isExpoGo = Constants?.executionEnvironment === "storeClient";
+  canUseNativeNotifications = !isExpoGo && Platform.OS !== "web";
+} catch {
+  canUseNativeNotifications = Platform.OS === "ios" || Platform.OS === "android";
+}
 
 export default function useNotifications() {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -24,13 +28,13 @@ export default function useNotifications() {
     const check = async () => {
       try {
         const { data } = await getNotifications({ limit: 1 });
-        const count = data.data.unreadCount || 0;
+        const count = data?.data?.unreadCount || 0;
         setUnreadCount(count);
 
         if (count > lastNotificationCount && lastNotificationCount >= 0) {
           const newItems = count - lastNotificationCount;
           const detail = await getNotifications({ limit: Math.min(newItems, 5) });
-          const notifs = detail.data.data.notifications || [];
+          const notifs = detail?.data?.data?.notifications || [];
           for (const n of notifs) {
             if (!n.isRead) {
               if (canUseNativeNotifications) {
@@ -58,9 +62,11 @@ export default function useNotifications() {
 }
 
 function requestWebPermission() {
-  if ("Notification" in window && Notification.permission === "default") {
-    Notification.requestPermission();
-  }
+  try {
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  } catch {}
 }
 
 async function requestNativePermission() {
@@ -78,9 +84,9 @@ async function requestNativePermission() {
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
         name: "Default",
-        importance: Notifications.AndroidImportance.HIGH,
+        importance: Notifications.AndroidImportance?.HIGH ?? 4,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: "#d4a04a",
+        lightColor: "#1878B4",
       });
     }
 
@@ -88,17 +94,15 @@ async function requestNativePermission() {
     if (status !== "granted") {
       console.log("Notification permission not granted");
     }
-  } catch {
-    // Not available
-  }
+  } catch {}
 }
 
 function showWebNotification(title, body) {
-  if ("Notification" in window && Notification.permission === "granted") {
-    try {
+  try {
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
       new Notification(title, { body });
-    } catch {}
-  }
+    }
+  } catch {}
 }
 
 async function showNativeNotification(title, body, data = {}) {

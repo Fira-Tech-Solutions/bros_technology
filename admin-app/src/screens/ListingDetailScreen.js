@@ -12,51 +12,28 @@ import {
   Dimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
 import {
   ChevronLeft,
   Trash2,
   Camera,
   X,
-  Plus,
   Check,
-  MapPin,
-  BedDouble,
-  Bath,
-  Calendar,
-  Gauge,
-  Fuel,
-  Palette,
-  Maximize2,
-  Sofa,
-  Star,
   DollarSign,
   CircleDollarSign,
-  Ruler,
-  ParkingSquare,
-  Settings,
-  Hash,
+  Calendar,
   Tag,
-  Car,
-  Home,
-  Landmark,
-  TreePine,
-  GraduationCap,
-  Heart,
-  Shield,
-  Wrench,
-  Briefcase,
-  ShoppingBag,
-  Gem,
   Smartphone,
   Laptop,
-  Bike,
-  Truck,
-  Handshake,
-  PackageX,
-  Clock,
-  Blinds,
-  Building2,
+  Settings,
+  Hash,
+  Star,
+  Gauge,
+  Maximize2,
+  Palette,
+  Ruler,
+  Car,
 } from "lucide-react-native";
 
 import CachedImage from "../components/CachedImage";
@@ -66,100 +43,58 @@ import { getCategories } from "../api/categories";
 import LoadingOverlay from "../components/LoadingOverlay";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
-
-const ICON_OPTIONS = [
-  { name: "home", Icon: Home, label: "House" },
-  { name: "building2", Icon: Building2, label: "Building" },
-  { name: "car", Icon: Car, label: "Car" },
-  { name: "bike", Icon: Bike, label: "Bike" },
-  { name: "truck", Icon: Truck, label: "Truck" },
-  { name: "smartphone", Icon: Smartphone, label: "Phone" },
-  { name: "laptop", Icon: Laptop, label: "Laptop" },
-  { name: "sofa", Icon: Sofa, label: "Furniture" },
-  { name: "gem", Icon: Gem, label: "Jewelry" },
-  { name: "shoppingBag", Icon: ShoppingBag, label: "Shopping" },
-  { name: "briefcase", Icon: Briefcase, label: "Business" },
-  { name: "landmark", Icon: Landmark, label: "Land" },
-  { name: "treePine", Icon: TreePine, label: "Nature" },
-  { name: "graduationCap", Icon: GraduationCap, label: "Education" },
-  { name: "heart", Icon: Heart, label: "Health" },
-  { name: "shield", Icon: Shield, label: "Security" },
-  { name: "wrench", Icon: Wrench, label: "Tools" },
-  { name: "palette", Icon: Palette, label: "Design" },
-  { name: "tag", Icon: Tag, label: "Other" },
-];
-
-function getIconComponent(iconName) {
-  const found = ICON_OPTIONS.find((o) => o.name === iconName);
-  return found ? found.Icon : Tag;
-}
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
 
 const STATUS_MAP = {
-  AVAILABLE: { label: "Available", color: "#22c55e", Icon: Check },
-  PENDING: { label: "Pending", color: "#eab308", Icon: Clock },
-  SOLD: { label: "Sold", color: "#ef4444", Icon: CircleDollarSign },
-  RENTED: { label: "Rented", color: "#6366f1", Icon: Handshake },
-  RESERVED: { label: "Reserved", color: "#f97316", Icon: PackageX },
+  AVAILABLE: { label: "Available", color: "#22C55E", bg: "#DCFCE7", darkBg: "#0D2E1A" },
+  PENDING: { label: "Pending", color: "#F59E0B", bg: "#FEF3C7", darkBg: "#2D2006" },
+  SOLD: { label: "Sold", color: "#EF4444", bg: "#FEE2E2", darkBg: "#2D1215" },
+  ARCHIVED: { label: "Archived", color: "#6B7280", bg: "#F3F4F6", darkBg: "#1F2429" },
 };
 
 const STATUS_OPTIONS = Object.keys(STATUS_MAP);
 
-const CITIES = [
-  "Addis Ababa",
-  "Dire Dawa",
-  "Hawassa",
-  "Bahir Dar",
-  "Mekelle",
-  "Adama",
-  "Gondar",
-  "Jimma",
-];
-
 const FIELD_META = {
-  bedrooms: { label: "Bedrooms", icon: BedDouble, type: "number" },
-  bathrooms: { label: "Bathrooms", icon: Bath, type: "number" },
-  area: { label: "Area (m\u00b2)", icon: Ruler, type: "number" },
-  furnished: { label: "Furnished", icon: Sofa, type: "boolean" },
-  parking: { label: "Parking Spots", icon: ParkingSquare, type: "number" },
-  floors: { label: "Floors", icon: Hash, type: "number" },
-  yearBuilt: { label: "Year Built", icon: Calendar, type: "number" },
-  condition: { label: "Condition", icon: Star, type: "string" },
-  make: { label: "Make / Brand", icon: Car, type: "string" },
-  model: { label: "Model", icon: Tag, type: "string" },
-  year: { label: "Year", icon: Calendar, type: "number" },
-  mileage: { label: "Mileage (km)", icon: Gauge, type: "number" },
-  fuelType: { label: "Fuel Type", icon: Fuel, type: "string" },
-  transmission: { label: "Transmission", icon: Settings, type: "string" },
-  color: { label: "Color", icon: Palette, type: "string" },
-  engineSize: { label: "Engine Size", icon: Gauge, type: "string" },
-  vin: { label: "VIN", icon: Hash, type: "string" },
-  brand: { label: "Brand", icon: Tag, type: "string" },
-  storage: { label: "Storage", icon: Tag, type: "string" },
-  screenSize: { label: "Screen Size", icon: Maximize2, type: "string" },
-  processor: { label: "Processor", icon: Settings, type: "string" },
-  ram: { label: "RAM", icon: Hash, type: "string" },
-  os: { label: "Operating System", icon: Settings, type: "string" },
-  hasAC: { label: "Air Conditioning", icon: Blinds, type: "boolean" },
-  hasWifi: { label: "Wi-Fi", icon: Blinds, type: "boolean" },
-  plotSize: { label: "Plot Size (m\u00b2)", icon: Ruler, type: "number" },
-  zoning: { label: "Zoning", icon: Tag, type: "string" },
-  material: { label: "Material", icon: Tag, type: "string" },
-  capacity: { label: "Capacity", icon: Hash, type: "number" },
-  seats: { label: "Seats", icon: Sofa, type: "number" },
-  bodyType: { label: "Body Type", icon: Car, type: "string" },
-  listingType: { label: "Listing Type", icon: CircleDollarSign, type: "string" },
+  brand: { label: "Brand", icon: Tag },
+  model: { label: "Model", icon: Tag },
+  storage: { label: "Storage", icon: Tag },
+  ram: { label: "RAM", icon: Hash },
+  color: { label: "Color", icon: Palette },
+  condition: { label: "Condition", icon: Star },
+  year: { label: "Year", icon: Calendar },
+  processor: { label: "Processor", icon: Settings },
+  gpu: { label: "GPU", icon: Settings },
+  screenSize: { label: "Screen Size", icon: Maximize2 },
+  os: { label: "OS", icon: Settings },
+  batteryHealth: { label: "Battery Health", icon: Gauge },
+  carrier: { label: "Carrier", icon: Tag },
+  hasWarranty: { label: "Warranty", icon: Check },
+  hasAppleCare: { label: "AppleCare", icon: Check },
+  connectivity: { label: "Connectivity", icon: Tag },
+  caseSize: { label: "Case Size", icon: Ruler },
+  storageType: { label: "Storage Type", icon: Tag },
+  price: { label: "Price", icon: DollarSign },
+  mileage: { label: "Mileage", icon: Gauge },
+  fuelType: { label: "Fuel Type", icon: Gauge },
+  transmission: { label: "Transmission", icon: Settings },
+  engineSize: { label: "Engine Size", icon: Settings },
+  vin: { label: "VIN", icon: Hash },
+  make: { label: "Make", icon: Car },
+  area: { label: "Area", icon: Ruler },
+  bedrooms: { label: "Bedrooms", icon: Tag },
+  bathrooms: { label: "Bathrooms", icon: Tag },
+  furnished: { label: "Furnished", icon: Tag },
+  parking: { label: "Parking", icon: Tag },
+  floors: { label: "Floors", icon: Tag },
+  yearBuilt: { label: "Year Built", icon: Calendar },
+  listingType: { label: "Listing Type", icon: CircleDollarSign },
 };
 
 function getFieldMeta(fieldName, ruleType) {
   if (FIELD_META[fieldName]) return FIELD_META[fieldName];
   return {
-    label: fieldName
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^./, (s) => s.toUpperCase()),
+    label: fieldName.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()),
     icon: Tag,
-    type: ruleType || "string",
   };
 }
 
@@ -170,17 +105,17 @@ function getImageUrl(images) {
   return `${API_BASE_URL}/${path}`;
 }
 
-function SectionHeader({ title, colors }) {
+function SectionLabel({ title, colors }) {
   return (
     <Text
       style={{
         color: colors.textMuted,
-        fontSize: 10,
-        fontWeight: "600",
+        fontSize: 11,
+        fontWeight: "700",
         textTransform: "uppercase",
-        letterSpacing: 1,
-        marginBottom: 12,
-        marginTop: 20,
+        letterSpacing: 0.8,
+        marginBottom: 14,
+        marginTop: 24,
       }}
     >
       {title}
@@ -188,82 +123,43 @@ function SectionHeader({ title, colors }) {
   );
 }
 
-function FieldRow({ label, icon: Icon, children, colors }) {
+function FieldLabel({ label, colors }) {
   return (
-    <View
+    <Text style={{ color: colors.textSecondary, fontSize: 13, fontWeight: "600", marginBottom: 8 }}>
+      {label}
+    </Text>
+  );
+}
+
+function StyledInput({ value, onChangeText, placeholder, keyboardType, multiline, colors, radii }) {
+  return (
+    <TextInput
+      value={value || ""}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={colors.textMuted}
+      keyboardType={keyboardType || "default"}
+      multiline={multiline}
       style={{
-        flexDirection: "row",
-        alignItems: "center",
         backgroundColor: colors.input,
-        borderRadius: 12,
-        borderWidth: 1.5,
+        borderWidth: 1,
         borderColor: colors.inputBorder,
-        paddingHorizontal: 14,
-        height: 52,
-        marginBottom: 10,
+        borderRadius: radii.md,
+        paddingHorizontal: 16,
+        height: multiline ? undefined : 52,
+        minHeight: multiline ? 90 : undefined,
+        color: colors.text,
+        fontSize: 14,
+        fontWeight: "500",
+        marginBottom: 14,
+        textAlignVertical: multiline ? "top" : undefined,
+        paddingVertical: multiline ? 14 : undefined,
       }}
-    >
-      <Icon size={18} color={colors.textMuted} style={{ marginRight: 12 }} />
-      <Text
-        style={{
-          color: colors.textSecondary,
-          fontSize: 13,
-          fontWeight: "500",
-          width: 100,
-        }}
-        numberOfLines={1}
-      >
-        {label}
-      </Text>
-      <View style={{ flex: 1, alignItems: "flex-end" }}>{children}</View>
-    </View>
+    />
   );
 }
 
-function EditableField({
-  label,
-  icon,
-  value,
-  onChangeText,
-  keyboardType,
-  colors,
-  multiline,
-}) {
-  return (
-    <FieldRow label={label} icon={icon} colors={colors}>
-      <TextInput
-        value={value || ""}
-        onChangeText={onChangeText}
-        keyboardType={keyboardType || "default"}
-        multiline={multiline}
-        placeholderTextColor={colors.textMuted}
-        style={{
-          color: colors.text,
-          fontSize: 14,
-          fontWeight: "500",
-          textAlign: "right",
-          flex: 1,
-          ...(multiline ? { minHeight: 60, textAlignVertical: "top" } : {}),
-        }}
-      />
-    </FieldRow>
-  );
-}
-
-function BooleanField({ label, icon, value, onToggle, colors }) {
-  return (
-    <FieldRow label={label} icon={icon} colors={colors}>
-      <Switch
-        value={!!value}
-        onValueChange={onToggle}
-        trackColor={{ false: colors.border, true: colors.primary }}
-        thumbColor={colors.primaryText}
-      />
-    </FieldRow>
-  );
-}
-
-function StatusPicker({ value, onChange, colors }) {
+function StatusPicker({ value, onChange, colors, radii }) {
   return (
     <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
       {STATUS_OPTIONS.map((key) => {
@@ -276,23 +172,16 @@ function StatusPicker({ value, onChange, colors }) {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              backgroundColor: active ? `${s.color}20` : colors.bgTertiary,
-              borderWidth: 1.5,
+              backgroundColor: active ? (colors.isDark ? s.darkBg : s.bg) : colors.bgTertiary,
+              borderWidth: 1,
               borderColor: active ? s.color : colors.border,
-              borderRadius: 10,
-              paddingHorizontal: 12,
+              borderRadius: 9999,
+              paddingHorizontal: 14,
               paddingVertical: 8,
             }}
           >
-            <s.Icon size={12} color={active ? s.color : colors.textMuted} />
-            <Text
-              style={{
-                color: active ? s.color : colors.textMuted,
-                fontSize: 11,
-                fontWeight: active ? "700" : "500",
-                marginLeft: 5,
-              }}
-            >
+            <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: s.color, marginRight: 7 }} />
+            <Text style={{ color: active ? s.color : colors.textMuted, fontSize: 12, fontWeight: active ? "700" : "500" }}>
               {s.label}
             </Text>
           </TouchableOpacity>
@@ -304,7 +193,7 @@ function StatusPicker({ value, onChange, colors }) {
 
 export default function ListingDetailScreen({ route, navigation }) {
   const { listingId } = route.params;
-  const { colors } = useTheme();
+  const { colors, radii, shadows } = useTheme();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -323,10 +212,7 @@ export default function ListingDetailScreen({ route, navigation }) {
 
   const [existingImages, setExistingImages] = useState([]);
   const [newImages, setNewImages] = useState([]);
-  const [removedImages, setRemovedImages] = useState([]);
-
   const [dynamicFields, setDynamicFields] = useState({});
-  const [listingType, setListingType] = useState("SELL");
 
   useEffect(() => {
     loadData();
@@ -340,7 +226,6 @@ export default function ListingDetailScreen({ route, navigation }) {
       ]);
       const data = listingRes.data.data;
       const cats = catRes.data.data || [];
-
       setListing(data);
       setCategories(cats);
       setForm({
@@ -354,9 +239,8 @@ export default function ListingDetailScreen({ route, navigation }) {
       });
       setExistingImages(data.images || []);
       setDynamicFields(data.attributes || {});
-      setListingType(data.attributes?.listingType || "SELL");
     } catch {
-      Alert.alert("Error", "Failed to load listing");
+      Alert.alert("Error", "Failed to load product");
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -366,16 +250,12 @@ export default function ListingDetailScreen({ route, navigation }) {
   const selectedCategory = categories.find((c) => c.id === form.categoryId);
   const schemaRules = useMemo(() => {
     if (!selectedCategory?.schemaRules) return [];
-    if (Array.isArray(selectedCategory.schemaRules))
-      return selectedCategory.schemaRules;
+    if (Array.isArray(selectedCategory.schemaRules)) return selectedCategory.schemaRules;
     return [];
   }, [selectedCategory]);
 
-  const updateForm = (field, value) =>
-    setForm((prev) => ({ ...prev, [field]: value }));
-
-  const updateDynamic = (field, value) =>
-    setDynamicFields((prev) => ({ ...prev, [field]: value }));
+  const updateForm = (field, value) => setForm((prev) => ({ ...prev, [field]: value }));
+  const updateDynamic = (field, value) => setDynamicFields((prev) => ({ ...prev, [field]: value }));
 
   const pickImages = async () => {
     const remaining = 5 - existingImages.length - newImages.length;
@@ -389,14 +269,10 @@ export default function ListingDetailScreen({ route, navigation }) {
       selectionLimit: remaining,
       quality: 0.8,
     });
-    if (!result.canceled) {
-      setNewImages((prev) => [...prev, ...result.assets]);
-    }
+    if (!result.canceled) setNewImages((prev) => [...prev, ...result.assets]);
   };
 
   const removeExistingImage = (index) => {
-    const img = existingImages[index];
-    setRemovedImages((prev) => [...prev, img]);
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -413,7 +289,6 @@ export default function ListingDetailScreen({ route, navigation }) {
       Alert.alert("Error", "Valid price is required");
       return;
     }
-
     setSaving(true);
     try {
       const formData = new FormData();
@@ -424,8 +299,7 @@ export default function ListingDetailScreen({ route, navigation }) {
       formData.append("neighborhood", form.neighborhood.trim());
       formData.append("categoryId", form.categoryId);
       formData.append("status", form.status);
-
-      const attributes = { ...dynamicFields, listingType };
+      const attributes = { ...dynamicFields };
       for (const rule of schemaRules) {
         const val = attributes[rule.field];
         if (val === undefined || val === null || val === "") {
@@ -437,26 +311,17 @@ export default function ListingDetailScreen({ route, navigation }) {
         }
       }
       formData.append("attributes", JSON.stringify(attributes));
-
       newImages.forEach((img, index) => {
         const ext = img.uri.split(".").pop() || "jpg";
         const mimeType = `image/${ext === "jpg" ? "jpeg" : ext}`;
-        formData.append("images", {
-          uri: img.uri,
-          type: mimeType,
-          name: `image_${index}.${ext}`,
-        });
+        formData.append("images", { uri: img.uri, type: mimeType, name: `image_${index}.${ext}` });
       });
-
       await updateListing(listingId, formData);
-      Alert.alert("Success", "Listing updated", [
+      Alert.alert("Success", "Product updated", [
         { text: "OK", onPress: () => navigation.goBack() },
       ]);
     } catch (err) {
-      const msg =
-        err.response?.data?.error ||
-        err.response?.data?.details?.[0]?.message ||
-        "Failed to update listing";
+      const msg = err.response?.data?.error || err.response?.data?.details?.[0]?.message || "Failed to update product";
       Alert.alert("Error", msg);
     } finally {
       setSaving(false);
@@ -464,7 +329,7 @@ export default function ListingDetailScreen({ route, navigation }) {
   };
 
   const handleDelete = () => {
-    Alert.alert("Delete Listing", `Delete "${form.title}"?`, [
+    Alert.alert("Delete Product", `Delete "${form.title}"?`, [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
@@ -474,7 +339,7 @@ export default function ListingDetailScreen({ route, navigation }) {
             await deleteListing(listingId);
             navigation.goBack();
           } catch {
-            Alert.alert("Error", "Failed to delete listing");
+            Alert.alert("Error", "Failed to delete product");
           }
         },
       },
@@ -484,7 +349,7 @@ export default function ListingDetailScreen({ route, navigation }) {
   if (loading) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
-        <View className="flex-1 items-center justify-center">
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </SafeAreaView>
@@ -492,6 +357,7 @@ export default function ListingDetailScreen({ route, navigation }) {
   }
 
   const totalImages = existingImages.length + newImages.length;
+  const statusCfg = STATUS_MAP[form.status] || STATUS_MAP.AVAILABLE;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
@@ -503,7 +369,7 @@ export default function ListingDetailScreen({ route, navigation }) {
             alignItems: "center",
             justifyContent: "space-between",
             paddingHorizontal: 16,
-            paddingVertical: 12,
+            paddingVertical: 14,
             backgroundColor: colors.bgSecondary,
             borderBottomWidth: 1,
             borderBottomColor: colors.border,
@@ -513,46 +379,31 @@ export default function ListingDetailScreen({ route, navigation }) {
             onPress={() => navigation.goBack()}
             style={{ flexDirection: "row", alignItems: "center" }}
           >
-            <ChevronLeft size={20} color={colors.text} />
-            <Text
-              style={{
-                color: colors.text,
-                fontSize: 15,
-                fontWeight: "600",
-                marginLeft: 4,
-              }}
-            >
+            <ChevronLeft size={20} color={colors.text} strokeWidth={1.75} />
+            <Text style={{ color: colors.text, fontSize: 15, fontWeight: "600", marginLeft: 4 }}>
               Back
             </Text>
           </TouchableOpacity>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             <TouchableOpacity
               onPress={handleSave}
               disabled={saving}
               style={{
                 backgroundColor: colors.primary,
-                borderRadius: 20,
-                paddingHorizontal: 16,
-                paddingVertical: 8,
+                borderRadius: 9999,
+                paddingHorizontal: 18,
+                paddingVertical: 9,
                 flexDirection: "row",
                 alignItems: "center",
-                marginRight: 10,
                 opacity: saving ? 0.6 : 1,
               }}
             >
               {saving ? (
-                <ActivityIndicator size="small" color={colors.primaryText} />
+                <ActivityIndicator size="small" color={colors.white} />
               ) : (
                 <>
-                  <Check size={14} color={colors.primaryText} />
-                  <Text
-                    style={{
-                      color: colors.primaryText,
-                      fontSize: 13,
-                      fontWeight: "700",
-                      marginLeft: 5,
-                    }}
-                  >
+                  <Check size={15} color={colors.white} strokeWidth={2.5} />
+                  <Text style={{ color: colors.white, fontSize: 13, fontWeight: "700", marginLeft: 6 }}>
                     Save
                   </Text>
                 </>
@@ -564,12 +415,12 @@ export default function ListingDetailScreen({ route, navigation }) {
                 width: 36,
                 height: 36,
                 borderRadius: 18,
-                backgroundColor: `${colors.danger}18`,
+                backgroundColor: `${colors.danger}15`,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Trash2 size={16} color={colors.danger} />
+              <Trash2 size={16} color={colors.danger} strokeWidth={1.75} />
             </TouchableOpacity>
           </View>
         </View>
@@ -578,28 +429,14 @@ export default function ListingDetailScreen({ route, navigation }) {
           contentContainerStyle={{ padding: 20, paddingBottom: 120 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Images Section */}
-          <SectionHeader title="Photos" colors={colors} />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ marginBottom: 16 }}
-          >
+          {/* Photos */}
+          <SectionLabel title="Photos" colors={colors} />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
             {existingImages.map((img, idx) => {
-              const uri = img.startsWith("http")
-                ? img
-                : `${API_BASE_URL}/${img}`;
+              const uri = img.startsWith("http") ? img : `${API_BASE_URL}/${img}`;
               return (
                 <View key={`exist-${idx}`} style={{ marginRight: 10 }}>
-                  <CachedImage
-                    uri={uri}
-                    style={{
-                      width: 100,
-                      height: 100,
-                      borderRadius: 12,
-                    }}
-                    resizeMode="cover"
-                  />
+                  <CachedImage uri={uri} style={{ width: 96, height: 96, borderRadius: radii.sm }} resizeMode="cover" />
                   <TouchableOpacity
                     onPress={() => removeExistingImage(idx)}
                     style={{
@@ -612,26 +449,16 @@ export default function ListingDetailScreen({ route, navigation }) {
                       backgroundColor: colors.danger,
                       alignItems: "center",
                       justifyContent: "center",
-                      borderWidth: 1.5,
-                      borderColor: colors.bg,
                     }}
                   >
-                    <X size={10} color="#fff" />
+                    <X size={10} color="#fff" strokeWidth={2.5} />
                   </TouchableOpacity>
                 </View>
               );
             })}
             {newImages.map((img, idx) => (
               <View key={`new-${idx}`} style={{ marginRight: 10 }}>
-                <Image
-                  source={{ uri: img.uri }}
-                  style={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: 12,
-                  }}
-                  resizeMode="cover"
-                />
+                <Image source={{ uri: img.uri }} style={{ width: 96, height: 96, borderRadius: radii.sm }} resizeMode="cover" />
                 <TouchableOpacity
                   onPress={() => removeNewImage(idx)}
                   style={{
@@ -644,11 +471,9 @@ export default function ListingDetailScreen({ route, navigation }) {
                     backgroundColor: colors.danger,
                     alignItems: "center",
                     justifyContent: "center",
-                    borderWidth: 1.5,
-                    borderColor: colors.bg,
                   }}
                 >
-                  <X size={10} color="#fff" />
+                  <X size={10} color="#fff" strokeWidth={2.5} />
                 </TouchableOpacity>
               </View>
             ))}
@@ -656,284 +481,66 @@ export default function ListingDetailScreen({ route, navigation }) {
               <TouchableOpacity
                 onPress={pickImages}
                 style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 12,
-                  borderWidth: 1.5,
-                  borderColor: `${colors.primary}40`,
+                  width: 96,
+                  height: 96,
+                  borderRadius: radii.sm,
+                  borderWidth: 2,
+                  borderColor: colors.border,
                   borderStyle: "dashed",
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: `${colors.primary}08`,
+                  backgroundColor: colors.bgTertiary,
                 }}
               >
-                <Camera size={22} color={colors.primary} />
-                <Text
-                  style={{
-                    color: colors.primary,
-                    fontSize: 9,
-                    fontWeight: "600",
-                    marginTop: 4,
-                  }}
-                >
-                  Add Photo
+                <Camera size={20} color={colors.textMuted} strokeWidth={1.75} />
+                <Text style={{ color: colors.textMuted, fontSize: 10, fontWeight: "600", marginTop: 4 }}>
+                  Add
                 </Text>
               </TouchableOpacity>
             )}
           </ScrollView>
 
           {/* Basic Info */}
-          <SectionHeader title="Basic Information" colors={colors} />
+          <SectionLabel title="Basic Information" colors={colors} />
+          <FieldLabel label="Title" colors={colors} />
+          <StyledInput
+            value={form.title}
+            onChangeText={(v) => updateForm("title", v)}
+            placeholder="Product title"
+            colors={colors}
+            radii={radii}
+          />
 
-          <View style={{ marginBottom: 10 }}>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontSize: 11,
-                fontWeight: "600",
-                marginBottom: 6,
-              }}
-            >
-              Title
-            </Text>
-            <TextInput
-              value={form.title}
-              onChangeText={(v) => updateForm("title", v)}
-              placeholderTextColor={colors.textMuted}
-              style={{
-                backgroundColor: colors.input,
-                borderWidth: 1.5,
-                borderColor: colors.inputBorder,
-                borderRadius: 12,
-                paddingHorizontal: 14,
-                height: 48,
-                color: colors.text,
-                fontSize: 14,
-                fontWeight: "500",
-              }}
-            />
-          </View>
+          <FieldLabel label="Description" colors={colors} />
+          <StyledInput
+            value={form.description}
+            onChangeText={(v) => updateForm("description", v)}
+            placeholder="Describe the product"
+            multiline
+            colors={colors}
+            radii={radii}
+          />
 
-          <View style={{ marginBottom: 10 }}>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontSize: 11,
-                fontWeight: "600",
-                marginBottom: 6,
-              }}
-            >
-              Description
-            </Text>
-            <TextInput
-              value={form.description}
-              onChangeText={(v) => updateForm("description", v)}
-              placeholderTextColor={colors.textMuted}
-              multiline
-              numberOfLines={4}
-              style={{
-                backgroundColor: colors.input,
-                borderWidth: 1.5,
-                borderColor: colors.inputBorder,
-                borderRadius: 12,
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-                color: colors.text,
-                fontSize: 14,
-                fontWeight: "500",
-                textAlignVertical: "top",
-                minHeight: 90,
-              }}
-            />
-          </View>
-
-          <View style={{ marginBottom: 10 }}>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontSize: 11,
-                fontWeight: "600",
-                marginBottom: 6,
-              }}
-            >
-              Price (ETB)
-            </Text>
-            <TextInput
-              value={form.price}
-              onChangeText={(v) => updateForm("price", v)}
-              keyboardType="numeric"
-              placeholderTextColor={colors.textMuted}
-              style={{
-                backgroundColor: colors.input,
-                borderWidth: 1.5,
-                borderColor: colors.inputBorder,
-                borderRadius: 12,
-                paddingHorizontal: 14,
-                height: 48,
-                color: colors.text,
-                fontSize: 14,
-                fontWeight: "500",
-              }}
-            />
-          </View>
-
-          {/* Listing Type */}
-          <View style={{ marginBottom: 16 }}>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontSize: 11,
-                fontWeight: "600",
-                marginBottom: 8,
-              }}
-            >
-              Listing Type
-            </Text>
-            <View style={{ flexDirection: "row", gap: 10 }}>
-              {[
-                { key: "SELL", label: "Sell", icon: CircleDollarSign },
-                { key: "RENT", label: "Rent", icon: Calendar },
-              ].map((opt) => {
-                const sel = listingType === opt.key;
-                return (
-                  <TouchableOpacity
-                    key={opt.key}
-                    onPress={() => setListingType(opt.key)}
-                    style={{
-                      flex: 1,
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingVertical: 12,
-                      borderRadius: 10,
-                      borderWidth: 1.5,
-                      backgroundColor: sel
-                        ? `${colors.primary}18`
-                        : colors.input,
-                      borderColor: sel ? colors.primary : colors.inputBorder,
-                    }}
-                  >
-                    <opt.icon
-                      size={16}
-                      color={sel ? colors.primary : colors.textMuted}
-                      style={{ marginRight: 6 }}
-                    />
-                    <Text
-                      style={{
-                        color: sel ? colors.primary : colors.textMuted,
-                        fontSize: 13,
-                        fontWeight: "600",
-                      }}
-                    >
-                      {opt.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
+          <FieldLabel label="Price (ETB)" colors={colors} />
+          <StyledInput
+            value={form.price}
+            onChangeText={(v) => updateForm("price", v)}
+            placeholder="0"
+            keyboardType="numeric"
+            colors={colors}
+            radii={radii}
+          />
 
           {/* Status */}
-          <View style={{ marginBottom: 16 }}>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontSize: 11,
-                fontWeight: "600",
-                marginBottom: 8,
-              }}
-            >
-              Status
-            </Text>
-            <StatusPicker
-              value={form.status}
-              onChange={(s) => updateForm("status", s)}
-              colors={colors}
-            />
-          </View>
-
-          {/* Location */}
-          <SectionHeader title="Location" colors={colors} />
-
-          <View style={{ marginBottom: 12 }}>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontSize: 11,
-                fontWeight: "600",
-                marginBottom: 8,
-              }}
-            >
-              City
-            </Text>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-              {CITIES.map((city) => (
-                <TouchableOpacity
-                  key={city}
-                  onPress={() => updateForm("city", city)}
-                  style={{
-                    paddingHorizontal: 14,
-                    paddingVertical: 8,
-                    borderRadius: 20,
-                    backgroundColor:
-                      form.city === city ? colors.primary : colors.input,
-                    borderWidth: 1,
-                    borderColor:
-                      form.city === city ? colors.primary : colors.inputBorder,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color:
-                        form.city === city ? colors.primaryText : colors.text,
-                      fontSize: 12,
-                      fontWeight: "500",
-                    }}
-                  >
-                    {city}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <View style={{ marginBottom: 10 }}>
-            <Text
-              style={{
-                color: colors.textSecondary,
-                fontSize: 11,
-                fontWeight: "600",
-                marginBottom: 6,
-              }}
-            >
-              Neighborhood
-            </Text>
-            <TextInput
-              value={form.neighborhood}
-              onChangeText={(v) => updateForm("neighborhood", v)}
-              placeholder="e.g. Bole"
-              placeholderTextColor={colors.textMuted}
-              style={{
-                backgroundColor: colors.input,
-                borderWidth: 1.5,
-                borderColor: colors.inputBorder,
-                borderRadius: 12,
-                paddingHorizontal: 14,
-                height: 48,
-                color: colors.text,
-                fontSize: 14,
-                fontWeight: "500",
-              }}
-            />
+          <FieldLabel label="Status" colors={colors} />
+          <View style={{ marginBottom: 14 }}>
+            <StatusPicker value={form.status} onChange={(s) => updateForm("status", s)} colors={colors} radii={radii} />
           </View>
 
           {/* Category Details */}
           {schemaRules.length > 0 && (
             <>
-              <SectionHeader
-                title={`${selectedCategory?.displayName || "Category"} Details`}
-                colors={colors}
-              />
+              <SectionLabel title={`${selectedCategory?.displayName || "Category"} Details`} colors={colors} />
               {schemaRules.map((rule) => {
                 const meta = getFieldMeta(rule.field, rule.type);
                 const Icon = meta.icon;
@@ -941,34 +548,64 @@ export default function ListingDetailScreen({ route, navigation }) {
 
                 if (rule.type === "boolean") {
                   return (
-                    <BooleanField
+                    <View
                       key={rule.field}
-                      label={meta.label}
-                      icon={Icon}
-                      value={val}
-                      onToggle={(v) => updateDynamic(rule.field, v)}
-                      colors={colors}
-                    />
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        backgroundColor: colors.input,
+                        borderRadius: radii.md,
+                        borderWidth: 1,
+                        borderColor: colors.inputBorder,
+                        paddingHorizontal: 16,
+                        height: 52,
+                        marginBottom: 10,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <Icon size={17} color={colors.textMuted} strokeWidth={1.75} style={{ marginRight: 12 }} />
+                        <Text style={{ color: colors.text, fontSize: 14, fontWeight: "500" }}>{meta.label}</Text>
+                      </View>
+                      <Switch
+                        value={!!val}
+                        onValueChange={(v) => updateDynamic(rule.field, v)}
+                        trackColor={{ false: colors.border, true: colors.primary }}
+                        thumbColor={colors.white}
+                      />
+                    </View>
                   );
                 }
 
                 return (
-                  <EditableField
-                    key={rule.field}
-                    label={meta.label}
-                    icon={Icon}
-                    value={val !== undefined && val !== null ? String(val) : ""}
-                    onChangeText={(v) => updateDynamic(rule.field, v)}
-                    keyboardType={rule.type === "number" ? "numeric" : "default"}
-                    colors={colors}
-                  />
+                  <View key={rule.field} style={{ marginBottom: 14 }}>
+                    <FieldLabel label={meta.label} colors={colors} />
+                    <TextInput
+                      value={val !== undefined && val !== null ? String(val) : ""}
+                      onChangeText={(v) => updateDynamic(rule.field, v)}
+                      placeholder={meta.label}
+                      placeholderTextColor={colors.textMuted}
+                      keyboardType={rule.type === "number" ? "numeric" : "default"}
+                      style={{
+                        backgroundColor: colors.input,
+                        borderWidth: 1,
+                        borderColor: colors.inputBorder,
+                        borderRadius: radii.md,
+                        paddingHorizontal: 16,
+                        height: 52,
+                        color: colors.text,
+                        fontSize: 14,
+                        fontWeight: "500",
+                      }}
+                    />
+                  </View>
                 );
               })}
             </>
           )}
         </ScrollView>
 
-        {/* Bottom Save Bar */}
+        {/* Bottom Bar */}
         <View
           style={{
             position: "absolute",
@@ -985,20 +622,11 @@ export default function ListingDetailScreen({ route, navigation }) {
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text
-              style={{ color: colors.textMuted, fontSize: 11, marginBottom: 2 }}
-            >
-              {selectedCategory?.displayName || "—"} · {form.city || "—"} ·{" "}
-              {form.neighborhood || "—"}
+            <Text style={{ color: colors.textMuted, fontSize: 11, marginBottom: 2 }}>
+              {selectedCategory?.displayName || "—"} · {form.neighborhood || "—"}
             </Text>
-            <Text style={{ color: colors.primary, fontSize: 16, fontWeight: "700" }}>
+            <Text style={{ color: colors.primary, fontSize: 17, fontWeight: "700" }}>
               {form.price ? `${Number(form.price).toLocaleString()} ETB` : "—"}
-              {listingType === "RENT" ? (
-                <Text style={{ color: colors.textMuted, fontSize: 11 }}>
-                  {" "}
-                  /month
-                </Text>
-              ) : null}
             </Text>
           </View>
           <TouchableOpacity
@@ -1006,7 +634,7 @@ export default function ListingDetailScreen({ route, navigation }) {
             disabled={saving}
             style={{
               backgroundColor: colors.primary,
-              borderRadius: 24,
+              borderRadius: 9999,
               paddingHorizontal: 24,
               paddingVertical: 12,
               flexDirection: "row",
@@ -1015,18 +643,11 @@ export default function ListingDetailScreen({ route, navigation }) {
             }}
           >
             {saving ? (
-              <ActivityIndicator size="small" color={colors.primaryText} />
+              <ActivityIndicator size="small" color={colors.white} />
             ) : (
               <>
-                <Check size={16} color={colors.primaryText} />
-                <Text
-                  style={{
-                    color: colors.primaryText,
-                    fontSize: 14,
-                    fontWeight: "700",
-                    marginLeft: 6,
-                  }}
-                >
+                <Check size={16} color={colors.white} strokeWidth={2.5} />
+                <Text style={{ color: colors.white, fontSize: 14, fontWeight: "700", marginLeft: 6 }}>
                   Save Changes
                 </Text>
               </>

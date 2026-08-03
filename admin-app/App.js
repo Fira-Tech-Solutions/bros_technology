@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
-import { ActivityIndicator, View } from "react-native";
+import { View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -10,20 +10,18 @@ import { AuthProvider, useAuth } from "./src/context/AuthContext";
 
 import MainNavigator from "./src/navigation/MainNavigator";
 import AuthNavigator from "./src/navigation/AuthNavigator";
+import SplashScreen from "./src/screens/SplashScreen";
 import useNotifications from "./src/hooks/useNotifications";
 
 function RootNavigator() {
   const { isAuthenticated, loading } = useAuth();
   const { colors } = useTheme();
 
-  // Initialize push notifications when authenticated
   useNotifications();
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.bg, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
+      <View style={{ flex: 1, backgroundColor: colors.bg, justifyContent: "center", alignItems: "center" }} />
     );
   }
 
@@ -31,6 +29,21 @@ function RootNavigator() {
 }
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  const handleSplashFinish = useCallback(() => {
+    setShowSplash(false);
+  }, []);
+
+  if (showSplash) {
+    return (
+      <>
+        <StatusBar style="light" />
+        <SplashScreen onFinish={handleSplashFinish} />
+      </>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <ThemeProvider>

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
+import Animated, { FadeIn } from "react-native-reanimated";
 import { useTheme } from "../context/ThemeContext";
 
 export default function Card({
@@ -7,25 +8,33 @@ export default function Card({
   onPress,
   className = "",
   padding = true,
+  variant = "default",
+  style = {},
 }) {
-  const { colors } = useTheme();
+  const { colors, radii, shadows } = useTheme();
+
+  const bg = variant === "highlight" ? colors.primaryTint : colors.card;
+  const border = variant === "highlight" ? `${colors.primary}20` : colors.border;
 
   const content = (
-    <View
-      className={`rounded-2xl ${padding ? "p-4" : ""} ${className}`}
-      style={{
-        backgroundColor: colors.card,
-        borderWidth: 1,
-        borderColor: colors.border,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.05,
-        shadowRadius: 3,
-        elevation: 2,
-      }}
+    <Animated.View
+      entering={FadeIn.duration(250)}
+      className={`${padding ? "" : ""} ${className}`}
+      style={[
+        {
+          backgroundColor: bg,
+          borderRadius: radii.lg,
+          borderWidth: 1,
+          borderColor: border,
+          padding: padding ? 18 : 0,
+          overflow: "hidden",
+        },
+        shadows.sm(),
+        style,
+      ]}
     >
       {children}
-    </View>
+    </Animated.View>
   );
 
   if (onPress) {

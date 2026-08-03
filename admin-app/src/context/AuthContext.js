@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { getProfile, login } from "../api/auth";
+import { getProfile, login, register } from "../api/auth";
+import client from "../api/client";
 import { getItemAsync, setItemAsync, deleteItemAsync } from "../utils/storage";
 
 const AuthContext = createContext(null);
@@ -22,8 +23,12 @@ export const AuthProvider = ({ children }) => {
         setUser(data.data);
       }
     } catch {
-      await deleteItemAsync("auth_token");
-      await deleteItemAsync("user_data");
+      try {
+        await deleteItemAsync("auth_token");
+      } catch {}
+      try {
+        await deleteItemAsync("user_data");
+      } catch {}
     } finally {
       setLoading(false);
     }
@@ -57,9 +62,30 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = !!token && !!user;
 
+  const registerAgent = {
+    verifyCode: async (code) => {
+      return client.post("/api/auth/verify-agent-code", { code });
+    },
+    signup: async ({ email, password, name, phone, agentCode }) => {
+      const { data } = await register({
+        email,
+        password,
+        name,
+        phone,
+        agentCode,
+      });
+      const { token: authToken, user: userData } = data.data;
+      await setItemAsync("auth_token", authToken);
+      await setItemAsync("user_data", JSON.stringify(userData));
+      setToken(authToken);
+      setUser(userData);
+      return userData;
+    },
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, token, loading, signIn, signOut, updateUser, isAuthenticated }}
+      value={{ user, token, loading, signIn, signOut, updateUser, isAuthenticated, registerAgent }}
     >
       {children}
     </AuthContext.Provider>

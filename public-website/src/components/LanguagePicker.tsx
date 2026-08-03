@@ -62,7 +62,7 @@ export function LanguagePicker({ className }: { className?: string }) {
                 {locale === l.code && (
                   <motion.span
                     layoutId="locale-check"
-                    className="ml-auto text-gold"
+                    className="ml-auto text-brand"
                     transition={{ type: "spring", stiffness: 380, damping: 32 }}
                   >
                     ✓

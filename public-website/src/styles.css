@@ -30,119 +30,140 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-gold: var(--gold);
-  --color-gold-soft: var(--gold-soft);
-  --color-gadaa-red: var(--gadaa-red);
-  --color-gadaa-black: var(--gadaa-black);
-  --color-gadaa-white: var(--gadaa-white);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-cyan-accent: var(--cyan-accent);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
   --font-display: var(--font-display);
   --font-sans: var(--font-sans);
 }
 
+/*
+ * Palette is derived from admin-app/src/config/theme.js so the storefront and
+ * the admin app read as one product. Primary #1878B4, slate neutrals, and the
+ * same semantic success/danger/warning triplet.
+ */
+
 /* ─── Dark mode (default) ─── */
 :root {
   --radius: 1rem;
-  --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --background: oklch(0.14 0.012 270);
-  --foreground: oklch(0.97 0.005 90);
-  --card: oklch(0.18 0.014 270);
-  --card-foreground: oklch(0.97 0.005 90);
-  --popover: oklch(0.18 0.014 270);
-  --popover-foreground: oklch(0.97 0.005 90);
-  --primary: oklch(0.85 0.12 85);
-  --primary-foreground: oklch(0.14 0.012 270);
-  --secondary: oklch(0.24 0.018 270);
-  --secondary-foreground: oklch(0.97 0.005 90);
-  --muted: oklch(0.22 0.014 270);
-  --muted-foreground: oklch(0.65 0.015 270);
-  --accent: oklch(0.28 0.04 270);
-  --accent-foreground: oklch(0.97 0.005 90);
-  --destructive: oklch(0.6 0.22 25);
-  --destructive-foreground: oklch(0.97 0.005 90);
-  --border: oklch(0.28 0.015 270);
-  --input: oklch(0.24 0.015 270);
-  --ring: oklch(0.85 0.12 85);
+  --background: oklch(0.158 0.007 258);      /* #0B0D10 */
+  --foreground: oklch(0.96 0.005 258);       /* #F0F2F5 */
+  --card: oklch(0.208 0.009 256);            /* #15181C */
+  --card-foreground: oklch(0.96 0.005 258);
+  --popover: oklch(0.208 0.009 256);
+  --popover-foreground: oklch(0.96 0.005 258);
 
-  --gold: oklch(0.85 0.12 85);
-  --gold-soft: oklch(0.92 0.08 90);
+  /* Lifted a touch off the admin blue so filled buttons hold up on near-black. */
+  --primary: oklch(0.585 0.135 243);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.242 0.011 254);       /* #1C2025 */
+  --secondary-foreground: oklch(0.96 0.005 258);
+  --muted: oklch(0.242 0.011 254);
+  --muted-foreground: oklch(0.64 0.018 256); /* ≥ 6:1 on --background */
+  --accent: oklch(0.283 0.013 253);          /* #252A30 */
+  --accent-foreground: oklch(0.96 0.005 258);
+  --destructive: oklch(0.637 0.208 25);      /* #EF4444 */
+  --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.723 0.192 150);         /* #22C55E */
+  --warning: oklch(0.769 0.165 70);          /* #F59E0B */
+  --border: oklch(0.283 0.013 253);
+  --input: oklch(0.242 0.011 254);
+  --ring: oklch(0.658 0.169 249);
 
-  /* Gadaa cultural palette — dark */
-  --gadaa-red: oklch(0.55 0.22 25);
-  --gadaa-black: oklch(0.12 0.01 270);
-  --gadaa-white: oklch(0.97 0.005 90);
+  /* Brand accent — used for icons, highlights and small accent text. Brighter
+     than --primary because it sits on the dark surface as text, not as a fill. */
+  --brand: oklch(0.745 0.135 236);
+  --brand-strong: oklch(0.83 0.11 230);
+  --brand-soft: oklch(0.273 0.049 241);      /* #0D2A3D — admin primaryTint (dark) */
+  --cyan-accent: oklch(0.73 0.132 225);      /* #22B8E6 */
 
-  --gradient-hero: radial-gradient(ellipse at top, oklch(0.28 0.05 280 / 0.6), transparent 60%),
-                   radial-gradient(ellipse at bottom right, oklch(0.85 0.12 85 / 0.15), transparent 50%);
-  --gradient-gold: linear-gradient(135deg, oklch(0.92 0.08 90), oklch(0.78 0.14 75));
-  --shadow-elegant: 0 30px 80px -20px oklch(0 0 0 / 0.6);
-  --shadow-glow: 0 0 60px oklch(0.85 0.12 85 / 0.25);
+  --gradient-hero: radial-gradient(ellipse at top, oklch(0.42 0.13 245 / 0.45), transparent 62%),
+                   radial-gradient(ellipse at bottom right, oklch(0.73 0.132 225 / 0.16), transparent 55%);
+  --gradient-brand: linear-gradient(135deg, oklch(0.73 0.132 225), oklch(0.55 0.14 250));
+  --shadow-elegant: 0 24px 64px -20px oklch(0 0 0 / 0.55);
+  --shadow-glow: 0 0 48px oklch(0.62 0.15 243 / 0.28);
 }
 
 /* ─── Light mode ─── */
 html.light {
-  --background: oklch(0.97 0.005 90);
-  --foreground: oklch(0.14 0.012 270);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.14 0.012 270);
+  --background: oklch(0.981 0.003 248);      /* #F7F9FB */
+  --foreground: oklch(0.207 0.010 248);      /* #14181C */
+  --card: oklch(1 0 0);                      /* #FFFFFF */
+  --card-foreground: oklch(0.207 0.010 248);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.14 0.012 270);
-  --primary: oklch(0.72 0.16 45);
+  --popover-foreground: oklch(0.207 0.010 248);
+
+  --primary: oklch(0.550 0.125 243);         /* #1878B4 — exact admin primary */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.93 0.01 90);
-  --secondary-foreground: oklch(0.22 0.012 270);
-  --muted: oklch(0.94 0.008 90);
-  --muted-foreground: oklch(0.45 0.015 270);
-  --accent: oklch(0.94 0.015 90);
-  --accent-foreground: oklch(0.14 0.012 270);
-  --destructive: oklch(0.55 0.22 25);
+  --secondary: oklch(0.960 0.005 248);       /* #EFF2F5 */
+  --secondary-foreground: oklch(0.373 0.031 260);
+  --muted: oklch(0.960 0.005 248);
+  --muted-foreground: oklch(0.551 0.023 264); /* #6B7280 */
+  --accent: oklch(0.962 0.014 238);          /* #EAF4FB — admin primaryTint */
+  --accent-foreground: oklch(0.207 0.010 248);
+  --destructive: oklch(0.577 0.215 26);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.88 0.01 90);
-  --input: oklch(0.92 0.008 90);
-  --ring: oklch(0.72 0.16 45);
+  --success: oklch(0.63 0.18 150);
+  --warning: oklch(0.70 0.16 62);
+  --border: oklch(0.941 0.009 248);          /* #E7ECF1 */
+  --input: oklch(1 0 0);
+  --ring: oklch(0.550 0.125 243);
 
-  --gold: oklch(0.72 0.16 45);
-  --gold-soft: oklch(0.82 0.1 50);
+  --brand: oklch(0.505 0.125 243);           /* ≥ 5.5:1 on white for accent text */
+  --brand-strong: oklch(0.462 0.102 242);    /* #125E8C — admin primaryDark */
+  --brand-soft: oklch(0.962 0.014 238);      /* #EAF4FB */
+  --cyan-accent: oklch(0.62 0.125 227);
 
-  /* Gadaa cultural palette — light */
-  --gadaa-red: oklch(0.52 0.22 25);
-  --gadaa-black: oklch(0.14 0.012 270);
-  --gadaa-white: oklch(0.99 0.003 90);
-
-  --gradient-hero: radial-gradient(ellipse at top, oklch(0.95 0.02 80 / 0.8), transparent 60%),
-                   radial-gradient(ellipse at bottom right, oklch(0.72 0.16 45 / 0.1), transparent 50%);
-  --gradient-gold: linear-gradient(135deg, oklch(0.78 0.14 55), oklch(0.65 0.18 40));
-  --shadow-elegant: 0 30px 80px -20px oklch(0 0 0 / 0.12);
-  --shadow-glow: 0 0 60px oklch(0.72 0.16 45 / 0.15);
+  --gradient-hero: radial-gradient(ellipse at top, oklch(0.93 0.04 240 / 0.9), transparent 62%),
+                   radial-gradient(ellipse at bottom right, oklch(0.55 0.125 243 / 0.10), transparent 55%);
+  --gradient-brand: linear-gradient(135deg, oklch(0.62 0.125 227), oklch(0.48 0.13 248));
+  --shadow-elegant: 0 24px 64px -20px oklch(0.45 0.06 245 / 0.16);
+  --shadow-glow: 0 0 48px oklch(0.550 0.125 243 / 0.18);
 }
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchor targets clear of the fixed header. */
+    scroll-padding-top: 6rem;
+  }
   body {
     background: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    text-rendering: optimizeLegibility;
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+  }
+  /* Visible keyboard focus everywhere — the site is otherwise focus-invisible. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--brand);
+    color: var(--primary-foreground);
   }
 }
 
 /* Ge'ez script typography optimization */
-html[lang="am"] body {
-  font-family: "Noto Sans Ethiopic", "Inter", ui-sans-serif, system-ui, sans-serif;
-  line-height: 1.8;
-  letter-spacing: 0.01em;
-}
-
+html[lang="am"] body,
 html[lang="am"] .font-display {
-  font-family: "Noto Serif Ethiopic", "Instrument Serif", ui-serif, Georgia, serif;
+  font-family: "Noto Sans Ethiopic", "Inter", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.75;
+  letter-spacing: 0.01em;
 }
 
 html[lang="om"] body {
@@ -152,36 +173,40 @@ html[lang="om"] body {
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .bg-gradient-hero { background-image: var(--gradient-hero); }
-  .bg-gradient-gold { background-image: var(--gradient-gold); }
-  .text-gradient-gold {
-    background: var(--gradient-gold);
+  .bg-gradient-brand { background-image: var(--gradient-brand); }
+  .text-gradient-brand {
+    background: var(--gradient-brand);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
   .shadow-elegant { box-shadow: var(--shadow-elegant); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
+
   .glass {
-    background: oklch(0.18 0.014 270 / 0.6);
+    background: oklch(0.185 0.009 256 / 0.72);
     backdrop-filter: blur(20px) saturate(140%);
     -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid oklch(1 0 0 / 0.06);
   }
   html.light .glass {
-    background: oklch(1 0 0 / 0.7);
+    background: oklch(1 0 0 / 0.75);
+    border: 1px solid oklch(0.55 0.125 243 / 0.10);
   }
+
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
   /* ── Frosted glass card ── */
   .frosted {
-    background: rgba(255,255,255,0.08);
+    background: oklch(1 0 0 / 0.06);
     backdrop-filter: blur(12px) saturate(140%);
     -webkit-backdrop-filter: blur(12px) saturate(140%);
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid oklch(1 0 0 / 0.08);
   }
   html.light .frosted {
-    background: rgba(255,255,255,0.5);
-    border: 1px solid rgba(0,0,0,0.06);
+    background: oklch(1 0 0 / 0.55);
+    border: 1px solid oklch(0.55 0.125 243 / 0.10);
   }
 
   /* ── Scroll-driven section reveal ── */
@@ -195,66 +220,69 @@ html[lang="om"] body {
     transform: translateY(0);
   }
 
-  /* ── Reduced motion: disable parallax, transforms, keep fades ── */
-  @media (prefers-reduced-motion: reduce) {
-    .reveal {
-      transition: opacity 0.4s ease;
-      transform: none !important;
-    }
-  }
-
-  /* ── Category card hover lift ── */
+  /* ── Category / product card hover lift ── */
   .card-lift {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   }
   .card-lift:hover {
     transform: translateY(-6px);
-    box-shadow: 0 12px 32px -8px oklch(0 0 0 / 0.2);
+    border-color: oklch(0.62 0.14 243 / 0.55);
+    box-shadow: 0 16px 36px -12px oklch(0.45 0.12 243 / 0.45);
   }
   html.light .card-lift:hover {
-    box-shadow: 0 12px 32px -8px oklch(0 0 0 / 0.1);
+    box-shadow: 0 16px 36px -12px oklch(0.55 0.125 243 / 0.28);
   }
 
-  /* ── Oromo cultural accent utilities ── */
-  .border-gadaa {
-    border-image: linear-gradient(135deg, var(--gadaa-red), var(--gadaa-black), var(--gadaa-white)) 1;
+  /* ── Marquee ──
+     CSS-driven so it runs on the compositor instead of a permanent
+     framer-motion rAF loop on the main thread. */
+  .marquee-track {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    width: max-content;
+    animation: marquee-scroll 32s linear infinite;
+    will-change: transform;
   }
-  .bg-gadaa-pattern {
-    background-image:
-      repeating-linear-gradient(
-        90deg,
-        var(--gadaa-red) 0px,
-        var(--gadaa-red) 2px,
-        transparent 2px,
-        transparent 8px
-      );
+  .marquee-viewport:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee-scroll {
+    from { transform: translate3d(0, 0, 0); }
+    to { transform: translate3d(-50%, 0, 0); }
   }
-  .accent-gadaa {
-    position: relative;
-  }
-  .accent-gadaa::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--gadaa-red), var(--gadaa-black), var(--gadaa-white), var(--gadaa-black), var(--gadaa-red));
-  }
-  .skeleton-gadaa {
+
+  .skeleton-shimmer {
     background: linear-gradient(
       110deg,
       var(--muted) 0%,
       var(--muted) 40%,
-      oklch(from var(--muted) l c h / 0.5) 50%,
+      var(--accent) 50%,
       var(--muted) 60%,
       var(--muted) 100%
     );
     background-size: 200% 100%;
-    animation: shimmer-gadaa 1.8s ease-in-out infinite;
+    animation: shimmer 1.8s ease-in-out infinite;
   }
-  @keyframes shimmer-gadaa {
+  @keyframes shimmer {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
+  }
+
+  /* Defer layout/paint for long off-screen sections. */
+  .cv-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 640px;
+  }
+
+  /* ── Reduced motion ── */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal {
+      opacity: 1;
+      transform: none !important;
+      transition: none;
+    }
+    .marquee-track { animation: none; }
+    .skeleton-shimmer { animation: none; }
+    .card-lift:hover { transform: none; }
   }
 }

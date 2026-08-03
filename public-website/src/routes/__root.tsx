@@ -89,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "BROS Technology \u2014 quality electronics accessories at the best prices in Ethiopia.",
       },
-      { name: "theme-color", content: "#c85a2a" },
+      { name: "theme-color", content: "#1878B4" },
       { property: "og:title", content: "BROS Technology — Electronics Accessories in Ethiopia" },
       {
         property: "og:description",
@@ -97,7 +97,53 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "BROS Technology \u2014 quality electronics accessories at the best prices in Ethiopia.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:image", content: "/images/hero/desktop-dark-1920.jpg" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "BROS Technology — Electronics Accessories in Ethiopia" },
+      {
+        name: "twitter:description",
+        content:
+          "BROS Technology \u2014 quality electronics accessories at the best prices in Ethiopia.",
+      },
+      { name: "twitter:image", content: "/images/hero/desktop-dark-1920.jpg" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        innerHTML: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "BROS Technology",
+          description: "Quality electronics accessories at the best prices in Ethiopia",
+          url: "https://brostechnology.com",
+          logo: "/images/favicon/favicon-96x96.png",
+          image: "/images/hero/desktop-dark-1920.jpg",
+          telephone: ["+251972195934", "+251980564814"],
+          email: "info@brostechnology.com",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Addis Ababa",
+            addressCountry: "ET",
+          },
+          geo: {
+            "@type": "GeoCoordinates",
+            latitude: "9.0054",
+            longitude: "38.7636",
+          },
+          openingHoursSpecification: {
+            "@type": "OpeningHoursSpecification",
+            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            opens: "08:00",
+            closes: "20:00",
+          },
+          sameAs: [
+            "https://t.me/bros_technology",
+            "https://www.facebook.com/brostechnology",
+            "https://www.instagram.com/brostechnology",
+          ],
+          priceRange: "$$",
+        }),
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -115,13 +161,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "preload",
         as: "image",
-        href: "/images/bros_desktop_dark_HD.jpg",
+        type: "image/avif",
+        href: "/images/hero/desktop-dark-1920.avif",
         media: "(min-width: 768px)",
       },
       {
         rel: "preload",
         as: "image",
-        href: "/images/bros_mobile_dark_HD.png",
+        type: "image/avif",
+        href: "/images/hero/mobile-dark-828.avif",
         media: "(max-width: 767px)",
       },
       { rel: "script", src: "https://telegram.org/js/telegram-web-app.js" },

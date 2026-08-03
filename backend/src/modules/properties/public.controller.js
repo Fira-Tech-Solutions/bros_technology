@@ -16,6 +16,8 @@ function mapListingToProperty(listing) {
     inStock,
     brand: attrs.brand || '',
     category: listing.category?.displayName || 'Device',
+    categoryId: listing.categoryId,
+    attributes: attrs,
     tags: Object.entries(attrs)
       .filter(([k]) => !['listingType', 'brand', 'inStock'].includes(k))
       .map(([k, v]) => `${k}: ${v}`)
@@ -39,6 +41,17 @@ export async function getPublicListings(req, res, next) {
       q,
       priceMin,
       priceMax,
+      brand,
+      condition,
+      storage,
+      ram,
+      color,
+      processor,
+      screenSize,
+      os,
+      model,
+      connectivity,
+      caseSize,
       limit = 50,
     } = req.query;
 
@@ -67,6 +80,26 @@ export async function getPublicListings(req, res, next) {
       where.price = {};
       if (priceMin) where.price.gte = parseFloat(priceMin);
       if (priceMax) where.price.lte = parseFloat(priceMax);
+    }
+
+    // Attribute-based filters using JSON path queries
+    const attributeFilters = [];
+    if (brand) attributeFilters.push({ path: ['brand'], equals: brand });
+    if (condition) attributeFilters.push({ path: ['condition'], equals: condition });
+    if (storage) attributeFilters.push({ path: ['storage'], equals: storage });
+    if (ram) attributeFilters.push({ path: ['ram'], equals: ram });
+    if (color) attributeFilters.push({ path: ['color'], equals: color });
+    if (processor) attributeFilters.push({ path: ['processor'], equals: processor });
+    if (screenSize) attributeFilters.push({ path: ['screenSize'], equals: screenSize });
+    if (os) attributeFilters.push({ path: ['os'], equals: os });
+    if (model) attributeFilters.push({ path: ['model'], equals: model });
+    if (connectivity) attributeFilters.push({ path: ['connectivity'], equals: connectivity });
+    if (caseSize) attributeFilters.push({ path: ['caseSize'], equals: caseSize });
+
+    if (attributeFilters.length > 0) {
+      where.AND = attributeFilters.map((filter) => ({
+        attributes: { path: filter.path, equals: filter.equals },
+      }));
     }
 
     const listings = await prisma.listing.findMany({
@@ -141,6 +174,65 @@ export async function trackInquiryClick(req, res, next) {
     });
 
     return res.status(200).json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getFilterOptions(req, res, next) {
+  try {
+    const { category } = req.query;
+
+    if (!category || category === 'All') {
+      return res.status(200).json({ success: true, data: {} });
+    }
+
+    const cat = await prisma.category.findFirst({
+      where: {
+        OR: [
+          { displayName: { equals: category, mode: 'insensitive' } },
+          { name: { equals: category, mode: 'insensitive' } },
+        ],
+      },
+    });
+
+    if (!cat) {
+      return res.status(200).json({ success: true, data: {} });
+    }
+
+    // Get all listings for this category to extract unique filter values
+    const listings = await prisma.listing.findMany({
+      where: { categoryId: cat.id, status: 'AVAILABLE' },
+      select: { attributes: true },
+    });
+
+    // Extract unique values for each filterable field
+    const filterOptions = {};
+    const schemaRules = cat.schemaRules || [];
+
+    for (const rule of schemaRules) {
+      const field = rule.field;
+      const uniqueValues = new Set();
+
+      for (const listing of listings) {
+        const attrs = listing.attributes || {};
+        const value = attrs[field];
+        if (value !== undefined && value !== null && value !== '') {
+          uniqueValues.add(String(value));
+        }
+      }
+
+      if (uniqueValues.size > 0) {
+        filterOptions[field] = {
+          ...rule,
+          options: rule.options
+            ? rule.options.filter((opt) => uniqueValues.has(opt))
+            : Array.from(uniqueValues).sort(),
+        };
+      }
+    }
+
+    return res.status(200).json({ success: true, data: filterOptions });
   } catch (error) {
     next(error);
   }

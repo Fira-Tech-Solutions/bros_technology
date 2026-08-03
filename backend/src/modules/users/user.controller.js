@@ -27,7 +27,7 @@ const USER_SELECT_SAFE = {
 
 export async function register(req, res, next) {
   try {
-    const { email, password, name, phone, role } = req.body;
+    const { email, password, name, phone, agentCode } = req.body;
 
     if (!email || !password || !name || !phone) {
       return res.status(400).json({
@@ -59,18 +59,58 @@ export async function register(req, res, next) {
       });
     }
 
+    // Agent registration requires a valid code
+    if (!agentCode || agentCode.length !== 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'A valid 6-digit agent code is required to register',
+      });
+    }
+
+    const codeRecord = await prisma.agentCode.findUnique({
+      where: { code: agentCode.trim() },
+    });
+
+    if (!codeRecord) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid agent code',
+      });
+    }
+
+    if (codeRecord.isUsed) {
+      return res.status(400).json({
+        success: false,
+        error: 'This agent code has already been used',
+      });
+    }
+
+    if (new Date() > codeRecord.expiresAt) {
+      return res.status(400).json({
+        success: false,
+        error: 'This agent code has expired. Please request a new one.',
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    const user = await prisma.user.create({
-      data: {
-        email: email.toLowerCase().trim(),
-        password: hashedPassword,
-        name: name.trim(),
-        phone: phone.trim(),
-        role: role || 'AGENT',
-      },
-      select: USER_SELECT_SAFE,
-    });
+    // Create user and mark code as used in a transaction
+    const [user] = await prisma.$transaction([
+      prisma.user.create({
+        data: {
+          email: email.toLowerCase().trim(),
+          password: hashedPassword,
+          name: name.trim(),
+          phone: phone.trim(),
+          role: 'AGENT',
+        },
+        select: USER_SELECT_SAFE,
+      }),
+      prisma.agentCode.update({
+        where: { id: codeRecord.id },
+        data: { isUsed: true },
+      }),
+    ]);
 
     const token = generateToken(user);
 
