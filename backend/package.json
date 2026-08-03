@@ -20,6 +20,7 @@
     "test:ci": "dotenv -e .env.test -- node --experimental-vm-modules node_modules/.bin/jest --runInBand --coverage --ci --forceExit",
     "test:setup": "docker compose -f ../DataBase/docker-compose.yml up -d postgres-test-db && sleep 3 && npm run db:push",
     "test:teardown": "docker compose -f ../DataBase/docker-compose.yml down -v --filter name=marketplace_test_postgres",
+    "vercel-build": "npx prisma generate",
     "db:seed": "node prisma/seed.js"
   },
   "keywords": [],
