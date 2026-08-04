@@ -1,5 +1,5 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { Suspense, lazy } from "react";
+import { View, Text, ActivityIndicator } from "react-native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,13 +16,40 @@ import ListingDetailScreen from "../screens/ListingDetailScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import SyndicationScreen from "../screens/SyndicationScreen";
-import SyndicationConfigScreen from "../screens/SyndicationConfigScreen";
-import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
-import ResetPasswordScreen from "../screens/ResetPasswordScreen";
-import NotificationScreen from "../screens/NotificationScreen";
-import CommissionScreen from "../screens/CommissionScreen";
-import ContactSettingsScreen from "../screens/ContactSettingsScreen";
-import AgentManagementScreen from "../screens/AgentManagementScreen";
+
+const SyndicationConfigScreen = lazy(() => import("../screens/SyndicationConfigScreen"));
+const ForgotPasswordScreen = lazy(() => import("../screens/ForgotPasswordScreen"));
+const ResetPasswordScreen = lazy(() => import("../screens/ResetPasswordScreen"));
+const NotificationScreen = lazy(() => import("../screens/NotificationScreen"));
+const CommissionScreen = lazy(() => import("../screens/CommissionScreen"));
+const ContactSettingsScreen = lazy(() => import("../screens/ContactSettingsScreen"));
+const AgentManagementScreen = lazy(() => import("../screens/AgentManagementScreen"));
+
+function LazyFallback() {
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <ActivityIndicator size="small" />
+    </View>
+  );
+}
+
+function withSuspense(Component) {
+  return function WrappedComponent(props) {
+    return (
+      <Suspense fallback={<LazyFallback />}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
+}
+
+const LazySyndicationConfig = withSuspense(SyndicationConfigScreen);
+const LazyForgotPassword = withSuspense(ForgotPasswordScreen);
+const LazyResetPassword = withSuspense(ResetPasswordScreen);
+const LazyNotification = withSuspense(NotificationScreen);
+const LazyCommission = withSuspense(CommissionScreen);
+const LazyContactSettings = withSuspense(ContactSettingsScreen);
+const LazyAgentManagement = withSuspense(AgentManagementScreen);
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,7 +83,7 @@ function DashboardStack() {
       />
       <Stack.Screen
         name="Notifications"
-        component={NotificationScreen}
+        component={LazyNotification}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -118,17 +145,17 @@ function SettingsStack() {
       />
       <Stack.Screen
         name="ForgotPassword"
-        component={ForgotPasswordScreen}
+        component={LazyForgotPassword}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="ResetPassword"
-        component={ResetPasswordScreen}
+        component={LazyResetPassword}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="ContactSettings"
-        component={ContactSettingsScreen}
+        component={LazyContactSettings}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -210,7 +237,7 @@ export default function MainNavigator() {
       {isAdmin && (
         <Tab.Screen
           name="Finance"
-          component={CommissionScreen}
+          component={LazyCommission}
           options={{
             tabBarLabel: "Finance",
             tabBarIcon: ({ color, size, focused }) => (
@@ -222,7 +249,7 @@ export default function MainNavigator() {
       {isAdmin && (
         <Tab.Screen
           name="Agents"
-          component={AgentManagementScreen}
+          component={LazyAgentManagement}
           options={{
             tabBarLabel: "Agents",
             tabBarIcon: ({ color, size, focused }) => (
@@ -233,7 +260,7 @@ export default function MainNavigator() {
       )}
       <Tab.Screen
         name="Syndication"
-        component={SyndicationConfigScreen}
+        component={LazySyndicationConfig}
         options={{
           tabBarLabel: "Syndication",
           tabBarIcon: ({ color, size, focused }) => (
