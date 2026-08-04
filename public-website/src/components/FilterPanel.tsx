@@ -239,6 +239,19 @@ export function FilterPanel({
           );
         }
 
+        if (rule.type === "string" && rule.options?.length) {
+          return (
+            <SelectFilter
+              key={field}
+              field={field}
+              label={LABEL_MAP[field] || rule.field}
+              options={rule.options}
+              value={value[field] as string | undefined}
+              onChange={(f, val) => patch({ [f]: val })}
+            />
+          );
+        }
+
         return null;
       })}
 
