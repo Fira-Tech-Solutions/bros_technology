@@ -4,19 +4,77 @@ import { useState, useCallback, useEffect } from "react";
 import { ArrowLeft, MapPin, Phone, MessageCircle, Send, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { ErrorState } from "@/components/ErrorState";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ProductJsonLd } from "@/components/JsonLd";
 import { useProperty } from "@/hooks/use-properties";
-import { formatPrice, trackInquiryClick } from "@/lib/api/properties";
+import { formatPrice, trackInquiryClick, fetchProperty } from "@/lib/api/properties";
 import { useLocale } from "@/providers/locale";
 import { useSettings, DEFAULT_SETTINGS } from "@/hooks/use-settings";
 import { isTelegramMiniApp } from "@/lib/telegram";
+import { SITE_URL, absoluteUrl } from "@/lib/env";
 
 export const Route = createFileRoute("/property/$id")({
+  // Loads on the server for the initial request so crawlers that don't run JS
+  // (Telegram, WhatsApp, Facebook) get real product meta tags in the HTML.
+  loader: async ({ params }) => {
+    try {
+      return { product: await fetchProperty(params.id) };
+    } catch {
+      return { product: null };
+    }
+  },
+  head: ({ loaderData, params }) => {
+    const p = loaderData?.product;
+    const url = `${SITE_URL}/property/${params.id}`;
+
+    if (!p) {
+      return {
+        meta: [{ title: "Product Not Found — BROS Technology" }, { name: "robots", content: "noindex" }],
+        links: [{ rel: "canonical", href: url }],
+      };
+    }
+
+    const title = `${p.title} — ${formatPrice(p.price)} | BROS Technology`;
+    const description =
+      p.description?.trim() ||
+      `Buy ${p.title} at BROS Technology in Addis Ababa, Ethiopia. ${formatPrice(p.price)}. Warranty included.`;
+    const image = absoluteUrl(p.hero || p.gallery?.[0] || "/images/hero/desktop-dark-1920.jpg");
+    const availability = p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        {
+          name: "keywords",
+          content: [p.title, p.brand, p.category, "Ethiopia", "Addis Ababa", "buy online"]
+            .filter(Boolean)
+            .join(", "),
+        },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "product" },
+        { property: "og:url", content: url },
+        { property: "og:image", content: image },
+        { property: "product:price:amount", content: String(p.price) },
+        { property: "product:price:currency", content: "ETB" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: image },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: Detail,
 });
 
 function Detail() {
   const { id } = Route.useParams();
-  const { data: p, isLoading, isError, refetch } = useProperty(id);
+  const { product: initialProduct } = Route.useLoaderData();
+  const { data, isLoading, isError, refetch } = useProperty(id);
+  // Fall back to server-loaded data so the first paint is fully rendered HTML.
+  const p = data ?? initialProduct;
   const { t } = useLocale();
   const { data: s = DEFAULT_SETTINGS } = useSettings();
 
@@ -56,47 +114,7 @@ function Detail() {
     trackInquiryClick(id, method).catch(() => {});
   };
 
-  useEffect(() => {
-    if (!p) return;
-    document.title = `${p.title} — BROS Technology`;
-
-    const meta = {
-      description: p.description || `${p.title} available at BROS Technology`,
-    };
-    document.querySelector('meta[name="description"]')?.setAttribute("content", meta.description);
-
-    const ogTags = [
-      { property: "og:title", content: `${p.title} — BROS Technology` },
-      { property: "og:description", content: meta.description },
-      { property: "og:type", content: "product" },
-      { property: "og:image", content: p.gallery?.[0] || "" },
-    ];
-    ogTags.forEach(({ property, content }) => {
-      const el = document.querySelector(`meta[property="${property}"]`);
-      if (el) el.setAttribute("content", content);
-    });
-
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      name: p.title,
-      description: meta.description,
-      image: p.gallery,
-      offers: {
-        "@type": "Offer",
-        priceCurrency: "ETB",
-        price: p.price,
-        availability: p.status === "AVAILABLE" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      },
-    };
-    const script = document.createElement("script");
-    script.type = "application/ld+json";
-    script.textContent = JSON.stringify(jsonLd);
-    document.head.appendChild(script);
-    return () => { document.head.removeChild(script); };
-  }, [p]);
-
-  if (isLoading) {
+  if (isLoading && !p) {
     return (
       <div className="min-h-screen bg-background pt-24">
         <Nav />
@@ -124,6 +142,16 @@ function Detail() {
 
   return (
     <div className="min-h-screen bg-background pb-40 lg:pb-0">
+      <ProductJsonLd
+        name={p.title}
+        price={formatPrice(p.price)}
+        image={absoluteUrl(p.hero || p.gallery?.[0] || "/images/hero/desktop-dark-1920.jpg")}
+        description={p.description?.trim() || undefined}
+        brand={p.brand || undefined}
+        condition={p.attributes?.condition || undefined}
+        availability={p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"}
+        url={`${SITE_URL}/property/${id}`}
+      />
       <Nav />
 
       {/* Hero */}
@@ -197,7 +225,19 @@ function Detail() {
         </div>
       </section>
 
-      <div className="mx-auto mt-12 max-w-7xl gap-12 px-6 lg:grid lg:grid-cols-[1fr_360px]">
+      <div className="mx-auto mt-8 max-w-7xl px-6">
+        <Breadcrumbs
+          items={[
+            { label: "Products", href: "/catalog" },
+            ...(p.category
+              ? [{ label: p.category, href: "/catalog", search: { category: p.category } }]
+              : []),
+            { label: p.title },
+          ]}
+        />
+      </div>
+
+      <div className="mx-auto mt-6 max-w-7xl gap-12 px-6 lg:grid lg:grid-cols-[1fr_360px]">
         <div>
           {/* Specs Table */}
           {p.features.length > 0 && (

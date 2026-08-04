@@ -13,6 +13,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider } from "../providers/theme";
 import { LocaleProvider } from "../providers/locale";
+import { LocalBusinessJsonLd, WebSiteJsonLd } from "../components/JsonLd";
+import { SITE_URL, absoluteUrl } from "../lib/env";
 
 function NotFoundComponent() {
   return (
@@ -105,7 +107,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Shop laptops, iPhones, Samsung, iPads, MacBooks, AirPods & smartwatches at best prices in Addis Ababa, Ethiopia. Warranty included.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "/images/hero/desktop-dark-1920.jpg" },
+      { property: "og:image", content: absoluteUrl("/images/hero/desktop-dark-1920.jpg") },
       { property: "og:locale", content: "en_ET" },
       { property: "og:site_name", content: "BROS Technology" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -115,95 +117,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "Shop laptops, iPhones, Samsung, iPads, MacBooks, AirPods & smartwatches at best prices in Addis Ababa, Ethiopia.",
       },
-      { name: "twitter:image", content: "/images/hero/desktop-dark-1920.jpg" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        innerHTML: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          name: "BROS Technology",
-          description:
-            "Buy laptops, iPhones, Samsung phones, iPads, MacBooks, AirPods, and smartwatches at best prices in Addis Ababa, Ethiopia. Warranty included.",
-          url: "https://bros-technology.vercel.app",
-          logo: "/images/favicon/favicon-96x96.png",
-          image: "/images/hero/desktop-dark-1920.jpg",
-          telephone: ["+251972195934", "+251980564814"],
-          email: "girmasamuel200@gmail.com",
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "Bole, Oromia building",
-            addressLocality: "Addis Ababa",
-            addressCountry: "ET",
-          },
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: "9.0054",
-            longitude: "38.7636",
-          },
-          openingHoursSpecification: {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            opens: "09:00",
-            closes: "19:00",
-          },
-          sameAs: [
-            "https://t.me/brostechnology",
-            "https://www.facebook.com/brostechnology",
-            "https://www.instagram.com/brostechnology",
-            "https://tiktok.com/@brostechnology",
-            "https://youtube.com/@brostechnology",
-          ],
-          priceRange: "$$",
-          areaServed: {
-            "@type": "Country",
-            name: "Ethiopia",
-          },
-          hasOfferCatalog: {
-            "@type": "OfferCatalog",
-            name: "Electronics Accessories",
-            itemListElement: [
-              {
-                "@type": "OfferCatalog",
-                name: "Laptops",
-                numberOfItems: 2,
-              },
-              {
-                "@type": "OfferCatalog",
-                name: "iPhones & Samsung Phones",
-                numberOfItems: 1,
-              },
-              {
-                "@type": "OfferCatalog",
-                name: "Smartwatches",
-                numberOfItems: 1,
-              },
-            ],
-          },
-        }),
-      },
-      {
-        type: "application/ld+json",
-        innerHTML: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "BROS Technology",
-          url: "https://bros-technology.vercel.app",
-          potentialAction: {
-            "@type": "SearchAction",
-            target: {
-              "@type": "EntryPoint",
-              urlTemplate: "https://bros-technology.vercel.app/catalog?q={search_term_string}",
-            },
-            "query-input": "required name=search_term_string",
-          },
-        }),
-      },
+      { name: "twitter:image", content: absoluteUrl("/images/hero/desktop-dark-1920.jpg") },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "canonical", href: "https://bros-technology.vercel.app" },
+      // No canonical here — each route sets its own. A root-level canonical
+      // would mark every page as a duplicate of the homepage.
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -244,6 +163,8 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body className="transition-colors duration-300">
+        <LocalBusinessJsonLd />
+        <WebSiteJsonLd />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var tg=window.Telegram&&window.Telegram.WebApp;if(tg){document.documentElement.classList.toggle('dark',tg.colorScheme==='dark');document.documentElement.classList.toggle('light',tg.colorScheme==='light');if(tg.themeParams&&tg.themeParams.bg_color){document.documentElement.style.setProperty('--background',tg.themeParams.bg_color)}}}catch(e){}})()`,
