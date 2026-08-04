@@ -5,12 +5,14 @@ import { z } from "zod";
 import { LayoutGrid, List, SlidersHorizontal, Search, X, Command, SearchX } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { CollectionPageJsonLd } from "@/components/JsonLd";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperties } from "@/hooks/use-properties";
 import { useDebounce } from "@/hooks/use-debounce";
 import { fetchCategories, fetchFilterOptions, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
 import type { Category, FilterOptions } from "@/lib/api/properties";
+import { SITE_URL, absoluteUrl } from "@/lib/env";
 import { useLocale } from "@/providers/locale";
 import {
   FilterPanel,
@@ -80,45 +82,10 @@ export const Route = createFileRoute("/catalog")({
           "Browse laptops, iPhones, Samsung, iPads, MacBooks, AirPods & smartwatches at best prices in Ethiopia.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://bros-technology.vercel.app/catalog" },
-      { property: "og:image", content: "/images/hero/desktop-dark-1920.jpg" },
+      { property: "og:url", content: `${SITE_URL}/catalog` },
+      { property: "og:image", content: absoluteUrl("/images/hero/desktop-dark-1920.jpg") },
     ],
-    links: [{ rel: "canonical", href: "https://bros-technology.vercel.app/catalog" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        innerHTML: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          name: "Buy Laptops, iPhones, Samsung & Electronics — BROS Technology Ethiopia",
-          description:
-            "Browse and buy laptops, iPhones, Samsung phones, iPads, MacBooks, AirPods, and smartwatches at BROS Technology in Addis Ababa, Ethiopia.",
-          url: "https://bros-technology.vercel.app/catalog",
-          isPartOf: {
-            "@type": "WebSite",
-            name: "BROS Technology",
-            url: "https://bros-technology.vercel.app",
-          },
-          breadcrumb: {
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: "https://bros-technology.vercel.app",
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "Products",
-                item: "https://bros-technology.vercel.app/catalog",
-              },
-            ],
-          },
-        }),
-      },
-    ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/catalog` }],
   }),
   component: Catalog,
 });
@@ -283,6 +250,7 @@ function Catalog() {
 
   return (
     <div className="min-h-screen bg-background pb-32 pt-24 md:pt-32">
+      <CollectionPageJsonLd />
       <Nav />
       <div className="mx-auto max-w-7xl px-5 md:px-6">
         <Breadcrumbs
