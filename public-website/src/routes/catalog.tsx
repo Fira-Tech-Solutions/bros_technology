@@ -147,6 +147,18 @@ function Catalog() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // The mobile sheet scrolls its own filter list. Without freezing the page
+  // behind it, touch scrolls chain to the catalog and the list reads as cut off.
+  // Only the md:hidden button opens the sheet, so this never fires on desktop.
+  useEffect(() => {
+    if (!filterOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [filterOpen]);
+
   const filters: FilterState = useMemo(
     () => ({
       priceMin: search.priceMin ?? DEFAULT_FILTERS.priceMin,
@@ -483,7 +495,10 @@ function Catalog() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", stiffness: 280, damping: 32 }}
-              className="fixed bottom-0 left-0 right-0 z-[61] max-h-[88vh] overflow-y-auto rounded-t-3xl border-t border-border bg-card p-6 pb-10 md:hidden"
+              // svh, not vh: vh measures the viewport with the browser toolbars
+              // hidden, so 88vh on a bottom-anchored sheet overflows the top of
+              // the screen and takes the header and first filters with it.
+              className="fixed bottom-0 left-0 right-0 z-[61] max-h-[85svh] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-border bg-card p-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] md:hidden"
             >
               <div className="sticky top-0 -mx-6 -mt-6 mb-2 bg-card px-6 pb-3 pt-4">
                 <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border" />
