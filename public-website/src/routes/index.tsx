@@ -16,11 +16,13 @@ import { HeroBackground } from "@/components/HeroBackground";
 import { ContactSection } from "@/components/ContactSection";
 import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
 import { ErrorState } from "@/components/ErrorState";
+import { WebPageJsonLd } from "@/components/JsonLd";
 import { useProperties } from "@/hooks/use-properties";
 import { fetchCategories, getIconName } from "@/lib/api/properties";
 import type { Category } from "@/lib/api/properties";
 import { useLocale } from "@/providers/locale";
 import { isTelegramMiniApp } from "@/lib/telegram";
+import { SITE_URL, absoluteUrl } from "@/lib/env";
 
 const ICON_COMPONENTS: Record<
   string,
@@ -193,7 +195,27 @@ function RevealSection({
   );
 }
 
+const HOME_TITLE =
+  "BROS Technology — Buy Laptops, iPhones, Samsung, iPads & MacBooks in Addis Ababa";
+const HOME_DESCRIPTION =
+  "Shop laptops, iPhones, Samsung phones, iPads, MacBooks, AirPods and smartwatches at BROS Technology. Best prices on new and used electronics in Addis Ababa, Ethiopia. Warranty included.";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: HOME_TITLE },
+      { name: "description", content: HOME_DESCRIPTION },
+      { property: "og:title", content: HOME_TITLE },
+      { property: "og:description", content: HOME_DESCRIPTION },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:image", content: absoluteUrl("/images/hero/desktop-dark-1920.jpg") },
+      { name: "twitter:title", content: HOME_TITLE },
+      { name: "twitter:description", content: HOME_DESCRIPTION },
+      { name: "twitter:image", content: absoluteUrl("/images/hero/desktop-dark-1920.jpg") },
+    ],
+    links: [{ rel: "canonical", href: SITE_URL }],
+  }),
   component: Index,
 });
 
@@ -221,6 +243,7 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background">
+      <WebPageJsonLd name={HOME_TITLE} description={HOME_DESCRIPTION} />
       <Nav />
 
       {/* HERO — sticky parallax background */}

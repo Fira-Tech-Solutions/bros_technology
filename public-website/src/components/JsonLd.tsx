@@ -1,4 +1,4 @@
-const SITE_URL = "https://bros-technology.vercel.app";
+import { SITE_URL } from "@/lib/env";
 
 export function JsonLd({ data }: { data: Record<string, unknown> }) {
   return (
@@ -81,6 +81,25 @@ export function WebSiteJsonLd() {
             urlTemplate: `${SITE_URL}/catalog?q={search_term_string}`,
           },
           "query-input": "required name=search_term_string",
+        },
+      }}
+    />
+  );
+}
+
+export function WebPageJsonLd({ name, description }: { name: string; description: string }) {
+  return (
+    <JsonLd
+      data={{
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name,
+        description,
+        url: SITE_URL,
+        isPartOf: {
+          "@type": "WebSite",
+          name: "BROS Technology",
+          url: SITE_URL,
         },
       }}
     />
