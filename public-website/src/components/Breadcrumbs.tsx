@@ -1,9 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, Home } from "lucide-react";
+import { SITE_URL } from "@/lib/env";
 
 interface BreadcrumbItem {
   label: string;
   href?: string;
+  /** Search params for the link target, e.g. `{ category: "Laptops" }`. */
+  search?: Record<string, string | undefined>;
+}
+
+/** Builds the absolute URL used in the BreadcrumbList structured data. */
+function itemUrl({ href, search }: BreadcrumbItem) {
+  if (!href) return undefined;
+  const qs = new URLSearchParams(
+    Object.entries(search ?? {}).filter(([, v]) => v !== undefined) as [string, string][],
+  ).toString();
+  return `${SITE_URL}${href}${qs ? `?${qs}` : ""}`;
 }
 
 export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
@@ -15,14 +27,17 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://bros-technology.vercel.app",
+        item: SITE_URL,
       },
-      ...items.map((item, i) => ({
-        "@type": "ListItem",
-        position: i + 2,
-        name: item.label,
-        ...(item.href ? { item: `https://bros-technology.vercel.app${item.href}` } : {}),
-      })),
+      ...items.map((item, i) => {
+        const url = itemUrl(item);
+        return {
+          "@type": "ListItem",
+          position: i + 2,
+          name: item.label,
+          ...(url ? { item: url } : {}),
+        };
+      }),
     ],
   };
 
@@ -41,7 +56,11 @@ export function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
           <span key={i} className="flex items-center gap-1">
             <ChevronRight className="h-3 w-3" />
             {item.href ? (
-              <Link to={item.href} className="hover:text-foreground transition-colors">
+              <Link
+                to={item.href}
+                search={item.search}
+                className="hover:text-foreground transition-colors"
+              >
                 {item.label}
               </Link>
             ) : (
