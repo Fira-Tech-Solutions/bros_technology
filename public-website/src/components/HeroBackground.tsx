@@ -60,11 +60,20 @@ function ScrollArrow() {
 export function HeroBackground() {
   const { theme } = useTheme();
   const heroRef = useRef<HTMLDivElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [loaded, setLoaded] = useState(false);
 
   const sources = heroSources(theme);
   const lqip = HERO_LQIP[theme];
+
+  // The hero is server-rendered and preloaded, so the browser usually finishes
+  // decoding it before React hydrates and attaches onLoad — that handler then
+  // never fires and the placeholder stays up forever. Ask the element directly.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img?.complete && img.naturalWidth > 0) setLoaded(true);
+  }, [theme]);
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -132,6 +141,7 @@ export function HeroBackground() {
             <source type="image/avif" srcSet={sources.desktop.avif} sizes="100vw" />
             <source type="image/webp" srcSet={sources.desktop.webp} sizes="100vw" />
             <img
+              ref={imgRef}
               src={sources.desktop.fallback}
               alt=""
               width={sources.desktop.width}
@@ -139,6 +149,8 @@ export function HeroBackground() {
               fetchPriority="high"
               decoding="async"
               onLoad={() => setLoaded(true)}
+              // A broken hero shouldn't leave a permanently blurred screen.
+              onError={() => setLoaded(true)}
               className={`relative h-full w-full object-cover transition-opacity duration-700 ${
                 loaded ? "opacity-100" : "opacity-0"
               }`}
