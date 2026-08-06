@@ -50,8 +50,7 @@ import {
   retrySyndication,
 } from "../api/syndication";
 
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE_URL = "https://bros-technology-api.vercel.app";
 
 const STATUS_MAP = {
   PENDING: { label: "Pending", color: "#eab308", Icon: Clock },
@@ -1119,8 +1118,8 @@ export default function SyndicationConfigScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.bg }}>
       <View style={{ flex: 1 }}>
-        <View className="px-5 pt-4 pb-2">
-          <Text style={{ color: colors.text }} className="text-2xl font-bold">
+        <View style={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 }}>
+          <Text style={{ color: colors.text, fontSize: 24, fontWeight: "bold" }}>
             Syndication
           </Text>
         </View>

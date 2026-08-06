@@ -27,6 +27,9 @@ export const getSyndicationLogs = (params = {}) =>
 export const retrySyndication = (id) =>
   client.post(`/api/syndication/retry/${id}`);
 
+export const triggerSyndication = (listingId) =>
+  client.post(`/api/syndication/trigger/${listingId}`);
+
 // Telegram webhook configuration
 export const setupTelegramWebhook = (webhookUrl) =>
   client.post("/api/syndication/telegram/setup-webhook", { webhookUrl });

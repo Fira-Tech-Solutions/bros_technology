@@ -6,6 +6,9 @@ import { nitro } from "nitro/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  server: {
+    host: "0.0.0.0",
+  },
   plugins: [
     tanstackStart(),
     tailwindcss(),

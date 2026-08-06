@@ -33,7 +33,7 @@ const Input = forwardRef(function Input(
     () => ({
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "#F7F9FB",
+      backgroundColor: colors.input,
       borderRadius: radii.md,
       borderWidth: 1.5,
       borderColor: error

@@ -18,12 +18,14 @@ import useNotifications from "../hooks/useNotifications";
 import useSuspenseCache from "../hooks/useSuspenseCache";
 import { RecentListing, StatusChart } from "../components/dashboard";
 import CachedImage from "../components/CachedImage";
+import NotificationPopup from "../components/NotificationPopup";
 
 export default function DashboardScreen({ navigation }) {
   const { colors } = useTheme();
   const { user } = useAuth();
 
   const [refreshing, setRefreshing] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { unreadCount } = useNotifications();
 
   const { data: listings, loading, refresh } = useSuspenseCache({
@@ -83,7 +85,7 @@ export default function DashboardScreen({ navigation }) {
 
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Notifications")}
+            onPress={() => setShowNotifications(true)}
             style={{
               width: 42,
               height: 42,
@@ -168,6 +170,12 @@ export default function DashboardScreen({ navigation }) {
           ))}
         </View>
       </ScrollView>
+
+      <NotificationPopup
+        visible={showNotifications}
+        onClose={() => setShowNotifications(false)}
+        onNavigate={(screen, params) => navigation.navigate(screen, params)}
+      />
     </SafeAreaView>
   );
 }

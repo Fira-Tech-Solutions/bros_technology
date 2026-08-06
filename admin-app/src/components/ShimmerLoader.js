@@ -4,7 +4,7 @@ import { useTheme } from "../context/ThemeContext";
 
 const SHIMMER_WIDTH = Dimensions.get("window").width;
 
-export default function ShimmerLoader({ width, height = 20, className = "" }) {
+export default function ShimmerLoader({ width, height = 20 }) {
   const { colors, isDark } = useTheme();
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
@@ -72,7 +72,7 @@ export function ListingCardSkeleton() {
         ...shadows.sm(),
       }}
     >
-      <ShimmerLoader height={160} className="mb-3" style={{ borderRadius: 12 }} />
+      <ShimmerLoader height={160} style={{ borderRadius: 12, marginBottom: 12 }} />
       <ShimmerLoader height={16} width="70%" style={{ marginBottom: 8 }} />
       <ShimmerLoader height={12} width="50%" style={{ marginBottom: 12 }} />
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

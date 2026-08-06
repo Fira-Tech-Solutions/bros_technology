@@ -87,22 +87,18 @@ export default function SyndicationScreen() {
   };
 
   const renderLog = ({ item }) => (
-    <Card className="mb-3">
-      <View className="flex-row items-start justify-between mb-3">
-        <View className="flex-row items-center flex-1">
+    <Card style={{ marginBottom: 12 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 12 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
           {getStatusIcon(item.status)}
-          <View className="ml-3 flex-1">
+          <View style={{ marginLeft: 12, flex: 1 }}>
             <Text
-              style={{ color: colors.text }}
-              className="text-base font-semibold"
+              style={{ color: colors.text, fontSize: 16, fontWeight: "600" }}
               numberOfLines={1}
             >
               {item.listing?.title || "Listing"}
             </Text>
-            <Text
-              style={{ color: colors.textSecondary }}
-              className="text-sm"
-            >
+            <Text style={{ color: colors.textSecondary, fontSize: 14 }}>
               {item.platform}
             </Text>
           </View>
@@ -110,19 +106,18 @@ export default function SyndicationScreen() {
         <StatusBadge status={item.status} size="sm" />
       </View>
 
-      <View className="flex-row items-center mb-3">
+      <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
         <Clock size={12} color={colors.textMuted} />
-        <Text style={{ color: colors.textMuted }} className="text-xs ml-1">
+        <Text style={{ color: colors.textMuted, fontSize: 12, marginLeft: 4 }}>
           {formatDate(item.runAt)}
         </Text>
       </View>
 
       {item.errorMessage && (
         <View
-          className="p-3 rounded-xl mb-3"
-          style={{ backgroundColor: `${colors.danger}12` }}
+          style={{ padding: 12, borderRadius: 12, marginBottom: 12, backgroundColor: `${colors.danger}12` }}
         >
-          <Text style={{ color: colors.danger }} className="text-xs">
+          <Text style={{ color: colors.danger, fontSize: 12 }}>
             {item.errorMessage}
           </Text>
         </View>
@@ -132,8 +127,13 @@ export default function SyndicationScreen() {
         <TouchableOpacity
           onPress={() => handleRetry(item.id)}
           disabled={retryingId === item.id}
-          className="flex-row items-center justify-center py-2 px-4 rounded-xl"
           style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingVertical: 8,
+            paddingHorizontal: 16,
+            borderRadius: 12,
             backgroundColor: colors.primary,
             opacity: retryingId === item.id ? 0.5 : 1,
           }}
@@ -141,11 +141,9 @@ export default function SyndicationScreen() {
           <RefreshCw
             size={14}
             color={colors.primaryText}
-            style={{
-              marginRight: 6,
-            }}
+            style={{ marginRight: 6 }}
           />
-          <Text style={{ color: colors.primaryText }} className="text-sm font-semibold">
+          <Text style={{ color: colors.primaryText, fontSize: 14, fontWeight: "600" }}>
             {retryingId === item.id ? t("retrying") : t("manualRetry")}
           </Text>
         </TouchableOpacity>
@@ -154,24 +152,21 @@ export default function SyndicationScreen() {
   );
 
   const LogCardSkeleton = () => (
-    <View className="mb-3">
-      <ShimmerLoader height={120} className="rounded-2xl" />
+    <View style={{ marginBottom: 12 }}>
+      <ShimmerLoader height={120} style={{ borderRadius: 16 }} />
     </View>
   );
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <View className="px-5 pt-2 pb-4">
-        <Text
-          style={{ color: colors.textSecondary }}
-          className="text-sm"
-        >
+      <View style={{ paddingHorizontal: 20, paddingTop: 8, paddingBottom: 16 }}>
+        <Text style={{ color: colors.textSecondary, fontSize: 14 }}>
           {t("syndicationSubtitle")}
         </Text>
       </View>
 
       {loading ? (
-        <View className="px-5">
+        <View style={{ paddingHorizontal: 20 }}>
           {[1, 2, 3].map((i) => (
             <LogCardSkeleton key={i} />
           ))}
@@ -186,12 +181,9 @@ export default function SyndicationScreen() {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           ListEmptyComponent={
-            <View className="items-center mt-20">
+            <View style={{ alignItems: "center", marginTop: 80 }}>
               <Send size={48} color={colors.textMuted} />
-              <Text
-                style={{ color: colors.textSecondary }}
-                className="text-base mt-4"
-              >
+              <Text style={{ color: colors.textSecondary, fontSize: 16, marginTop: 16 }}>
                 {t("noLogs")}
               </Text>
             </View>
