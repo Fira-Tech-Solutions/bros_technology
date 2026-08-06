@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import axios from 'axios';
 import prisma from '../../config/prisma.js';
-import listingEmitter from '../../core/listingEmitter.js';
 import { authenticate, authorize } from '../users/auth.middleware.js';
 import TelegramBotService from './services/telegramBot.service.js';
 
@@ -241,6 +240,60 @@ router.get('/logs', authenticate(), async (req, res, next) => {
   }
 });
 
+router.post('/trigger/:listingId', authenticate(), async (req, res, next) => {
+  try {
+    const { listingId } = req.params;
+
+    const listing = await prisma.listing.findUnique({
+      where: { id: listingId },
+      include: {
+        category: true,
+        agent: { select: { id: true, name: true, phone: true, email: true } },
+      },
+    });
+
+    if (!listing) {
+      return res.status(404).json({ success: false, error: 'Listing not found' });
+    }
+
+    if (req.user.role === 'AGENT' && listing.agentId !== req.user.id) {
+      return res.status(403).json({ success: false, error: 'Not authorized to syndicate this listing' });
+    }
+
+    // Directly post to Telegram (works in serverless unlike EventEmitter)
+    const logEntry = await prisma.syndicationLog.create({
+      data: {
+        listingId: listing.id,
+        platform: 'TELEGRAM',
+        status: 'PENDING',
+        action: 'NEW_POST',
+        channelInfo: process.env.TELEGRAM_CHANNEL_ID || 'unknown',
+      },
+    });
+
+    try {
+      const result = await TelegramBotService.sendListingToChannel(listing);
+      await prisma.syndicationLog.update({
+        where: { id: logEntry.id },
+        data: { status: 'SUCCESS', messageId: result.messageId || null },
+      });
+      return res.status(200).json({
+        success: true,
+        data: { listingId: listing.id, messageId: result.messageId, message: 'Posted to Telegram successfully' },
+      });
+    } catch (err) {
+      const errorMessage = err.response?.data?.description || err.message || String(err);
+      await prisma.syndicationLog.update({
+        where: { id: logEntry.id },
+        data: { status: 'FAILED', errorMessage },
+      });
+      return res.status(500).json({ success: false, error: `Failed to post to Telegram: ${errorMessage}` });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post('/retry/:id', authenticate(), async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -290,20 +343,34 @@ router.post('/retry/:id', authenticate(), async (req, res, next) => {
       });
     }
 
-    listingEmitter.emit('listing:created', listing.id);
-
+    // Directly post to Telegram (works in serverless)
     await prisma.syndicationLog.update({
       where: { id },
       data: { status: 'PENDING', errorMessage: null },
     });
+
+    try {
+      const result = await TelegramBotService.sendListingToChannel(listing);
+      await prisma.syndicationLog.update({
+        where: { id },
+        data: { status: 'SUCCESS', messageId: result.messageId || null },
+      });
+    } catch (err) {
+      const errorMessage = err.response?.data?.description || err.message || String(err);
+      await prisma.syndicationLog.update({
+        where: { id },
+        data: { status: 'FAILED', errorMessage },
+      });
+      return res.status(500).json({ success: false, error: `Retry failed: ${errorMessage}` });
+    }
 
     return res.status(200).json({
       success: true,
       data: {
         id: log.id,
         listingId: log.listingId,
-        status: 'PENDING',
-        message: 'Re-syndication triggered successfully',
+        status: 'SUCCESS',
+        message: 'Re-syndication completed successfully',
       },
     });
   } catch (error) {
