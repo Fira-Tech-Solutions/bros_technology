@@ -6,7 +6,6 @@ import { useTheme } from "../context/ThemeContext";
 export default function Card({
   children,
   onPress,
-  className = "",
   padding = true,
   variant = "default",
   style = {},
@@ -19,7 +18,6 @@ export default function Card({
   const content = (
     <Animated.View
       entering={FadeIn.duration(250)}
-      className={`${padding ? "" : ""} ${className}`}
       style={[
         {
           backgroundColor: bg,

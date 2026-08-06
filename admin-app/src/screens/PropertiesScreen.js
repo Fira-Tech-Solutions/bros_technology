@@ -27,12 +27,14 @@ import {
   Monitor,
   ChevronDown,
   ChevronRight,
+  Send,
 } from "lucide-react-native";
 
 import useSuspenseCache from "../hooks/useSuspenseCache";
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
 import { getListings } from "../api/listings";
+import { triggerSyndication } from "../api/syndication";
 import {
   getCategories,
   createCategory,
@@ -80,6 +82,7 @@ export default function PropertiesScreen({ navigation }) {
   const [showRuleTypeDropdown, setShowRuleTypeDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [syndicatingId, setSyndicatingId] = useState(null);
 
   const { data: categories, refresh: refreshCategories } = useSuspenseCache({
     key: "properties_categories",
@@ -97,7 +100,15 @@ export default function PropertiesScreen({ navigation }) {
         const items = data.data || [];
         const totalPages = data.pagination?.totalPages || 1;
         if (append) {
-          setListings((prev) => [...prev, ...items]);
+          setListings((prev) => {
+            const merged = [...prev, ...items];
+            const seen = new Set();
+            return merged.filter((item) => {
+              if (seen.has(item.id)) return false;
+              seen.add(item.id);
+              return true;
+            });
+          });
         } else {
           setListings(items);
         }
@@ -130,6 +141,31 @@ export default function PropertiesScreen({ navigation }) {
     setPage(nextPage);
     setLoadingMore(true);
     fetchListings(nextPage, true);
+  };
+
+  const handleSyndicate = (item) => {
+    Alert.alert(
+      "Post to Telegram",
+      `Post "${item.title}" to Telegram channel?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Post",
+          onPress: async () => {
+            setSyndicatingId(item.id);
+            try {
+              await triggerSyndication(item.id);
+              Alert.alert("Success", "Posted to Telegram successfully");
+            } catch (err) {
+              const msg = err.response?.data?.error || "Failed to post to Telegram";
+              Alert.alert("Error", msg);
+            } finally {
+              setSyndicatingId(null);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const filteredListings = listings.filter((item) => {
@@ -442,11 +478,35 @@ export default function PropertiesScreen({ navigation }) {
           <FlatList
             data={filteredListings}
             renderItem={({ item, index }) => (
-              <ListingCard
-                listing={item}
-                index={index}
-                onPress={() => navigation.navigate("ListingDetail", { listingId: item.id })}
-              />
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <View style={{ flex: 1 }}>
+                  <ListingCard
+                    listing={item}
+                    index={index}
+                    onPress={() => navigation.navigate("ListingDetail", { listingId: item.id })}
+                  />
+                </View>
+                <TouchableOpacity
+                  onPress={() => handleSyndicate(item)}
+                  disabled={syndicatingId === item.id}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: syndicatingId === item.id ? `${colors.primary}40` : colors.primaryTint,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginLeft: 8,
+                    opacity: syndicatingId === item.id ? 0.6 : 1,
+                  }}
+                >
+                  {syndicatingId === item.id ? (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  ) : (
+                    <Send size={18} color={colors.primary} />
+                  )}
+                </TouchableOpacity>
+              </View>
             )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 100 }}

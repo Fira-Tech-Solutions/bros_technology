@@ -105,7 +105,7 @@ export async function trackInquiryClick(
   });
 }
 
-export const PRICE_BOUNDS = { min: 0, max: 5_000_000 } as const;
+export const PRICE_BOUNDS = { min: 0, max: 500_000 } as const;
 
 export const formatPrice = (n: number) =>
   new Intl.NumberFormat("en-US", {

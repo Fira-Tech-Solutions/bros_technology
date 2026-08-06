@@ -1,10 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   Dimensions,
-  StyleSheet,
   Linking,
   Keyboard,
   KeyboardAvoidingView,
@@ -37,6 +36,114 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [loginError, setLoginError] = useState("");
+
+  const styles = useMemo(() => ({
+    root: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    hero: {
+      height: HERO_HEIGHT,
+      backgroundColor: "#1878B4",
+      borderBottomLeftRadius: 36,
+      borderBottomRightRadius: 36,
+      overflow: "hidden",
+    },
+    heroContent: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingTop: 10,
+      paddingBottom: 20,
+    },
+    heroWordmark: {
+      color: "#FFFFFF",
+      fontSize: 20,
+      fontWeight: "800",
+      letterSpacing: 3,
+      marginTop: 14,
+    },
+    heroPill: {
+      marginTop: 8,
+      backgroundColor: "rgba(255,255,255,0.16)",
+      paddingHorizontal: 14,
+      paddingVertical: 5,
+      borderRadius: 20,
+    },
+    heroPillText: {
+      color: "#FFFFFF",
+      fontSize: 10,
+      fontWeight: "700",
+      letterSpacing: 2.5,
+    },
+    illustrationWrap: {
+      marginTop: 16,
+      alignItems: "center",
+    },
+    sheet: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      borderTopLeftRadius: 36,
+      borderTopRightRadius: 36,
+      marginTop: -36,
+    },
+    sheetContent: {
+      padding: 24,
+      paddingTop: 16,
+      paddingBottom: 40,
+    },
+    grabber: {
+      width: 40,
+      height: 5,
+      borderRadius: 3,
+      backgroundColor: colors.border,
+      alignSelf: "center",
+      marginBottom: 20,
+    },
+    heading: {
+      fontSize: 24,
+      fontWeight: "800",
+      color: colors.text,
+      letterSpacing: -0.5,
+    },
+    subheading: {
+      fontSize: 14,
+      color: colors.textMuted,
+      marginTop: 6,
+      marginBottom: 4,
+    },
+    forgotText: {
+      color: colors.primary,
+      fontSize: 13,
+      fontWeight: "600",
+    },
+    agentText: {
+      color: colors.primary,
+      fontSize: 14,
+      fontWeight: "600",
+      letterSpacing: 0.3,
+    },
+    footer: {
+      textAlign: "center",
+      color: colors.textMuted,
+      fontSize: 11,
+      letterSpacing: 0.5,
+      marginTop: 40,
+    },
+    errorBox: {
+      backgroundColor: colors.dangerTint,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      marginTop: 14,
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: 13,
+      fontWeight: "500",
+      textAlign: "center",
+    },
+  }), [colors]);
 
   const validate = () => {
     const newErrors = {};
@@ -190,119 +297,3 @@ export default function LoginScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-
-  /* ─── Hero ─── */
-  hero: {
-    height: HERO_HEIGHT,
-    backgroundColor: "#1878B4",
-    borderBottomLeftRadius: 36,
-    borderBottomRightRadius: 36,
-    overflow: "hidden",
-  },
-  heroContent: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 10,
-    paddingBottom: 20,
-  },
-  heroWordmark: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "800",
-    letterSpacing: 3,
-    marginTop: 14,
-  },
-  heroPill: {
-    marginTop: 8,
-    backgroundColor: "rgba(255,255,255,0.16)",
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    borderRadius: 20,
-  },
-  heroPillText: {
-    color: "#FFFFFF",
-    fontSize: 10,
-    fontWeight: "700",
-    letterSpacing: 2.5,
-  },
-  illustrationWrap: {
-    marginTop: 16,
-    alignItems: "center",
-  },
-
-  /* ─── Sheet ─── */
-  sheet: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    marginTop: -36,
-  },
-  sheetContent: {
-    padding: 24,
-    paddingTop: 16,
-    paddingBottom: 40,
-  },
-  grabber: {
-    width: 40,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: "#E7ECF1",
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-
-  /* ─── Text ─── */
-  heading: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: "#14181C",
-    letterSpacing: -0.5,
-  },
-  subheading: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginTop: 6,
-    marginBottom: 4,
-  },
-  forgotText: {
-    color: "#1878B4",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  agentText: {
-    color: "#1878B4",
-    fontSize: 14,
-    fontWeight: "600",
-    letterSpacing: 0.3,
-  },
-  footer: {
-    textAlign: "center",
-    color: "#9CA3AF",
-    fontSize: 11,
-    letterSpacing: 0.5,
-    marginTop: 40,
-  },
-
-  /* ─── Error ─── */
-  errorBox: {
-    backgroundColor: "#FEE2E2",
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    marginTop: 14,
-  },
-  errorText: {
-    color: "#EF4444",
-    fontSize: 13,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-});

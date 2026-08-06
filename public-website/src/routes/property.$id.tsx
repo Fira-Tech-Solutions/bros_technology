@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { ArrowLeft, MapPin, Phone, MessageCircle, Send, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { ErrorState } from "@/components/ErrorState";
@@ -79,6 +79,7 @@ function Detail() {
   const { data: s = DEFAULT_SETTINGS } = useSettings();
 
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const touchStartX = useRef<number | null>(null);
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
@@ -90,6 +91,20 @@ function Detail() {
     if (lightboxIndex === null || !p) return;
     setLightboxIndex((lightboxIndex + 1) % p.gallery.length);
   }, [lightboxIndex, p]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) nextImage();
+      else prevImage();
+    }
+    touchStartX.current = null;
+  };
 
   useEffect(() => {
     if (lightboxIndex === null) return;
@@ -418,6 +433,8 @@ function Detail() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm"
             onClick={closeLightbox}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             {/* Close */}
             <button
@@ -453,8 +470,7 @@ function Detail() {
               transition={{ duration: 0.2 }}
               src={p.gallery[lightboxIndex]}
               alt=""
-              className="max-h-[85vh] max-w-[90vw] rounded-lg object-contain"
-              onClick={(e) => e.stopPropagation()}
+              className="max-h-[85vh] max-w-[90vw] rounded-lg object-contain select-none"
             />
 
             {/* Next */}

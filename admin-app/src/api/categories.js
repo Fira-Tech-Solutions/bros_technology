@@ -15,8 +15,6 @@ export const getCategories = async (forceRefresh = false) => {
   return res;
 };
 
-export const getCategory = (id) => client.get(`/api/categories/${id}`);
-
 export const createCategory = async (data) => {
   const res = await client.post("/api/categories", data);
   await invalidateGroup(CACHE_GROUP);

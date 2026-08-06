@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
   Image,
   TouchableOpacity,
   Dimensions,
-  StyleSheet,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -39,6 +38,106 @@ export default function AgentSignupScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const styles = useMemo(() => ({
+    root: {
+      flex: 1,
+      backgroundColor: colors.bg,
+    },
+    hero: {
+      height: SCREEN_HEIGHT * 0.38,
+      backgroundColor: "#1878B4",
+      borderBottomLeftRadius: 36,
+      borderBottomRightRadius: 36,
+      overflow: "hidden",
+    },
+    heroContent: {
+      flex: 1,
+    },
+    backButton: {
+      position: "absolute",
+      top: 8,
+      left: 20,
+      width: 42,
+      height: 42,
+      borderRadius: 21,
+      backgroundColor: "rgba(255,255,255,0.15)",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 10,
+    },
+    heroInner: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingTop: 10,
+      paddingBottom: 20,
+    },
+    heroLogo: {
+      width: 68,
+      height: 68,
+      borderRadius: 18,
+    },
+    heroWordmark: {
+      color: "#FFFFFF",
+      fontSize: 18,
+      fontWeight: "800",
+      letterSpacing: 3,
+      marginTop: 10,
+    },
+    heroPill: {
+      marginTop: 6,
+      backgroundColor: "rgba(255,255,255,0.16)",
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 20,
+    },
+    heroPillText: {
+      color: "#FFFFFF",
+      fontSize: 9,
+      fontWeight: "700",
+      letterSpacing: 2.5,
+    },
+    illustrationWrap: {
+      marginTop: 12,
+      alignItems: "center",
+    },
+    sheet: {
+      flex: 1,
+      backgroundColor: colors.bg,
+      borderTopLeftRadius: 36,
+      borderTopRightRadius: 36,
+      marginTop: -36,
+    },
+    sheetContent: {
+      padding: 24,
+      paddingTop: 16,
+      paddingBottom: 40,
+    },
+    grabber: {
+      width: 40,
+      height: 5,
+      borderRadius: 3,
+      backgroundColor: colors.border,
+      alignSelf: "center",
+      marginBottom: 20,
+    },
+    heading: {
+      fontSize: 24,
+      fontWeight: "800",
+      color: colors.text,
+      letterSpacing: -0.5,
+    },
+    subheading: {
+      fontSize: 14,
+      color: colors.textMuted,
+      marginTop: 6,
+    },
+    linkText: {
+      color: colors.textMuted,
+      fontSize: 14,
+    },
+  }), [colors]);
 
   const handleVerifyCode = async () => {
     if (!code || code.length !== 6) {
@@ -244,103 +343,3 @@ export default function AgentSignupScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-  hero: {
-    height: SCREEN_HEIGHT * 0.38,
-    backgroundColor: "#1878B4",
-    borderBottomLeftRadius: 36,
-    borderBottomRightRadius: 36,
-    overflow: "hidden",
-  },
-  heroContent: {
-    flex: 1,
-  },
-  backButton: {
-    position: "absolute",
-    top: 8,
-    left: 20,
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 10,
-  },
-  heroInner: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 10,
-    paddingBottom: 20,
-  },
-  heroLogo: {
-    width: 68,
-    height: 68,
-    borderRadius: 18,
-  },
-  heroWordmark: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "800",
-    letterSpacing: 3,
-    marginTop: 10,
-  },
-  heroPill: {
-    marginTop: 6,
-    backgroundColor: "rgba(255,255,255,0.16)",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
-  },
-  heroPillText: {
-    color: "#FFFFFF",
-    fontSize: 9,
-    fontWeight: "700",
-    letterSpacing: 2.5,
-  },
-  illustrationWrap: {
-    marginTop: 12,
-    alignItems: "center",
-  },
-  sheet: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    marginTop: -36,
-  },
-  sheetContent: {
-    padding: 24,
-    paddingTop: 16,
-    paddingBottom: 40,
-  },
-  grabber: {
-    width: 40,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: "#E7ECF1",
-    alignSelf: "center",
-    marginBottom: 20,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: "#14181C",
-    letterSpacing: -0.5,
-  },
-  subheading: {
-    fontSize: 14,
-    color: "#6B7280",
-    marginTop: 6,
-  },
-  linkText: {
-    color: "#6B7280",
-    fontSize: 14,
-  },
-});
