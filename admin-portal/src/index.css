@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS
+   ═══════════════════════════════════════════ */
+
+:root {
+  /* Colors */
+  --color-primary: #1878B4;
+  --color-primary-dark: #125E8C;
+  --color-primary-tint: #EAF4FB;
+  --color-primary-hover: #15699E;
+  --color-accent: #0A0A0A;
+  --color-bg: #F7F9FB;
+  --color-surface: #FFFFFF;
+  --color-border: #E7ECF1;
+  --color-text: #14181C;
+  --color-text-secondary: #374151;
+  --color-text-muted: #6B7280;
+  --color-success: #22C55E;
+  --color-success-tint: #DCFCE7;
+  --color-warning: #F59E0B;
+  --color-warning-tint: #FEF3C7;
+  --color-danger: #EF4444;
+  --color-danger-tint: #FEE2E2;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(10,10,10,0.06);
+  --shadow-md: 0 4px 12px rgba(10,10,10,0.08);
+  --shadow-lg: 0 12px 32px rgba(10,10,10,0.12);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Font families */
+  --font-heading: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+}
+
+/* ═══════════════════════════════════════════
+   DARK MODE TOKENS
+   ═══════════════════════════════════════════ */
+
+.dark {
+  --color-primary: #4DA3E0;
+  --color-primary-dark: #3B8CC4;
+  --color-primary-tint: rgba(77, 163, 224, 0.12);
+  --color-primary-hover: #5BB3E8;
+  --color-accent: #F0F0F0;
+  --color-bg: #0F1117;
+  --color-surface: #1A1D27;
+  --color-border: #2A2D3A;
+  --color-text: #E8EAED;
+  --color-text-secondary: #D1D5DB;
+  --color-text-muted: #9CA3AF;
+  --color-success: #34D399;
+  --color-success-tint: rgba(52, 211, 153, 0.12);
+  --color-warning: #FBBF24;
+  --color-warning-tint: rgba(251, 191, 36, 0.12);
+  --color-danger: #F87171;
+  --color-danger-tint: rgba(248, 113, 113, 0.12);
+
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+}
+
+/* ═══════════════════════════════════════════
+   GLOBAL RESET & BASE
+   ═══════════════════════════════════════════ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════ */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in { animation: fadeIn 0.2s ease-out; }
+.animate-fade-in-scale { animation: fadeInScale 0.2s ease-out; }
+.animate-spin { animation: spin 1s linear infinite; }
