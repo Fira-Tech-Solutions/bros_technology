@@ -34,15 +34,27 @@ export default function Dashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [listingsRes, catRes] = await Promise.all([
-          get('/api/listings', { params: { limit: 1000 } }),
+        const fetchAll = async (endpoint: string) => {
+          let all: any[] = [];
+          let page = 1;
+          while (true) {
+            const res = await get(endpoint, { params: { page, limit: 100 } });
+            const chunk = res.data?.data || res.data?.listings || res.data || [];
+            const arr = Array.isArray(chunk) ? chunk : [];
+            all = [...all, ...arr];
+            const total = res.data?.pagination?.total || 0;
+            if (all.length >= total || arr.length < 100) break;
+            page++;
+          }
+          return all;
+        };
+
+        const [listings, catsRaw] = await Promise.all([
+          fetchAll('/api/listings'),
           get('/api/categories'),
         ]);
-        const listingsRaw = listingsRes.data?.data || listingsRes.data?.listings || listingsRes.data || [];
-        const listings = Array.isArray(listingsRaw) ? listingsRaw : [];
-        const totalCount = listingsRes.data?.pagination?.total || listings.length;
-        const catsRaw = catRes.data?.data || catRes.data?.categories || catRes.data || [];
-        const cats = Array.isArray(catsRaw) ? catsRaw : [];
+        const totalCount = listings.length;
+        const cats = Array.isArray(catsRaw.data?.data || catsRaw.data?.categories || catsRaw.data) ? (catsRaw.data?.data || catsRaw.data?.categories || catsRaw.data) : [];
 
         const statusCounts: Record<string, number> = { total: totalCount, available: 0, sold: 0, pending: 0, archived: 0 };
         listings.forEach((l: any) => {
