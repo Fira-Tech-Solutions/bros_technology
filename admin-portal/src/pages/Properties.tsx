@@ -29,13 +29,27 @@ export default function Properties() {
 
   const loadData = async () => {
     try {
-      const [listRes, catRes] = await Promise.all([
-        get('/api/listings', { params: { limit: 1000 } }),
+      const fetchAll = async (endpoint: string) => {
+        let all: any[] = [];
+        let page = 1;
+        while (true) {
+          const res = await get(endpoint, { params: { page, limit: 100 } });
+          const chunk = res.data?.data || res.data?.listings || res.data || [];
+          const arr = Array.isArray(chunk) ? chunk : [];
+          all = [...all, ...arr];
+          const total = res.data?.pagination?.total || 0;
+          if (all.length >= total || arr.length < 100) break;
+          page++;
+        }
+        return all;
+      };
+
+      const [listings, catsRes] = await Promise.all([
+        fetchAll('/api/listings'),
         get('/api/categories'),
       ]);
-      const listingsRaw = listRes.data?.data || listRes.data?.listings || listRes.data || [];
-      setListings(Array.isArray(listingsRaw) ? listingsRaw : []);
-      const catsRaw = catRes.data?.data || catRes.data?.categories || catRes.data || [];
+      setListings(listings);
+      const catsRaw = catsRes.data?.data || catsRes.data?.categories || catsRes.data || [];
       setCategories(Array.isArray(catsRaw) ? catsRaw : []);
     } catch (err) {
       console.error('Failed to load:', err);
