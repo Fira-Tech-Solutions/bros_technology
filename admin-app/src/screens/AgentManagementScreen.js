@@ -319,7 +319,7 @@ export default function AgentManagementScreen({ navigation }) {
   const handleRemoveAgent = async (agent) => {
     Alert.alert(
       "Remove Agent",
-      `Remove ${agent.name} and all their listings?`,
+      `Remove ${agent.name}? Their listings will be unassigned but kept.`,
       [
         { text: "Cancel", style: "cancel" },
         {

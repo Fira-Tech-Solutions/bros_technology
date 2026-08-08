@@ -112,8 +112,8 @@ model Listing {
   categoryId            String
   category              Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   
-  agentId               String
-  agent                 User             @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentId               String?
+  agent                 User?            @relation(fields: [agentId], references: [id], onDelete: SetNull)
   
   // Real-time metrics
   viewsCount            Int              @default(0)
@@ -130,6 +130,7 @@ model Listing {
 
   @@index([status])
   @@index([categoryId])
+  @@index([agentId])
   @@index([city, neighborhood]) // Compound index for fast regional search queries
   @@map("listings")
 }
