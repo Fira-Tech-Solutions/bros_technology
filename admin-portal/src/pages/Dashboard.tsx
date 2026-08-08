@@ -94,7 +94,7 @@ export default function Dashboard() {
       <PageHeader title="Dashboard" subtitle="Overview of your store performance" />
 
       {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 28 }}>
+      <div className="grid-responsive-4" style={{ display: 'grid', gap: 16, marginBottom: 24 }}>
         <StatCard title="Total Products" value={stats.total || 0} icon={Package} />
         <StatCard title="Available" value={stats.available || 0} icon={TrendingUp} />
         <StatCard title="Sold" value={stats.sold || 0} icon={Package} />
@@ -176,7 +176,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24 }}>
+      <div className="grid-responsive-sidebar" style={{ display: 'grid', gap: 20 }}>
         {/* Chart */}
         <div
           style={{

@@ -25,6 +25,7 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
 
   return (
     <div
+      className="modal-mobile"
       style={{
         position: 'fixed',
         inset: 0,
@@ -32,7 +33,7 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 16,
+        padding: 8,
       }}
     >
       {/* Backdrop */}
@@ -107,7 +108,7 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
           </button>
         </div>
         {/* Content */}
-        <div style={{ padding: '20px 24px', maxHeight: '70vh', overflowY: 'auto' }}>
+        <div style={{ padding: '16px 20px', maxHeight: '70vh', overflowY: 'auto' }}>
           {children}
         </div>
       </div>

@@ -203,13 +203,14 @@ export default function Properties() {
         subtitle={`${filtered.length} of ${listings.length} products`}
         action={
           <Button icon={Plus} onClick={() => navigate('/properties/new')}>
-            Add Product
+            <span className="sm\:hidden" style={{ display: 'none' }}>Add</span>
+            <span className="hidden sm\:inline">Add Product</span>
           </Button>
         }
       />
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 240, position: 'relative' }}>
+      <div style={{ display: 'flex', gap: 12, marginBottom: 20, flexDirection: 'column' }} className="sm\:flex" >
+        <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           <div style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
             <Package size={16} />
           </div>
