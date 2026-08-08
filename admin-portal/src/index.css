@@ -165,3 +165,20 @@ a:hover {
 .animate-fade-in { animation: fadeIn 0.2s ease-out; }
 .animate-fade-in-scale { animation: fadeInScale 0.2s ease-out; }
 .animate-spin { animation: spin 1s linear infinite; }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE UTILITIES (replaces broken Tailwind classes)
+   ═══════════════════════════════════════════ */
+
+.hidden { display: none !important; }
+
+@media (min-width: 640px) {
+  .sm\:flex { display: flex !important; }
+  .sm\:block { display: block !important; }
+}
+
+@media (min-width: 1024px) {
+  .lg\:block { display: block !important; }
+  .lg\:flex { display: flex !important; }
+  .lg\:hidden { display: none !important; }
+}

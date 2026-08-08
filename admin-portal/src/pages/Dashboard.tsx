@@ -5,18 +5,21 @@ import { get } from '../lib/api';
 import { StatCard, PageHeader, LoadingSpinner } from '../components/ui';
 
 const STATUS_COLORS: Record<string, string> = {
-  AVAILABLE: '#22C55E',
-  PENDING: '#F59E0B',
-  SOLD: '#EF4444',
-  ARCHIVED: '#6B7280',
+  AVAILABLE: 'var(--color-success)',
+  PENDING: 'var(--color-warning)',
+  SOLD: 'var(--color-danger)',
+  ARCHIVED: 'var(--color-text-muted)',
 };
 
 const CATEGORY_ICONS: Record<string, any> = {
   PHONES: Smartphone,
+  SMARTPHONES: Smartphone,
+  IPHONES_SAMSUNG: Smartphone,
   LAPTOPS: Laptop,
   SMARTWATCHES: Watch,
   AIRPODS: Headphones,
   TABLETS: Tablet,
+  IPADS_MACBOOKS: Laptop,
   'IPADS & MACBOOKS': Laptop,
 };
 

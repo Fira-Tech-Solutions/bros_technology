@@ -53,9 +53,9 @@ import {
 const API_BASE_URL = "https://bros-technology-api.vercel.app";
 
 const STATUS_MAP = {
-  PENDING: { label: "Pending", color: "#eab308", Icon: Clock },
-  SUCCESS: { label: "Success", color: "#22c55e", Icon: CircleCheck },
-  FAILED: { label: "Failed", color: "#ef4444", Icon: CircleX },
+  PENDING: { label: "Pending", color: "#F59E0B", Icon: Clock },
+  SUCCESS: { label: "Success", color: "#22C55E", Icon: CircleCheck },
+  FAILED: { label: "Failed", color: "#EF4444", Icon: CircleX },
 };
 
 const ACTION_MAP = {
