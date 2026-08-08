@@ -495,7 +495,7 @@ export default function AddListing() {
       {step === 3 && (
         <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', padding: 28, animation: 'fadeIn 0.2s ease-out' }}>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 12, fontFamily: 'var(--font-body)' }}>Product Photos</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div className="sm\:grid-3" style={{ display: 'grid', gap: 12 }}>
             {form.imagePreviews.map((src: string, i: number) => (
               <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
                 <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />

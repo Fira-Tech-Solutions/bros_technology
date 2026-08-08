@@ -72,7 +72,7 @@ export default function Layout() {
     <div style={{ display: 'flex', height: '100vh', background: 'var(--color-bg)', overflow: 'hidden' }}>
       {/* ═══ SIDEBAR — DESKTOP ═══ */}
       <aside
-        className="hidden lg:block"
+        className="sidebar-desktop"
         style={{
           width: sidebarOpen ? SIDEBAR_WIDTH : SIDEBAR_COLLAPSED,
           background: 'var(--color-surface)',
@@ -222,6 +222,7 @@ export default function Layout() {
 
       {/* ═══ SIDEBAR — MOBILE ═══ */}
       <aside
+        className="sidebar-mobile"
         style={{
           position: 'fixed',
           inset: 0,
@@ -323,14 +324,14 @@ export default function Layout() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '0 24px',
+            padding: '0 16px',
             flexShrink: 0,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <button
               onClick={() => setMobileOpen(true)}
-              className="lg:hidden"
+              className="hamburger-btn"
               style={{
                 width: 40,
                 height: 40,
@@ -347,7 +348,7 @@ export default function Layout() {
               <Menu size={20} />
             </button>
             <div
-              className="hidden sm:flex"
+              className="sm:flex"
               style={{
                 alignItems: 'center',
                 gap: 8,
@@ -355,8 +356,10 @@ export default function Layout() {
                 borderRadius: 'var(--radius-md)',
                 padding: '0 14px',
                 height: 40,
-                width: 320,
+                width: '100%',
+                maxWidth: 320,
                 border: '1px solid var(--color-border)',
+                display: 'none',
               }}
             >
               <Search size={16} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
@@ -515,7 +518,7 @@ export default function Layout() {
                     <User size={18} style={{ color: 'var(--color-primary)' }} />
                   )}
                 </div>
-                <div className="hidden sm:block" style={{ textAlign: 'left' }}>
+                <div className="sm:block" style={{ textAlign: 'left', display: 'none' }}>
                   <p style={{ fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-body)', color: 'var(--color-text)', lineHeight: 1.2 }}>
                     {user?.firstName || user?.name || 'Admin'}
                   </p>
@@ -595,7 +598,7 @@ export default function Layout() {
         </header>
 
         {/* Content */}
-        <main style={{ flex: 1, overflowY: 'auto', padding: 32 }}>
+        <main style={{ flex: 1, overflowY: 'auto' }} className="page-padding">
           <div style={{ maxWidth: 1440, margin: '0 auto' }} className="animate-fade-in">
             <Outlet />
           </div>

@@ -189,7 +189,7 @@ export default function Settings() {
 
             {/* Contact Settings */}
             <div style={{ borderTop: '1px solid var(--color-border)', paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="sm\:grid-2" style={{ display: 'grid', gap: 12 }}>
                 <Input
                   label="Store Name"
                   value={settings.siteName || ''}
@@ -263,7 +263,7 @@ export default function Settings() {
               />
 
               {/* Social Media */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="sm\:grid-2" style={{ display: 'grid', gap: 12 }}>
                 <Input
                   label="Facebook"
                   placeholder="Page URL"

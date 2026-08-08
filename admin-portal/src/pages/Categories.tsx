@@ -193,7 +193,7 @@ export default function Categories() {
         size="lg"
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="sm\:grid-2" style={{ display: 'grid', gap: 16 }}>
             <Input
               label="Category Name"
               placeholder="e.g. PHONES_TABLETS"

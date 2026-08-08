@@ -53,7 +53,7 @@ export default function Finance() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader title="Finance" subtitle="Asset overview by category" />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="grid-responsive-3" style={{ display: 'grid', gap: 16 }}>
         <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', padding: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'var(--color-primary-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -115,7 +115,7 @@ export default function Finance() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+      <div className="grid-responsive-3" style={{ display: 'grid', gap: 16 }}>
         {chartData.map((cat, i) => (
           <div key={i} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', padding: 20 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>

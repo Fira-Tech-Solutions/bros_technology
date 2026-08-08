@@ -167,18 +167,62 @@ a:hover {
 .animate-spin { animation: spin 1s linear infinite; }
 
 /* ═══════════════════════════════════════════
-   RESPONSIVE UTILITIES (replaces broken Tailwind classes)
+   RESPONSIVE UTILITIES
    ═══════════════════════════════════════════ */
 
 .hidden { display: none !important; }
 
+/* Sidebar: show desktop sidebar only on lg+ */
+@media (max-width: 1023px) {
+  .sidebar-desktop { display: none !important; }
+}
+@media (min-width: 1024px) {
+  .sidebar-desktop { display: flex !important; }
+  .sidebar-mobile { display: none !important; }
+  .hamburger-btn { display: none !important; }
+}
+
+/* Show/hide at breakpoints */
 @media (min-width: 640px) {
   .sm\:flex { display: flex !important; }
   .sm\:block { display: block !important; }
+  .sm\:grid-2 { grid-template-columns: repeat(2, 1fr) !important; }
+  .sm\:grid-3 { grid-template-columns: repeat(3, 1fr) !important; }
+  .sm\:grid-4 { grid-template-columns: repeat(4, 1fr) !important; }
+  .sm\:hidden { display: none !important; }
 }
 
 @media (min-width: 1024px) {
   .lg\:block { display: block !important; }
   .lg\:flex { display: flex !important; }
   .lg\:hidden { display: none !important; }
+  .lg\:grid-2 { grid-template-columns: repeat(2, 1fr) !important; }
+  .lg\:grid-3 { grid-template-columns: repeat(3, 1fr) !important; }
 }
+
+/* Responsive grids */
+.grid-responsive-2 { grid-template-columns: 1fr; }
+.grid-responsive-3 { grid-template-columns: 1fr; }
+.grid-responsive-4 { grid-template-columns: repeat(2, 1fr); }
+.grid-responsive-sidebar { grid-template-columns: 1fr; }
+
+@media (min-width: 640px) {
+  .grid-responsive-2 { grid-template-columns: repeat(2, 1fr); }
+  .grid-responsive-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid-responsive-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-responsive-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-responsive-sidebar { grid-template-columns: 1fr 380px; }
+}
+
+/* Mobile-friendly page padding */
+.page-padding { padding: 16px; }
+@media (min-width: 640px) { .page-padding { padding: 24px; } }
+@media (min-width: 1024px) { .page-padding { padding: 32px; } }
+
+/* Mobile-friendly modal */
+.modal-mobile { margin: 8px; max-height: calc(100vh - 16px); }
+@media (min-width: 640px) { .modal-mobile { margin: 16px; max-height: 70vh; } }
