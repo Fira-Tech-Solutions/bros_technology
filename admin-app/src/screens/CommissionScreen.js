@@ -36,10 +36,10 @@ const CATEGORY_ICONS = {
 };
 
 const STATUS_CONFIG = [
-  { key: "available", label: "Available", color: "#6366F1" },
-  { key: "sold", label: "Sold", color: "#22C55E" },
+  { key: "available", label: "Available", color: "#22C55E" },
   { key: "pending", label: "Pending", color: "#F59E0B" },
-  { key: "archived", label: "Archived", color: "#EF4444" },
+  { key: "sold", label: "Sold", color: "#EF4444" },
+  { key: "archived", label: "Archived", color: "#6B7280" },
 ];
 
 function SummaryCard({ icon: Icon, label, value, color, colors, radii, index }) {

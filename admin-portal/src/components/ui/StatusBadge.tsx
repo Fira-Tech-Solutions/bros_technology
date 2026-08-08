@@ -5,7 +5,7 @@ const BADGE_STYLES: Record<string, { bg: string; color: string; dot: string }> =
   ARCHIVED: { bg: 'var(--color-bg)', color: 'var(--color-text-muted)', dot: 'var(--color-text-muted)' },
   SUCCESS: { bg: 'var(--color-success-tint)', color: 'var(--color-success)', dot: 'var(--color-success)' },
   FAILED: { bg: 'var(--color-danger-tint)', color: 'var(--color-danger)', dot: 'var(--color-danger)' },
-  ACTIVE: { bg: 'var(--color-success-tint)', color: 'var(--color-success)', dot: 'var(--color-success)' },
+  ACTIVE: { bg: 'var(--color-primary-tint)', color: 'var(--color-primary)', dot: 'var(--color-primary)' },
   INACTIVE: { bg: 'var(--color-bg)', color: 'var(--color-text-muted)', dot: 'var(--color-text-muted)' },
 };
 
