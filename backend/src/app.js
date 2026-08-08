@@ -25,8 +25,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use(helmet());
-
 // Parse allowed origins from environment variable
 const allowedOriginsEnv = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
@@ -52,6 +50,7 @@ const devOrigins = [
 // Production origins are always allowed; env var and dev origins are merged in
 const allowedOrigins = [...new Set([...productionOrigins, ...allowedOriginsEnv, ...devOrigins])];
 
+// CORS MUST be registered before helmet() — helmet can strip CORS headers
 app.use(cors({
   origin(origin, callback) {
     if (!origin) return callback(null, true);
@@ -65,6 +64,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+app.use(helmet());
 
 app.use(morgan('dev'));
 app.use(express.json());
