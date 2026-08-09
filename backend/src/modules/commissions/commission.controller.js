@@ -8,6 +8,7 @@ export async function getAssetStats(req, res, next) {
         price: true,
         status: true,
         categoryId: true,
+        stockQuantity: true,
         category: {
           select: { id: true, name: true, displayName: true },
         },
@@ -16,12 +17,15 @@ export async function getAssetStats(req, res, next) {
 
     const statusCounts = { AVAILABLE: 0, SOLD: 0, PENDING: 0, ARCHIVED: 0 };
     let totalValue = 0;
+    let totalStock = 0;
 
     const categoryMap = {};
 
     for (const l of listings) {
       const price = Number(l.price) || 0;
+      const stock = l.stockQuantity || 0;
       totalValue += price;
+      totalStock += stock;
 
       if (statusCounts[l.status] !== undefined) {
         statusCounts[l.status]++;
@@ -40,12 +44,14 @@ export async function getAssetStats(req, res, next) {
           pending: 0,
           archived: 0,
           totalValue: 0,
+          totalStock: 0,
         };
       }
 
       const cat = categoryMap[catId];
       cat.count++;
       cat.totalValue += price;
+      cat.totalStock += stock;
 
       if (l.status === 'AVAILABLE') cat.available++;
       else if (l.status === 'SOLD') cat.sold++;
@@ -60,6 +66,7 @@ export async function getAssetStats(req, res, next) {
       data: {
         totalAssets: listings.length,
         totalValue: Math.round(totalValue * 100) / 100,
+        totalStock,
         ...statusCounts,
         byCategory,
       },

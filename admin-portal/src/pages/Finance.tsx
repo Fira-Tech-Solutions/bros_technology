@@ -38,9 +38,10 @@ export default function Finance() {
   const categoryData: Record<string, any> = stats?.byCategory || stats?.categories || stats || {};
   const categoryEntries = Object.entries(categoryData).filter(([k]) => !['_id', 'createdAt', 'updatedAt'].includes(k));
 
-  const totalProducts = categoryEntries.reduce((sum, [, v]) => sum + (v.count || v.listings || 0), 0);
-  const totalValue = categoryEntries.reduce((sum, [, v]) => sum + (v.totalValue || v.value || 0), 0);
-  const totalSold = categoryEntries.reduce((sum, [, v]) => sum + (v.sold || 0), 0);
+  const totalProducts = stats?.totalAssets || categoryEntries.reduce((sum, [, v]) => sum + (v.count || v.listings || 0), 0);
+  const totalValue = stats?.totalValue || categoryEntries.reduce((sum, [, v]) => sum + (v.totalValue || v.value || 0), 0);
+  const totalSold = stats?.SOLD || categoryEntries.reduce((sum, [, v]) => sum + (v.sold || 0), 0);
+  const totalStock = stats?.totalStock || 0;
 
   const chartData = categoryEntries.map(([key, val], i) => ({
     name: key.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase()),
@@ -53,7 +54,7 @@ export default function Finance() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <PageHeader title="Finance" subtitle="Asset overview by category" />
 
-      <div className="grid-responsive-3" style={{ display: 'grid', gap: 16 }}>
+      <div className="grid-responsive-4" style={{ display: 'grid', gap: 16 }}>
         <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', padding: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'var(--color-primary-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -73,6 +74,17 @@ export default function Finance() {
             <div>
               <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: 0 }}>{totalSold}</p>
               <p style={{ fontSize: 14, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', margin: 0 }}>Total Sold</p>
+            </div>
+          </div>
+        </div>
+        <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', padding: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'var(--color-primary-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Package size={20} style={{ color: 'var(--color-primary)' }} />
+            </div>
+            <div>
+              <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: 0 }}>{totalStock}</p>
+              <p style={{ fontSize: 14, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', margin: 0 }}>Total Stock</p>
             </div>
           </div>
         </div>
