@@ -36,15 +36,8 @@ const productionOrigins = [
 ];
 
 const devOrigins = [
-  'http://localhost:5000',
-  'http://localhost:19006',
   'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:3002',
-  'http://localhost:5173',
-  'http://10.0.2.2:5000',
-  'http://10.0.2.2:19006',
-  'http://127.0.0.1:5000',
+  'http://localhost:3001'
 ];
 
 // Production origins are always allowed; env var and dev origins are merged in
@@ -61,7 +54,7 @@ app.use(cors({
     callback(null, false);
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
