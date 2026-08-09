@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { post } from '../lib/api';
 import { useListings, useCategories, useDeleteListing } from '../hooks';
 import { DataTable, StatusBadge, Button, Modal, PageHeader, LoadingSpinner } from '../components/ui';
-import { Package, Plus, Trash2, Edit, Send, Filter, MapPin, Calendar, Smartphone, Laptop, Headphones, Watch, Monitor, Tag } from 'lucide-react';
+import { Package, Plus, Trash2, Edit, Send, Filter, Calendar, Smartphone, Laptop, Headphones, Watch, Monitor, Tag } from 'lucide-react';
 
 const ICON_MAP: Record<string, any> = {
   smartphone: Smartphone,
@@ -31,8 +31,6 @@ export default function Properties() {
     const q = search.toLowerCase();
     const matchesSearch = !q ||
       (l.title || '').toLowerCase().includes(q) ||
-      (l.city || '').toLowerCase().includes(q) ||
-      (l.neighborhood || '').toLowerCase().includes(q) ||
       (l.category?.displayName || '').toLowerCase().includes(q) ||
       (l.category?.name || '').toLowerCase().includes(q);
     const catName = l.category?.name || (typeof l.category === 'string' ? l.category : '');
@@ -110,17 +108,6 @@ export default function Properties() {
       ),
     },
     {
-      header: 'Location',
-      render: (row: any) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <MapPin size={12} style={{ color: 'var(--color-text-muted)', flexShrink: 0 }} />
-          <span style={{ fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-text-muted)' }}>
-            {row.neighborhood || row.city || '—'}
-          </span>
-        </div>
-      ),
-    },
-    {
       header: 'Status',
       render: (row: any) => <StatusBadge status={row.status || 'AVAILABLE'} />,
     },
@@ -191,7 +178,7 @@ export default function Properties() {
           </div>
           <input
             type="text"
-            placeholder="Search products, location, category..."
+            placeholder="Search products or category..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setSearchFocused(true)}

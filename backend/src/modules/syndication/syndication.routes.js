@@ -213,8 +213,6 @@ router.get('/logs', authenticate(), async (req, res, next) => {
             select: {
               id: true,
               title: true,
-              city: true,
-              neighborhood: true,
               images: true,
               price: true,
               category: true,

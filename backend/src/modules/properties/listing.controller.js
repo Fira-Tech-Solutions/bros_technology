@@ -16,8 +16,6 @@ export async function createListing(req, res, next) {
       title,
       description,
       price,
-      city,
-      neighborhood,
       categoryId,
       agentId,
       attributes,
@@ -48,8 +46,6 @@ export async function createListing(req, res, next) {
         title: title.trim(),
         description: description.trim(),
         price: parseFloat(price),
-        city: city.trim(),
-        neighborhood: neighborhood.trim(),
         images,
         attributes: attributes || {},
         categoryId,
@@ -88,8 +84,6 @@ export async function getListings(req, res, next) {
       limit = 20,
       status,
       categoryId,
-      city,
-      neighborhood,
       minPrice,
       maxPrice,
       search,
@@ -108,14 +102,6 @@ export async function getListings(req, res, next) {
 
     if (status) where.status = status;
     if (categoryId) where.categoryId = categoryId;
-
-    if (city) {
-      where.city = { contains: city, mode: 'insensitive' };
-    }
-
-    if (neighborhood) {
-      where.neighborhood = { contains: neighborhood, mode: 'insensitive' };
-    }
 
     if (minPrice || maxPrice) {
       where.price = {};
@@ -211,8 +197,6 @@ export async function updateListing(req, res, next) {
       title,
       description,
       price,
-      city,
-      neighborhood,
       categoryId,
       agentId,
       attributes,
@@ -236,8 +220,6 @@ export async function updateListing(req, res, next) {
       ...(title && { title: title.trim() }),
       ...(description && { description: description.trim() }),
       ...(price && { price: parseFloat(price) }),
-      ...(city && { city: city.trim() }),
-      ...(neighborhood && { neighborhood: neighborhood.trim() }),
       ...(categoryId && { categoryId }),
       ...(agentId && { agentId }),
       images,

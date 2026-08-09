@@ -204,8 +204,6 @@ export default function ListingDetailScreen({ route, navigation }) {
     title: "",
     description: "",
     price: "",
-    city: "",
-    neighborhood: "",
     categoryId: "",
     status: "AVAILABLE",
     stockQuantity: "1",
@@ -233,8 +231,6 @@ export default function ListingDetailScreen({ route, navigation }) {
         title: data.title || "",
         description: data.description || "",
         price: String(data.price || ""),
-        city: data.city || "",
-        neighborhood: data.neighborhood || "",
         categoryId: data.categoryId || "",
         status: data.status || "AVAILABLE",
         stockQuantity: String(data.stockQuantity ?? 1),
@@ -297,8 +293,6 @@ export default function ListingDetailScreen({ route, navigation }) {
       formData.append("title", form.title.trim());
       formData.append("description", form.description.trim());
       formData.append("price", parseFloat(form.price));
-      formData.append("city", form.city);
-      formData.append("neighborhood", form.neighborhood.trim());
       formData.append("categoryId", form.categoryId);
       formData.append("status", form.status);
       formData.append("stockQuantity", parseInt(form.stockQuantity || "1", 10));

@@ -622,8 +622,6 @@ export default function AddListingScreen({ navigation }) {
     formData.append("description", form.description?.trim() || "");
     formData.append("price", parseFloat(form.price));
     formData.append("stockQuantity", parseInt(form.stockQuantity || "1", 10));
-    formData.append("city", "Addis Ababa");
-    formData.append("neighborhood", "Addis Ababa");
     formData.append("categoryId", form.categoryId);
     formData.append("agentId", user.id);
     formData.append("status", "AVAILABLE");
