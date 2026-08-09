@@ -226,3 +226,8 @@ a:hover {
 /* Mobile-friendly modal */
 .modal-mobile { margin: 8px; max-height: calc(100vh - 16px); }
 @media (min-width: 640px) { .modal-mobile { margin: 16px; max-height: 70vh; } }
+
+/* Actions always visible on mobile (no hover) */
+.table-actions { opacity: 0; transition: opacity var(--transition-fast); }
+.table-actions:hover, .table-actions.active { opacity: 1; }
+@media (max-width: 639px) { .table-actions { opacity: 1 !important; } }
