@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { get, post } from '../lib/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useCategories, useCreateListing } from '../hooks';
 import { Button, Input, Select, Textarea, PageHeader, LoadingSpinner } from '../components/ui';
 import { ArrowLeft, Upload, X, Check, ChevronDown, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, Plus } from 'lucide-react';
 import { PRODUCT_OPTIONS, FIELD_LABELS } from '../config/productOptions';
@@ -18,7 +18,8 @@ export default function AddListing() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [step, setStep] = useState(1);
-  const [categories, setCategories] = useState<any[]>([]);
+  const { data: categories = [] } = useCategories();
+  const createListing = useCreateListing();
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
@@ -31,17 +32,6 @@ export default function AddListing() {
   const [showFieldDropdown, setShowFieldDropdown] = useState<string | null>(null);
   const [customMode, setCustomMode] = useState<string | null>(null);
   const [customValue, setCustomValue] = useState('');
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await get('/api/categories');
-        const catsRaw = res.data?.data || res.data?.categories || res.data || [];
-        setCategories(Array.isArray(catsRaw) ? catsRaw : []);
-      } catch (err) { console.error(err); }
-    };
-    load();
-  }, []);
 
   const updateForm = (key: string, value: any) => setForm(prev => ({ ...prev, [key]: value }));
 
@@ -100,7 +90,7 @@ export default function AddListing() {
       fd.append('attributes', JSON.stringify(attributes));
       fd.append('stockQuantity', form.stockQuantity || '1');
       form.images.forEach((img: any) => fd.append('images', img));
-      await post('/api/listings', fd);
+      await createListing.mutateAsync(fd);
       navigate('/properties');
     } catch (err) { console.error(err); } finally { setSubmitting(false); }
   };

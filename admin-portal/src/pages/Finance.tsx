@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { get } from '../lib/api';
+import { useAssetStats } from '../hooks';
 import { PageHeader, LoadingSpinner } from '../components/ui';
-import { DollarSign, Package, TrendingUp, BarChart3 } from 'lucide-react';
+import { DollarSign, Package, TrendingUp } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 const CATEGORY_COLORS = ['#1878B4', '#22C55E', '#F59E0B', '#EF4444', '#8B5CF6'];
@@ -14,24 +13,9 @@ const CATEGORY_ICONS = {
 };
 
 export default function Finance() {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: stats, isLoading } = useAssetStats();
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await get('/api/commissions/asset-stats');
-        setStats(res.data?.data || res.data);
-      } catch (err) {
-        console.error('Failed to load asset stats:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}><LoadingSpinner size="lg" /></div>;
   }
 

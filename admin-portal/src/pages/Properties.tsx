@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { get, del, post } from '../lib/api';
+import { post } from '../lib/api';
+import { useListings, useCategories, useDeleteListing } from '../hooks';
 import { DataTable, StatusBadge, Button, Modal, PageHeader, LoadingSpinner } from '../components/ui';
 import { Package, Plus, Trash2, Edit, Send, Filter, MapPin, Calendar, Smartphone, Laptop, Headphones, Watch, Monitor, Tag } from 'lucide-react';
 
@@ -14,51 +15,19 @@ const ICON_MAP: Record<string, any> = {
 
 export default function Properties() {
   const navigate = useNavigate();
-  const [listings, setListings] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: listings = [], isLoading: listingsLoading } = useListings();
+  const { data: categories = [], isLoading: catsLoading } = useCategories();
+  const deleteMutation = useDeleteListing();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [syndicateModal, setSyndicateModal] = useState<any>(null);
   const [syndicating, setSyndicating] = useState(false);
   const [deleteModal, setDeleteModal] = useState<any>(null);
-  const [deleting, setDeleting] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
 
-  useEffect(() => { loadData(); }, []);
+  const loading = listingsLoading || catsLoading;
 
-  const loadData = async () => {
-    try {
-      const fetchAll = async (endpoint: string) => {
-        let all: any[] = [];
-        let page = 1;
-        while (true) {
-          const res = await get(endpoint, { params: { page, limit: 100 } });
-          const chunk = res.data?.data || res.data?.listings || res.data || [];
-          const arr = Array.isArray(chunk) ? chunk : [];
-          all = [...all, ...arr];
-          const total = res.data?.pagination?.total || 0;
-          if (all.length >= total || arr.length < 100) break;
-          page++;
-        }
-        return all;
-      };
-
-      const [listings, catsRes] = await Promise.all([
-        fetchAll('/api/listings'),
-        get('/api/categories'),
-      ]);
-      setListings(listings);
-      const catsRaw = catsRes.data?.data || catsRes.data?.categories || catsRes.data || [];
-      setCategories(Array.isArray(catsRaw) ? catsRaw : []);
-    } catch (err) {
-      console.error('Failed to load:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filtered = listings.filter((l: any) => {
+  const filtered = useMemo(() => listings.filter((l: any) => {
     const q = search.toLowerCase();
     const matchesSearch = !q ||
       (l.title || '').toLowerCase().includes(q) ||
@@ -69,7 +38,7 @@ export default function Properties() {
     const catName = l.category?.name || (typeof l.category === 'string' ? l.category : '');
     const matchesCategory = !selectedCategory || catName === selectedCategory;
     return matchesSearch && matchesCategory;
-  });
+  }), [listings, search, selectedCategory]);
 
   const handleSyndicate = async () => {
     if (!syndicateModal) return;
@@ -86,17 +55,9 @@ export default function Properties() {
 
   const handleDelete = async () => {
     if (!deleteModal) return;
-    setDeleting(true);
-    try {
-      const listingId = deleteModal.id || deleteModal._id;
-      await del(`/api/listings/${listingId}`);
-      setListings(prev => prev.filter(l => (l.id || l._id) !== listingId));
-      setDeleteModal(null);
-    } catch (err) {
-      console.error('Delete failed:', err);
-    } finally {
-      setDeleting(false);
-    }
+    const listingId = deleteModal.id || deleteModal._id;
+    await deleteMutation.mutateAsync(listingId);
+    setDeleteModal(null);
   };
 
   const columns = [
@@ -307,7 +268,7 @@ export default function Properties() {
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
           <Button variant="ghost" onClick={() => setDeleteModal(null)}>Cancel</Button>
-          <Button variant="danger" icon={Trash2} loading={deleting} onClick={handleDelete}>Delete</Button>
+          <Button variant="danger" icon={Trash2} loading={deleteMutation.isPending} onClick={handleDelete}>Delete</Button>
         </div>
       </Modal>
     </div>

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { get, put } from '../lib/api';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useSettings, useUpdateSettings } from '../hooks';
 import { Button, Input, Textarea, LoadingSpinner } from '../components/ui';
 import { ChevronRight, Sun, Moon, Globe, Store, Phone, Mail, MapPin, ExternalLink, Info, LogOut, Save } from 'lucide-react';
 
@@ -12,36 +12,25 @@ export default function Settings() {
   const { dark, toggle: toggleTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
   const { user, logout } = useAuth();
+  const { data: serverSettings, isLoading } = useSettings();
+  const updateSettings = useUpdateSettings();
   const [settings, setSettings] = useState<Record<string, any>>({});
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await get('/api/settings');
-        setSettings(res.data?.data || res.data?.settings || res.data || {});
-      } catch (err) {
-        console.error('Failed to load settings:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+    if (serverSettings) {
+      setSettings(serverSettings);
+    }
+  }, [serverSettings]);
 
   const handleSave = async () => {
-    setSaving(true);
     try {
-      await put('/api/settings', settings);
+      await updateSettings.mutateAsync(settings);
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err) {
       console.error('Save failed:', err);
-    } finally {
-      setSaving(false);
     }
   };
 
@@ -61,7 +50,7 @@ export default function Settings() {
 
   const currentLanguage = languages.find(l => l.code === language)?.label || 'English';
 
-  if (loading) {
+  if (isLoading) {
     return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}><LoadingSpinner size="lg" /></div>;
   }
 
@@ -291,7 +280,7 @@ export default function Settings() {
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-                <Button icon={Save} loading={saving} onClick={handleSave}>
+                <Button icon={Save} loading={updateSettings.isPending} onClick={handleSave}>
                   {saved ? 'Saved!' : 'Save Changes'}
                 </Button>
               </div>

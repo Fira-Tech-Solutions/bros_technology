@@ -1,73 +1,47 @@
-import { useState, useEffect } from 'react';
-import { get, post, del } from '../lib/api';
+import { useState } from 'react';
+import { useAgentCodes, useAgents, useGenerateAgentCode, useRevokeAgentCode } from '../hooks';
 import { Button, DataTable, Modal, Input, PageHeader, EmptyState, LoadingSpinner } from '../components/ui';
 import { Users, Plus, Trash2, Copy, Check, Shield, UserX, RefreshCw } from 'lucide-react';
 
 export default function Agents() {
   const [activeTab, setActiveTab] = useState('codes');
-  const [codes, setCodes] = useState([]);
-  const [agents, setAgents] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: codes = [], isLoading: codesLoading } = useAgentCodes();
+  const { data: agents = [], isLoading: agentsLoading } = useAgents();
+  const generateCode = useGenerateAgentCode();
+  const revokeCode = useRevokeAgentCode();
   const [generateModal, setGenerateModal] = useState(false);
-  const [generating, setGenerating] = useState(false);
   const [codeName, setCodeName] = useState('');
   const [codeRole, setCodeRole] = useState('agent');
   const [codeUses, setCodeUses] = useState('1');
   const [copiedCode, setCopiedCode] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
-  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => { loadData(); }, []);
-
-  const loadData = async () => {
-    try {
-      const [codesRes, agentsRes] = await Promise.all([
-        get('/api/auth/agent-codes'),
-        get('/api/auth/agents'),
-      ]);
-      const codesRaw = codesRes.data?.codes || codesRes.data?.data || codesRes.data || [];
-      setCodes(Array.isArray(codesRaw) ? codesRaw : []);
-      const agentsRaw = agentsRes.data?.agents || agentsRes.data?.data || agentsRes.data || [];
-      setAgents(Array.isArray(agentsRaw) ? agentsRaw : []);
-    } catch (err) {
-      console.error('Failed to load:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loading = codesLoading || agentsLoading;
 
   const handleGenerate = async () => {
-    setGenerating(true);
     try {
-      const res = await post('/api/auth/agent-codes', {
+      await generateCode.mutateAsync({
         name: codeName,
         role: codeRole,
         maxUses: parseInt(codeUses),
       });
-        setCodes(prev => [...prev, res.data?.data || res.data?.code || res.data]);
       setGenerateModal(false);
       setCodeName('');
       setCodeRole('agent');
       setCodeUses('1');
     } catch (err) {
       console.error('Generate failed:', err);
-    } finally {
-      setGenerating(false);
     }
   };
 
   const handleRevoke = async () => {
     if (!deleteModal) return;
-    setDeleting(true);
     try {
       const codeId = deleteModal.id || deleteModal._id;
-      await del(`/api/auth/agent-codes/${codeId}`);
-      setCodes(prev => prev.filter(c => (c.id || c._id) !== codeId));
+      await revokeCode.mutateAsync(codeId);
       setDeleteModal(null);
     } catch (err) {
       console.error('Revoke failed:', err);
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -256,7 +230,7 @@ export default function Agents() {
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
           <Button variant="secondary" onClick={() => setGenerateModal(false)}>Cancel</Button>
-          <Button loading={generating} onClick={handleGenerate} disabled={!codeName}>Generate</Button>
+          <Button loading={generateCode.isPending} onClick={handleGenerate} disabled={!codeName}>Generate</Button>
         </div>
       </Modal>
 
@@ -269,7 +243,7 @@ export default function Agents() {
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button variant="secondary" onClick={() => setDeleteModal(null)}>Cancel</Button>
-          <Button variant="danger" icon={Trash2} loading={deleting} onClick={handleRevoke}>Confirm</Button>
+          <Button variant="danger" icon={Trash2} loading={revokeCode.isPending} onClick={handleRevoke}>Confirm</Button>
         </div>
       </Modal>
     </div>
