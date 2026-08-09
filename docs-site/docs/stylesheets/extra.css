@@ -1,0 +1,65 @@
+/* BROS Technology Brand Colors */
+:root {
+  --md-primary-fg-color: #1878B4;
+  --md-primary-fg-color--light: #4DA3E0;
+  --md-primary-fg-color--dark: #125E8C;
+  --md-accent-fg-color: #1878B4;
+  --md-accent-fg-color--light: #4DA3E0;
+  --md-accent-fg-color--dark: #125E8C;
+}
+
+/* Dark mode overrides */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: #4DA3E0;
+  --md-primary-fg-color--light: #7ABDE8;
+  --md-primary-fg-color--dark: #1878B4;
+  --md-accent-fg-color: #4DA3E0;
+  --md-accent-fg-color--light: #7ABDE8;
+  --md-accent-fg-color--dark: #1878B4;
+}
+
+/* Logo sizing */
+.md-header__button.md-logo img {
+  height: 2rem;
+}
+
+/* Admonition styling */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 8px;
+}
+
+/* Code block styling */
+.md-typeset pre {
+  border-radius: 8px;
+}
+
+/* Table styling */
+.md-typeset table:not([class]) {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color);
+  color: white;
+}
+
+/* Navigation tabs */
+.md-tabs {
+  background-color: var(--md-primary-fg-color--dark);
+}
+
+/* Search highlight */
+.md-search-result .md-search-result__title {
+  font-weight: 600;
+}
+
+/* Footer styling */
+.md-footer {
+  background-color: #1a1a2e;
+}
+
+.md-footer__link {
+  color: var(--md-primary-fg-color--light);
+}

@@ -1,0 +1,102 @@
+site_name: BROS Technology — Developer Documentation
+site_description: Technical documentation for the BROS Technology marketplace platform
+site_url: https://docs.brostechnology.com
+repo_url: https://github.com/Fira-Tech-Solutions/bros_technology
+repo_name: bros_technology
+
+theme:
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.png
+  palette:
+    - scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+  custom_dir: overrides
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list
+  - md_in_html
+  - tables
+  - admonition
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+  - def_list
+  - pymdownx.keys
+
+plugins:
+  - search
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Fira-Tech-Solutions/bros_technology
+    - icon: fontawesome/brands/telegram
+      link: https://t.me/brostechnology
+
+nav:
+  - Home: index.md
+  - Overview: 00-OVERVIEW.md
+  - Getting Started: 01-GETTING-STARTED.md
+  - Architecture: 02-ARCHITECTURE.md
+  - Features: 03-FEATURES.md
+  - API Reference: 04-API-REFERENCE.md
+  - Deployment: 05-DEPLOYMENT.md
+  - Brand & Design System: 06-BRAND-AND-DESIGN-SYSTEM.md
+  - Known Issues & Tech Debt: 07-KNOWN-ISSUES-AND-TECH-DEBT.md
+  - For Future Developers: 08-FOR-FUTURE-DEVELOPERS.md
+  - Reference:
+    - API Reference (Detailed): api-reference.md
+    - Architecture (Detailed): architecture.md
+    - Authentication: authentication.md
+    - Database Schema: database-schema.md
+    - Image Processing: image-processing.md
+    - Internationalization: internationalization.md
+    - Security: security.md
+    - Telegram Syndication: telegram-syndication.md
+    - Vercel Serverless Migration: vercel-serverless-migration.md

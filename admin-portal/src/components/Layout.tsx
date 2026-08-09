@@ -17,9 +17,13 @@ import {
   LogOut,
   User,
   RefreshCw,
+  BookOpen,
+  FileText,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { DOC_LINKS } from '../constants/docLinks';
 
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -187,6 +191,65 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
+
+        {/* Documentation links */}
+        {sidebarOpen && (
+          <div style={{ padding: '8px 8px 0', borderTop: '1px solid var(--color-border)' }}>
+            <p style={{ fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-heading)', color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, padding: '0 16px', marginBottom: 4 }}>
+              Documentation
+            </p>
+            <a
+              href={DOC_LINKS.DEVELOPER_DOCS}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                height: NAV_HEIGHT,
+                padding: '0 16px',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 14,
+                fontWeight: 500,
+                fontFamily: 'var(--font-body)',
+                color: 'var(--color-text-muted)',
+                textDecoration: 'none',
+                transition: 'all var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg)'; e.currentTarget.style.color = 'var(--color-text)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
+            >
+              <BookOpen size={20} style={{ flexShrink: 0 }} />
+              <span>Developer Docs</span>
+              <ExternalLink size={12} style={{ marginLeft: 'auto', opacity: 0.5 }} />
+            </a>
+            <a
+              href={DOC_LINKS.HANDOVER_PDF}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                height: NAV_HEIGHT,
+                padding: '0 16px',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 14,
+                fontWeight: 500,
+                fontFamily: 'var(--font-body)',
+                color: 'var(--color-text-muted)',
+                textDecoration: 'none',
+                transition: 'all var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg)'; e.currentTarget.style.color = 'var(--color-text)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
+            >
+              <FileText size={20} style={{ flexShrink: 0 }} />
+              <span>Client Handover</span>
+              <ExternalLink size={12} style={{ marginLeft: 'auto', opacity: 0.5 }} />
+            </a>
+          </div>
+        )}
 
         {/* Collapse button when collapsed */}
         {!sidebarOpen && (
