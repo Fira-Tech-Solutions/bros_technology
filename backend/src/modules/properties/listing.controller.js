@@ -23,6 +23,7 @@ export async function createListing(req, res, next) {
       attributes,
       customTelegramCaption,
       status,
+      stockQuantity,
     } = req.body;
 
     if (!title || !price || !categoryId || !agentId) {
@@ -55,6 +56,7 @@ export async function createListing(req, res, next) {
         agentId,
         customTelegramCaption: customTelegramCaption || null,
         status: status || 'AVAILABLE',
+        stockQuantity: stockQuantity != null ? parseInt(stockQuantity) : 1,
       },
       include: LISTING_INCLUDE,
     });
@@ -216,6 +218,7 @@ export async function updateListing(req, res, next) {
       attributes,
       customTelegramCaption,
       status,
+      stockQuantity,
     } = req.body;
 
     const images = req.images && req.images.length > 0 ? req.images : existing.images;
@@ -226,23 +229,39 @@ export async function updateListing(req, res, next) {
       });
     }
 
-    const updated = await prisma.listing.update({
+    const updateData = {
+      ...(title && { title: title.trim() }),
+      ...(description && { description: description.trim() }),
+      ...(price && { price: parseFloat(price) }),
+      ...(city && { city: city.trim() }),
+      ...(neighborhood && { neighborhood: neighborhood.trim() }),
+      ...(categoryId && { categoryId }),
+      ...(agentId && { agentId }),
+      images,
+      ...(attributes !== undefined && { attributes }),
+      ...(customTelegramCaption !== undefined && { customTelegramCaption: customTelegramCaption || null }),
+      ...(status && { status }),
+      ...(stockQuantity != null && { stockQuantity: parseInt(stockQuantity) }),
+    };
+
+    let updated = await prisma.listing.update({
       where: { id },
-      data: {
-        ...(title && { title: title.trim() }),
-        ...(description && { description: description.trim() }),
-        ...(price && { price: parseFloat(price) }),
-        ...(city && { city: city.trim() }),
-        ...(neighborhood && { neighborhood: neighborhood.trim() }),
-        ...(categoryId && { categoryId }),
-        ...(agentId && { agentId }),
-        images,
-        ...(attributes !== undefined && { attributes }),
-        ...(customTelegramCaption !== undefined && { customTelegramCaption: customTelegramCaption || null }),
-        ...(status && { status }),
-      },
+      data: updateData,
       include: LISTING_INCLUDE,
     });
+
+    // Auto-decrement stock when status changes to SOLD
+    if (status === 'SOLD' && updated.stockQuantity > 0) {
+      const newStock = Math.max(0, updated.stockQuantity - 1);
+      updated = await prisma.listing.update({
+        where: { id },
+        data: {
+          stockQuantity: newStock,
+          ...(newStock === 0 ? { status: 'ARCHIVED' } : {}),
+        },
+        include: LISTING_INCLUDE,
+      });
+    }
 
     listingEmitter.emit('listing:updated', updated.id);
 

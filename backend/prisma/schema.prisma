@@ -119,6 +119,9 @@ model Listing {
   viewsCount            Int              @default(0)
   inquiryClicks         Int              @default(0)
 
+  // Inventory tracking
+  stockQuantity         Int              @default(0)
+
   // Commission tracking for admin revenue
   commissionPercent     Decimal?         @db.Decimal(5, 2)
   

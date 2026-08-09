@@ -22,6 +22,7 @@ export type Property = {
   title: string;
   price: number;
   inStock: boolean;
+  stockQuantity: number;
   brand: string;
   category: string;
   categoryId: string;

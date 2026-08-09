@@ -7,13 +7,15 @@ function mapListingToProperty(listing) {
     return `${process.env.API_BASE_URL || 'http://localhost:5000'}/${p}`;
   });
 
-  const inStock = attrs.inStock !== undefined ? attrs.inStock : listing.status === 'AVAILABLE';
+  const stockQuantity = listing.stockQuantity || 0;
+  const inStock = stockQuantity > 0 || listing.status === 'AVAILABLE';
 
   return {
     id: listing.id,
     title: listing.title,
     price: listing.price,
     inStock,
+    stockQuantity,
     brand: attrs.brand || '',
     category: listing.category?.displayName || 'Device',
     categoryId: listing.categoryId,

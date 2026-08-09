@@ -164,6 +164,20 @@ export default function Properties() {
       render: (row: any) => <StatusBadge status={row.status || 'AVAILABLE'} />,
     },
     {
+      header: 'Stock',
+      render: (row: any) => {
+        const qty = row.stockQuantity || 0;
+        return (
+          <span style={{
+            fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-body)',
+            color: qty === 0 ? 'var(--color-danger)' : qty <= 3 ? 'var(--color-warning)' : 'var(--color-success)',
+          }}>
+            {qty}
+          </span>
+        );
+      },
+    },
+    {
       header: 'Agent',
       render: (row: any) => (
         <span style={{ fontSize: 13, fontFamily: 'var(--font-body)', color: 'var(--color-text-muted)' }}>
