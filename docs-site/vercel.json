@@ -1,6 +1,6 @@
 {
-  "buildCommand": "pip install mkdocs-material && mkdocs build --strict",
+  "buildCommand": "mkdocs build --strict",
   "outputDirectory": "site",
-  "installCommand": "pip install mkdocs-material",
+  "installCommand": "pip install --break-system-packages mkdocs-material",
   "framework": null
 }
