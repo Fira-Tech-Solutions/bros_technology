@@ -1,0 +1,3346 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Technical documentation for the BROS Technology marketplace platform">
+      
+      
+      
+        <link rel="canonical" href="https://docs.brostechnology.com/vercel-serverless-migration/">
+      
+      
+        <link rel="prev" href="../telegram-syndication/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Vercel Serverless Migration - BROS Technology — Developer Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vercel-serverless-migration-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BROS Technology — Developer Documentation" class="md-header__button md-logo" aria-label="BROS Technology — Developer Documentation" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BROS Technology — Developer Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Vercel Serverless Migration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Fira-Tech-Solutions/bros_technology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bros_technology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../00-OVERVIEW/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../01-GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../02-ARCHITECTURE/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../03-FEATURES/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../04-API-REFERENCE/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../05-DEPLOYMENT/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../06-BRAND-AND-DESIGN-SYSTEM/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Brand & Design System
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../07-KNOWN-ISSUES-AND-TECH-DEBT/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Known Issues & Tech Debt
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../08-FOR-FUTURE-DEVELOPERS/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  For Future Developers
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BROS Technology — Developer Documentation" class="md-nav__button md-logo" aria-label="BROS Technology — Developer Documentation" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    BROS Technology — Developer Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Fira-Tech-Solutions/bros_technology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bros_technology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00-OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-FEATURES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-API-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-BRAND-AND-DESIGN-SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brand & Design System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-KNOWN-ISSUES-AND-TECH-DEBT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Known Issues & Tech Debt
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-FOR-FUTURE-DEVELOPERS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    For Future Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference (Detailed)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (Detailed)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../image-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../telegram-syndication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telegram Syndication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vercel Serverless Migration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vercel Serverless Migration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stack-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Information
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-entry-point-restructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Entry Point Restructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Entry Point Restructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#created-backendapiindexjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Created: /backend/api/index.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcserverjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/server.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#created-backendverceljson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Created: /backend/vercel.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-database-connection-for-serverless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Database Connection for Serverless
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Database Connection for Serverless">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendprismaschemaprisma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/prisma/schema.prisma
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcconfigprismajs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/config/prisma.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-connection-string-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Connection String Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-file-system-uploads-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. File System / Uploads Refactoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. File System / Uploads Refactoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcutilsimageprocessorjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/utils/imageProcessor.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcmodulesusersuserroutesjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/modules/users/user.routes.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-system-operations-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File System Operations Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-websocket-long-lived-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. WebSocket / Long-Lived Connections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. WebSocket / Long-Lived Connections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-environment-variables-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Environment Variables Audit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Environment Variables Audit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Environment Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Required Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CORS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-cloudinary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage (Cloudinary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-brevo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email (Brevo)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telegram-syndication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telegram Syndication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-cors-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. CORS Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. CORS Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcappjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/app.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-long-running-operations-10s-timeout-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Long-Running Operations (&gt;10s timeout risk)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Long-Running Operations (&gt;10s timeout risk)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#potentially-long-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Potentially Long Operations:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-critical-long-running-operations-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Critical Long-Running Operations Found
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-route-sanity-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Route Sanity Check
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Route Sanity Check">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-routes-method-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All Routes (Method + Path)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="All Routes (Method + Path)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-apiauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication (/api/auth)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#categories-apicategories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categories (/api/categories)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listings-apilistings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Listings (/api/listings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-apipublic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public (/api/public)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syndication-apisyndication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syndication (/api/syndication)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notifications-apinotifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications (/api/notifications)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commissions-apicommissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commissions (/api/commissions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-files-conditional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Files (conditional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-deployment-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Deployment Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Deployment Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vercel-project-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vercel Project Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-uncertainties-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Uncertainties / Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Uncertainties / Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#items-to-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Items to Verify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#potential-future-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Potential Future Improvements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-summary-of-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Summary of Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Summary of Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#files-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Created
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-modified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Modified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Unchanged
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stack-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Information
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-entry-point-restructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Entry Point Restructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Entry Point Restructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#created-backendapiindexjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Created: /backend/api/index.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcserverjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/server.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#created-backendverceljson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Created: /backend/vercel.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-database-connection-for-serverless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Database Connection for Serverless
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Database Connection for Serverless">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendprismaschemaprisma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/prisma/schema.prisma
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcconfigprismajs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/config/prisma.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-connection-string-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Connection String Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-file-system-uploads-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. File System / Uploads Refactoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. File System / Uploads Refactoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcutilsimageprocessorjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/utils/imageProcessor.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcmodulesusersuserroutesjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/modules/users/user.routes.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-system-operations-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File System Operations Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-websocket-long-lived-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. WebSocket / Long-Lived Connections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. WebSocket / Long-Lived Connections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Findings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-environment-variables-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Environment Variables Audit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Environment Variables Audit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#required-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required Environment Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Required Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CORS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage-cloudinary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage (Cloudinary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-brevo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email (Brevo)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#telegram-syndication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Telegram Syndication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-cors-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. CORS Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. CORS Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changes-made_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changes Made
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Changes Made">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#modified-backendsrcappjs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modified: /backend/src/app.js
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-long-running-operations-10s-timeout-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Long-Running Operations (&gt;10s timeout risk)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Long-Running Operations (&gt;10s timeout risk)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#potentially-long-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Potentially Long Operations:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-critical-long-running-operations-found" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No Critical Long-Running Operations Found
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-route-sanity-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Route Sanity Check
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Route Sanity Check">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#all-routes-method-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        All Routes (Method + Path)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="All Routes (Method + Path)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-apiauth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication (/api/auth)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#categories-apicategories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Categories (/api/categories)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#listings-apilistings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Listings (/api/listings)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-apipublic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public (/api/public)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syndication-apisyndication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Syndication (/api/syndication)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notifications-apinotifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications (/api/notifications)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commissions-apicommissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commissions (/api/commissions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#static-files-conditional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Files (conditional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-deployment-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Deployment Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Deployment Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vercel-project-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vercel Project Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Local Development
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-uncertainties-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Uncertainties / Notes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Uncertainties / Notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#items-to-verify" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Items to Verify
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#potential-future-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Potential Future Improvements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-summary-of-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Summary of Changes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Summary of Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#files-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Created
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-modified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Modified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Unchanged
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="vercel-serverless-migration-documentation">Vercel Serverless Migration Documentation<a class="headerlink" href="#vercel-serverless-migration-documentation" title="Permanent link">&para;</a></h1>
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p>This document describes the refactoring of the Express.js backend for deployment on Vercel serverless functions with Supabase Postgres database.</p>
+<h2 id="stack-information">Stack Information<a class="headerlink" href="#stack-information" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>ORM</strong>: Prisma (v6.9.0)</li>
+<li><strong>Database</strong>: PostgreSQL (targeting Supabase with PgBouncer)</li>
+<li><strong>Target Platform</strong>: Vercel Serverless Functions</li>
+<li><strong>Current Storage</strong>: Cloudinary (with local fallback for development)</li>
+</ul>
+<hr />
+<h2 id="1-entry-point-restructure">1. Entry Point Restructure<a class="headerlink" href="#1-entry-point-restructure" title="Permanent link">&para;</a></h2>
+<h3 id="changes-made">Changes Made<a class="headerlink" href="#changes-made" title="Permanent link">&para;</a></h3>
+<h4 id="created-backendapiindexjs">Created: <code>/backend/api/index.js</code><a class="headerlink" href="#created-backendapiindexjs" title="Permanent link">&para;</a></h4>
+<p><div class="language-javascript highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">import</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">&#39;../src/app.js&#39;</span><span class="p">;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">app</span><span class="p">;</span>
+</span></code></pre></div>
+<strong>Purpose</strong>: Vercel entry point that exports the Express app without calling <code>app.listen()</code>.</p>
+<h4 id="modified-backendsrcserverjs">Modified: <code>/backend/src/server.js</code><a class="headerlink" href="#modified-backendsrcserverjs" title="Permanent link">&para;</a></h4>
+<p><strong>Removed</strong>: <code>export default app;</code> at the end of the file
+<strong>Purpose</strong>: Local development entry point that calls <code>app.listen()</code> - unchanged otherwise.</p>
+<h4 id="created-backendverceljson">Created: <code>/backend/vercel.json</code><a class="headerlink" href="#created-backendverceljson" title="Permanent link">&para;</a></h4>
+<p><div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;rewrites&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/(.*)&quot;</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/api/index.js&quot;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<strong>Purpose</strong>: Routes all incoming requests to the Vercel serverless handler, preserving existing route paths.</p>
+<hr />
+<h2 id="2-database-connection-for-serverless">2. Database Connection for Serverless<a class="headerlink" href="#2-database-connection-for-serverless" title="Permanent link">&para;</a></h2>
+<h3 id="changes-made_1">Changes Made<a class="headerlink" href="#changes-made_1" title="Permanent link">&para;</a></h3>
+<h4 id="modified-backendprismaschemaprisma">Modified: <code>/backend/prisma/schema.prisma</code><a class="headerlink" href="#modified-backendprismaschemaprisma" title="Permanent link">&para;</a></h4>
+<p><div class="language-diff highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="w"> </span>datasource db {
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w"> </span>  provider = &quot;postgresql&quot;
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w"> </span>  url      = env(&quot;DATABASE_URL&quot;)
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="gi">+  directUrl = env(&quot;DIRECT_URL&quot;)</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w"> </span>}
+</span></code></pre></div>
+<strong>Purpose</strong>: Added support for Prisma's connection pooling with <code>directUrl</code> for direct connections when needed (e.g., migrations).</p>
+<h4 id="modified-backendsrcconfigprismajs">Modified: <code>/backend/src/config/prisma.js</code><a class="headerlink" href="#modified-backendsrcconfigprismajs" title="Permanent link">&para;</a></h4>
+<p><div class="language-diff highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w"> </span>import { PrismaClient } from &#39;@prisma/client&#39;;
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w"> </span>const globalForPrisma = globalThis;
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w"> </span>const prisma = globalForPrisma.prisma ?? new PrismaClient({
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w"> </span>  log: process.env.NODE_ENV === &#39;development&#39; ? [&#39;error&#39;, &#39;warn&#39;] : [&#39;error&#39;],
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="gi">+  datasources: {</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="gi">+    db: {</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="gi">+      url: process.env.DATABASE_URL,</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="gi">+    },</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="gi">+  },</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w"> </span>});
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w"> </span>if (process.env.NODE_ENV !== &#39;production&#39;) {
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w"> </span>  globalForPrisma.prisma = prisma;
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w"> </span>}
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="gi">+// Handle cleanup for serverless environments</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="gi">+if (process.env.NODE_ENV === &#39;production&#39;) {</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="gi">+  process.on(&#39;beforeExit&#39;, async () =&gt; {</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="gi">+    await prisma.$disconnect();</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="gi">+  });</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="gi">+}</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w"> </span>export default prisma;
+</span></code></pre></div>
+<strong>Purpose</strong>: 
+- Singleton pattern already implemented (good for serverless)
+- Added explicit <code>DATABASE_URL</code> datasource configuration
+- Added cleanup handler for serverless environments</p>
+<h3 id="database-connection-string-requirements">Database Connection String Requirements<a class="headerlink" href="#database-connection-string-requirements" title="Permanent link">&para;</a></h3>
+<p><strong>For Vercel/Supabase:</strong>
+- <code>DATABASE_URL</code>: Should use Supabase pooled connection (port 6543, pgbouncer=true)
+  - Format: <code>postgres://postgres:[password]@db.[project-ref].supabase.co:6543/postgres?pgbouncer=true</code>
+- <code>DIRECT_URL</code>: Should use direct connection for migrations (port 5432)
+  - Format: <code>postgres://postgres:[password]@db.[project-ref].supabase.co:5432/postgres</code></p>
+<hr />
+<h2 id="3-file-system-uploads-refactoring">3. File System / Uploads Refactoring<a class="headerlink" href="#3-file-system-uploads-refactoring" title="Permanent link">&para;</a></h2>
+<h3 id="changes-made_2">Changes Made<a class="headerlink" href="#changes-made_2" title="Permanent link">&para;</a></h3>
+<h4 id="modified-backendsrcutilsimageprocessorjs">Modified: <code>/backend/src/utils/imageProcessor.js</code><a class="headerlink" href="#modified-backendsrcutilsimageprocessorjs" title="Permanent link">&para;</a></h4>
+<p><strong>Added serverless detection:</strong>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">IS_SERVERLESS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VERCEL</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">AWS_LAMBDA_FUNCTION_NAME</span><span class="p">;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">STORAGE_PROVIDER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">STORAGE_PROVIDER</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VERCEL</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s1">&#39;cloudinary&#39;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;local&#39;</span><span class="p">);</span>
+</span></code></pre></div></p>
+<p><strong>Modified storage configuration:</strong>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Use memory storage in serverless environments, disk storage otherwise</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">storage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">IS_SERVERLESS</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="o">?</span><span class="w"> </span><span class="nx">multer</span><span class="p">.</span><span class="nx">memoryStorage</span><span class="p">()</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="nx">multer</span><span class="p">.</span><span class="nx">diskStorage</span><span class="p">({</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">      </span><span class="c1">// ... disk storage config</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="p">});</span>
+</span></code></pre></div></p>
+<p><strong>Modified <code>processSingleImageLocal</code>:</strong>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">processSingleImageLocal</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="c1">// In serverless environments, local storage is not available</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">IS_SERVERLESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s1">&#39;Local storage is not available in serverless environments. Please configure STORAGE_PROVIDER=cloudinary&#39;</span><span class="p">);</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span><span class="c1">// ... rest of function</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<p><strong>Modified <code>processSingleImageCloudinary</code>:</strong>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">async</span><span class="w"> </span><span class="kd">function</span><span class="w"> </span><span class="nx">processSingleImageCloudinary</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">inputPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">file</span><span class="p">.</span><span class="nx">path</span><span class="p">;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="kd">let</span><span class="w"> </span><span class="nx">buffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">file</span><span class="p">.</span><span class="nx">buffer</span><span class="p">;</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="c1">// Handle memory storage (serverless)</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">IS_SERVERLESS</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">buffer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">      </span><span class="c1">// Create a temporary file path for Cloudinary upload</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">tempDir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;/tmp&#39;</span><span class="p">;</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">ext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">getExtensionForMime</span><span class="p">(</span><span class="nx">file</span><span class="p">.</span><span class="nx">mimetype</span><span class="p">);</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">timestamp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Date</span><span class="p">.</span><span class="nx">now</span><span class="p">();</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">random</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">crypto</span><span class="p">.</span><span class="nx">randomBytes</span><span class="p">(</span><span class="mf">8</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="s1">&#39;hex&#39;</span><span class="p">);</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">tempFilename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`temp-</span><span class="si">${</span><span class="nx">timestamp</span><span class="si">}</span><span class="sb">-</span><span class="si">${</span><span class="nx">random</span><span class="si">}${</span><span class="nx">ext</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">      </span><span class="nx">inputPath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">path</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="nx">tempDir</span><span class="p">,</span><span class="w"> </span><span class="nx">tempFilename</span><span class="p">);</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">(</span><span class="nx">inputPath</span><span class="p">,</span><span class="w"> </span><span class="nx">buffer</span><span class="p">);</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">      </span><span class="kd">const</span><span class="w"> </span><span class="nx">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">uploadToCloudinary</span><span class="p">(</span><span class="nx">inputPath</span><span class="p">);</span>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">      </span><span class="k">await</span><span class="w"> </span><span class="nx">fs</span><span class="p">.</span><span class="nx">unlink</span><span class="p">(</span><span class="nx">inputPath</span><span class="p">).</span><span class="k">catch</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{});</span>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">        </span><span class="nx">path</span><span class="o">:</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span>
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">        </span><span class="nx">publicId</span><span class="o">:</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">publicId</span><span class="p">,</span>
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">        </span><span class="nx">width</span><span class="o">:</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">width</span><span class="p">,</span>
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="w">        </span><span class="nx">height</span><span class="o">:</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">height</span><span class="p">,</span>
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="w">        </span><span class="nx">originalName</span><span class="o">:</span><span class="w"> </span><span class="nx">file</span><span class="p">.</span><span class="nx">originalname</span><span class="p">,</span>
+</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a><span class="w">        </span><span class="nx">size</span><span class="o">:</span><span class="w"> </span><span class="nx">result</span><span class="p">.</span><span class="nx">bytes</span><span class="p">,</span>
+</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a><span class="w">      </span><span class="p">};</span>
+</span><span id="__span-7-30"><a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-31"><a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">inputPath</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nx">inputPath</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">&#39;/tmp&#39;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-32"><a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a><span class="w">        </span><span class="k">await</span><span class="w"> </span><span class="nx">fs</span><span class="p">.</span><span class="nx">unlink</span><span class="p">(</span><span class="nx">inputPath</span><span class="p">).</span><span class="k">catch</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{});</span>
+</span><span id="__span-7-33"><a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a><span class="w">      </span><span class="p">}</span>
+</span><span id="__span-7-34"><a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a><span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="sb">`Failed to upload &quot;</span><span class="si">${</span><span class="nx">file</span><span class="p">.</span><span class="nx">originalname</span><span class="si">}</span><span class="sb">&quot; to Cloudinary: </span><span class="si">${</span><span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="si">}</span><span class="sb">`</span><span class="p">);</span>
+</span><span id="__span-7-35"><a id="__codelineno-7-35" name="__codelineno-7-35" href="#__codelineno-7-35"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-36"><a id="__codelineno-7-36" name="__codelineno-7-36" href="#__codelineno-7-36"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-7-37"><a id="__codelineno-7-37" name="__codelineno-7-37" href="#__codelineno-7-37"></a><span class="w">  </span><span class="c1">// ... rest of function for disk storage</span>
+</span><span id="__span-7-38"><a id="__codelineno-7-38" name="__codelineno-7-38" href="#__codelineno-7-38"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<p><strong>Modified cleanup:</strong>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// Only run cleanup in non-serverless environments</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nx">IS_SERVERLESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="nx">cleanupTempFiles</span><span class="p">();</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<h4 id="modified-backendsrcmodulesusersuserroutesjs">Modified: <code>/backend/src/modules/users/user.routes.js</code><a class="headerlink" href="#modified-backendsrcmodulesusersuserroutesjs" title="Permanent link">&para;</a></h4>
+<p><strong>Added serverless detection and memory storage:</strong>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kd">const</span><span class="w"> </span><span class="nx">IS_SERVERLESS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VERCEL</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">&#39;1&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">AWS_LAMBDA_FUNCTION_NAME</span><span class="p">;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="c1">// Use memory storage in serverless environments, disk storage otherwise</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="kd">const</span><span class="w"> </span><span class="nx">storage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">IS_SERVERLESS</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">  </span><span class="o">?</span><span class="w"> </span><span class="nx">multer</span><span class="p">.</span><span class="nx">memoryStorage</span><span class="p">()</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="nx">multer</span><span class="p">.</span><span class="nx">diskStorage</span><span class="p">({</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">      </span><span class="c1">// ... disk storage config</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="p">});</span>
+</span></code></pre></div></p>
+<h3 id="file-system-operations-summary">File System Operations Summary<a class="headerlink" href="#file-system-operations-summary" title="Permanent link">&para;</a></h3>
+<p><strong>Files with disk operations:</strong>
+1. <code>/backend/src/utils/imageProcessor.js</code> - Image processing and upload handling
+2. <code>/backend/src/modules/users/user.routes.js</code> - Profile image upload</p>
+<p><strong>Changes:</strong>
+- In serverless environments (Vercel), multer now uses <code>memoryStorage()</code> instead of <code>diskStorage()</code>
+- Cloudinary uploads write to <code>/tmp</code> (temporary directory available in Lambda) then delete
+- Local storage is explicitly blocked in serverless environments with clear error message
+- Temp file cleanup disabled in serverless environments (not needed)</p>
+<p><strong>Static file serving:</strong>
+- <code>/backend/src/app.js</code> line 67-69: Static file serving for <code>/uploads</code> route is conditionally disabled when <code>STORAGE_PROVIDER !== 'cloudinary'</code>
+- In Vercel deployment, this should use Cloudinary URLs, so static file serving won't be needed</p>
+<hr />
+<h2 id="4-websocket-long-lived-connections">4. WebSocket / Long-Lived Connections<a class="headerlink" href="#4-websocket-long-lived-connections" title="Permanent link">&para;</a></h2>
+<h3 id="findings">Findings<a class="headerlink" href="#findings" title="Permanent link">&para;</a></h3>
+<p><strong>No WebSocket libraries found.</strong>
+- No <code>socket.io</code>, <code>ws</code>, or <code>WebSocket</code> imports detected
+- No <code>createServer</code> usage for WebSocket servers</p>
+<p><strong>EventEmitter usage (NOT a WebSocket):</strong>
+- <code>/backend/src/core/listingEmitter.js</code> - Uses Node.js <code>EventEmitter</code> for in-process event handling
+- <code>/backend/src/modules/syndication/listeners/telegramListener.js</code> - Listens to EventEmitter for Telegram syndication
+- <strong>Status</strong>: This is fine for serverless - it's in-process event handling, not a network WebSocket connection</p>
+<p><strong>Note</strong>: The Telegram syndication uses HTTP API calls to Telegram Bot API, not WebSockets.</p>
+<hr />
+<h2 id="5-environment-variables-audit">5. Environment Variables Audit<a class="headerlink" href="#5-environment-variables-audit" title="Permanent link">&para;</a></h2>
+<h3 id="required-environment-variables">Required Environment Variables<a class="headerlink" href="#required-environment-variables" title="Permanent link">&para;</a></h3>
+<h4 id="database">Database<a class="headerlink" href="#database" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><code>DATABASE_URL</code></strong> (Required)</li>
+<li>Supabase pooled connection string (port 6543, pgbouncer=true)</li>
+<li>
+<p>Example: <code>postgres://postgres:[password]@db.[project-ref].supabase.co:6543/postgres?pgbouncer=true</code></p>
+</li>
+<li>
+<p><strong><code>DIRECT_URL</code></strong> (Required for migrations)</p>
+</li>
+<li>Supabase direct connection string (port 5432)</li>
+<li>Example: <code>postgres://postgres:[password]@db.[project-ref].supabase.co:5432/postgres</code></li>
+</ul>
+<h4 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><code>JWT_SECRET</code></strong> (Required)</li>
+<li>Secret key for JWT token signing</li>
+<li>
+<p>Must be set in production</p>
+</li>
+<li>
+<p><strong><code>JWT_EXPIRES_IN</code></strong> (Optional, default: <code>7d</code>)</p>
+</li>
+<li>JWT token expiration time</li>
+</ul>
+<h4 id="cors">CORS<a class="headerlink" href="#cors" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><code>ALLOWED_ORIGINS</code></strong> (Optional, but recommended for production)</li>
+<li>Comma-separated list of allowed CORS origins</li>
+<li>Example: <code>https://yourdomain.com,https://www.yourdomain.com,exp://192.168.1.1:19006</code></li>
+<li>If not set, defaults to localhost development origins</li>
+</ul>
+<h4 id="storage-cloudinary">Storage (Cloudinary)<a class="headerlink" href="#storage-cloudinary" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><code>STORAGE_PROVIDER</code></strong> (Optional, auto-detected)</li>
+<li><code>cloudinary</code> or <code>local</code></li>
+<li>
+<p>Defaults to <code>cloudinary</code> on Vercel, <code>local</code> otherwise</p>
+</li>
+<li>
+<p><strong><code>CLOUDINARY_CLOUD_NAME</code></strong> (Required if using Cloudinary)</p>
+</li>
+<li>
+<p>Cloudinary cloud name</p>
+</li>
+<li>
+<p><strong><code>CLOUDINARY_API_KEY</code></strong> (Required if using Cloudinary)</p>
+</li>
+<li>
+<p>Cloudinary API key</p>
+</li>
+<li>
+<p><strong><code>CLOUDINARY_API_SECRET</code></strong> (Required if using Cloudinary)</p>
+</li>
+<li>
+<p>Cloudinary API secret</p>
+</li>
+<li>
+<p><strong><code>CLOUDINARY_FOLDER</code></strong> (Optional, default: <code>brostechnology/listings</code>)</p>
+</li>
+<li>Cloudinary folder for uploads</li>
+</ul>
+<h4 id="email-brevo">Email (Brevo)<a class="headerlink" href="#email-brevo" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><code>BREVO_API_KEY</code></strong> (Optional)</li>
+<li>Brevo API key for email sending</li>
+<li>
+<p>If not set, emails are simulated (logged only)</p>
+</li>
+<li>
+<p><strong><code>BREVO_FROM_EMAIL</code></strong> (Optional, default: <code>noreply@brostechnology.com</code>)</p>
+</li>
+<li>From email address for Brevo emails</li>
+</ul>
+<h4 id="telegram-syndication">Telegram Syndication<a class="headerlink" href="#telegram-syndication" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><code>TELEGRAM_CHANNEL_ID</code></strong> (Optional)</li>
+<li>Default Telegram channel ID for syndication</li>
+<li>Can also be configured via database</li>
+</ul>
+<h4 id="general">General<a class="headerlink" href="#general" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong><code>NODE_ENV</code></strong> (Optional)</li>
+<li><code>development</code> or <code>production</code></li>
+<li>
+<p>Affects logging, error messages, and some behaviors</p>
+</li>
+<li>
+<p><strong><code>PORT</code></strong> (Optional, default: <code>5000</code>)</p>
+</li>
+<li>Port for local development server</li>
+<li>
+<p>Not used in Vercel</p>
+</li>
+<li>
+<p><strong><code>API_BASE_URL</code></strong> (Optional, default: <code>http://localhost:5000</code>)</p>
+</li>
+<li>Base URL for API responses (used in image URL construction)</li>
+<li>
+<p>Should be set to production domain in Vercel</p>
+</li>
+<li>
+<p><strong><code>UPLOAD_DIR</code></strong> (Optional, default: <code>./uploads</code>)</p>
+</li>
+<li>Directory for local file uploads (development only)</li>
+<li>Not used in serverless environments</li>
+</ul>
+<hr />
+<h2 id="6-cors-configuration">6. CORS Configuration<a class="headerlink" href="#6-cors-configuration" title="Permanent link">&para;</a></h2>
+<h3 id="changes-made_3">Changes Made<a class="headerlink" href="#changes-made_3" title="Permanent link">&para;</a></h3>
+<h4 id="modified-backendsrcappjs">Modified: <code>/backend/src/app.js</code><a class="headerlink" href="#modified-backendsrcappjs" title="Permanent link">&para;</a></h4>
+<p><strong>Added configurable ALLOWED_ORIGINS:</strong>
+<div class="language-javascript highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// Parse allowed origins from environment variable</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kd">const</span><span class="w"> </span><span class="nx">allowedOriginsEnv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ALLOWED_ORIGINS</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="o">?</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">ALLOWED_ORIGINS</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">).</span><span class="nx">map</span><span class="p">(</span><span class="nx">origin</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">origin</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="o">:</span><span class="w"> </span><span class="p">[];</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="kd">const</span><span class="w"> </span><span class="nx">defaultOrigins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="s1">&#39;http://localhost:5000&#39;</span><span class="p">,</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="s1">&#39;http://localhost:19006&#39;</span><span class="p">,</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">  </span><span class="s1">&#39;http://localhost:3000&#39;</span><span class="p">,</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">  </span><span class="s1">&#39;http://localhost:5173&#39;</span><span class="p">,</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">  </span><span class="s1">&#39;http://10.0.2.2:5000&#39;</span><span class="p">,</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">  </span><span class="s1">&#39;http://10.0.2.2:19006&#39;</span><span class="p">,</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">  </span><span class="s1">&#39;http://127.0.0.1:5000&#39;</span><span class="p">,</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="p">];</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="kd">const</span><span class="w"> </span><span class="nx">allowedOrigins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">allowedOriginsEnv</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="nx">allowedOriginsEnv</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="nx">defaultOrigins</span><span class="p">;</span>
+</span></code></pre></div></p>
+<p><strong>Purpose</strong>: Allows production domains to be configured via environment variable while maintaining development defaults.</p>
+<p><strong>Recommended Vercel Environment Variable:</strong>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>ALLOWED_ORIGINS=https://your-website.com,https://www.your-website.com,exp://192.168.1.1:19006
+</span></code></pre></div></p>
+<hr />
+<h2 id="7-long-running-operations-10s-timeout-risk">7. Long-Running Operations (&gt;10s timeout risk)<a class="headerlink" href="#7-long-running-operations-10s-timeout-risk" title="Permanent link">&para;</a></h2>
+<h3 id="analysis">Analysis<a class="headerlink" href="#analysis" title="Permanent link">&para;</a></h3>
+<p><strong>Vercel Serverless Function Timeout</strong>: 10 seconds (Hobby plan), 60 seconds (Pro plan)</p>
+<h4 id="potentially-long-operations">Potentially Long Operations:<a class="headerlink" href="#potentially-long-operations" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Image Upload &amp; Processing</strong> (<code>/api/listings</code> POST/PATCH with images)</li>
+<li><strong>Risk</strong>: Medium-High</li>
+<li><strong>Factors</strong>: Number of images (up to 10), image sizes, Cloudinary upload speed</li>
+<li><strong>Estimated Time</strong>: 2-8 seconds for typical uploads</li>
+<li><strong>Mitigation</strong>: Already using Cloudinary (fast), images resized before upload</li>
+<li>
+<p><strong>Recommendation</strong>: Monitor in production, consider background jobs if timeouts occur</p>
+</li>
+<li>
+<p><strong>Telegram Syndication</strong> (triggered via EventEmitter after listing creation/update)</p>
+</li>
+<li><strong>Risk</strong>: Low-Medium</li>
+<li><strong>Factors</strong>: Telegram API response time, image upload to Telegram</li>
+<li><strong>Estimated Time</strong>: 1-5 seconds</li>
+<li><strong>Note</strong>: This runs asynchronously via EventEmitter, doesn't block the HTTP response</li>
+<li>
+<p><strong>Recommendation</strong>: Current implementation is fine (non-blocking)</p>
+</li>
+<li>
+<p><strong>Email Sending</strong> (password reset via Brevo)</p>
+</li>
+<li><strong>Risk</strong>: Low</li>
+<li><strong>Estimated Time</strong>: 1-3 seconds</li>
+<li><strong>Note</strong>: Email sending happens after password reset token is saved</li>
+<li>
+<p><strong>Recommendation</strong>: Current implementation is fine</p>
+</li>
+<li>
+<p><strong>Database Queries</strong> (listing search with filters)</p>
+</li>
+<li><strong>Risk</strong>: Low</li>
+<li><strong>Factors</strong>: Query complexity, database load</li>
+<li><strong>Estimated Time</strong>: &lt;1 second with proper indexing</li>
+<li><strong>Note</strong>: Schema has compound indexes on frequently queried fields</li>
+<li><strong>Recommendation</strong>: Ensure Supabase has proper indexing</li>
+</ol>
+<h4 id="no-critical-long-running-operations-found">No Critical Long-Running Operations Found<a class="headerlink" href="#no-critical-long-running-operations-found" title="Permanent link">&para;</a></h4>
+<p>All operations should complete within Vercel's timeout limits under normal conditions.</p>
+<hr />
+<h2 id="8-route-sanity-check">8. Route Sanity Check<a class="headerlink" href="#8-route-sanity-check" title="Permanent link">&para;</a></h2>
+<h3 id="all-routes-method-path">All Routes (Method + Path)<a class="headerlink" href="#all-routes-method-path" title="Permanent link">&para;</a></h3>
+<h4 id="health">Health<a class="headerlink" href="#health" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /health</code></li>
+</ul>
+<h4 id="authentication-apiauth">Authentication (<code>/api/auth</code>)<a class="headerlink" href="#authentication-apiauth" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>POST /api/auth/register</code></li>
+<li><code>POST /api/auth/login</code></li>
+<li><code>GET /api/auth/me</code></li>
+<li><code>PUT /api/auth/me</code></li>
+<li><code>POST /api/auth/forgot-password</code></li>
+<li><code>POST /api/auth/reset-password</code></li>
+</ul>
+<h4 id="categories-apicategories">Categories (<code>/api/categories</code>)<a class="headerlink" href="#categories-apicategories" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /api/categories</code></li>
+<li><code>GET /api/categories/:id</code></li>
+<li><code>POST /api/categories</code></li>
+<li><code>PATCH /api/categories/:id</code></li>
+<li><code>DELETE /api/categories/:id</code></li>
+</ul>
+<h4 id="listings-apilistings">Listings (<code>/api/listings</code>)<a class="headerlink" href="#listings-apilistings" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /api/listings</code></li>
+<li><code>GET /api/listings/:id</code></li>
+<li><code>POST /api/listings</code></li>
+<li><code>PATCH /api/listings/:id</code></li>
+<li><code>DELETE /api/listings/:id</code></li>
+</ul>
+<h4 id="public-apipublic">Public (<code>/api/public</code>)<a class="headerlink" href="#public-apipublic" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /api/public/listings</code></li>
+<li><code>GET /api/public/listings/:id</code></li>
+</ul>
+<h4 id="syndication-apisyndication">Syndication (<code>/api/syndication</code>)<a class="headerlink" href="#syndication-apisyndication" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /api/syndication/config</code></li>
+<li><code>GET /api/syndication/config/:platform</code></li>
+<li><code>POST /api/syndication/config</code></li>
+<li><code>DELETE /api/syndication/config/:platform</code></li>
+<li><code>GET /api/syndication/telegram/info</code></li>
+<li><code>POST /api/syndication/delete-message/:messageId</code></li>
+<li><code>POST /api/syndication/edit-message/:messageId</code></li>
+<li><code>GET /api/syndication/logs</code></li>
+<li><code>POST /api/syndication/retry/:id</code></li>
+</ul>
+<h4 id="notifications-apinotifications">Notifications (<code>/api/notifications</code>)<a class="headerlink" href="#notifications-apinotifications" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /api/notifications</code></li>
+<li><code>PUT /api/notifications/read-all</code></li>
+<li><code>PUT /api/notifications/:id/read</code></li>
+</ul>
+<h4 id="commissions-apicommissions">Commissions (<code>/api/commissions</code>)<a class="headerlink" href="#commissions-apicommissions" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /api/commissions/summary</code></li>
+<li><code>GET /api/commissions/listings</code></li>
+<li><code>PATCH /api/commissions/listing/:id</code></li>
+</ul>
+<h4 id="static-files-conditional">Static Files (conditional)<a class="headerlink" href="#static-files-conditional" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>GET /uploads/*</code> (only if <code>STORAGE_PROVIDER !== 'cloudinary'</code>)</li>
+</ul>
+<h3 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>No route paths changed</strong> - all existing routes preserved</li>
+<li><strong>No API contracts changed</strong> - request/response shapes unchanged</li>
+<li><strong>Middleware order preserved</strong> - authentication, validation, image processing all maintained</li>
+<li><strong>Error handling preserved</strong> - all error handlers maintained</li>
+</ul>
+<hr />
+<h2 id="9-deployment-checklist">9. Deployment Checklist<a class="headerlink" href="#9-deployment-checklist" title="Permanent link">&para;</a></h2>
+<h3 id="vercel-project-settings">Vercel Project Settings<a class="headerlink" href="#vercel-project-settings" title="Permanent link">&para;</a></h3>
+<p>Add these environment variables in Vercel:</p>
+<p><strong>Required:</strong>
+- <code>DATABASE_URL</code> - Supabase pooled connection
+- <code>DIRECT_URL</code> - Supabase direct connection
+- <code>JWT_SECRET</code> - Generate a secure random string
+- <code>CLOUDINARY_CLOUD_NAME</code>
+- <code>CLOUDINARY_API_KEY</code>
+- <code>CLOUDINARY_API_SECRET</code>
+- <code>ALLOWED_ORIGINS</code> - Your production domains</p>
+<p><strong>Optional but Recommended:</strong>
+- <code>API_BASE_URL</code> - Your production API URL
+- <code>BREVO_API_KEY</code> - For email functionality
+- <code>BREVO_FROM_EMAIL</code> - Your from email address
+- <code>TELEGRAM_CHANNEL_ID</code> - For Telegram syndication</p>
+<h3 id="database-setup">Database Setup<a class="headerlink" href="#database-setup" title="Permanent link">&para;</a></h3>
+<ol>
+<li>
+<p>Run Prisma migrations to ensure schema is up to date:
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>npx<span class="w"> </span>prisma<span class="w"> </span>migrate<span class="w"> </span>deploy
+</span></code></pre></div></p>
+</li>
+<li>
+<p>Ensure Supabase connection pooling is enabled (port 6543)</p>
+</li>
+</ol>
+<h3 id="local-development">Local Development<a class="headerlink" href="#local-development" title="Permanent link">&para;</a></h3>
+<p>Local development workflow unchanged:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>npm<span class="w"> </span>run<span class="w"> </span>dev
+</span></code></pre></div></p>
+<p>This uses <code>server.js</code> which calls <code>app.listen()</code> as before.</p>
+<h3 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h3>
+<p>Run the test suite:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>npm<span class="w"> </span><span class="nb">test</span>
+</span></code></pre></div></p>
+<hr />
+<h2 id="10-uncertainties-notes">10. Uncertainties / Notes<a class="headerlink" href="#10-uncertainties-notes" title="Permanent link">&para;</a></h2>
+<h3 id="items-to-verify">Items to Verify<a class="headerlink" href="#items-to-verify" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Supabase Connection Pooling</strong>: </li>
+<li>Ensure your Supabase project has connection pooling enabled</li>
+<li>
+<p>Verify the <code>DATABASE_URL</code> uses port 6543 with <code>pgbouncer=true</code></p>
+</li>
+<li>
+<p><strong>Cloudinary Configuration</strong>:</p>
+</li>
+<li>Ensure Cloudinary account is set up for unsigned uploads or configure signed uploads if needed</li>
+<li>
+<p>Current implementation uses unsigned uploads (simpler for serverless)</p>
+</li>
+<li>
+<p><strong>Telegram Syndication in Serverless</strong>:</p>
+</li>
+<li>EventEmitter-based syndication works in serverless but may not fire if the function exits before the event is processed</li>
+<li><strong>Current implementation</strong>: Syndication is triggered synchronously in the request handler via <code>listingEmitter.emit()</code>, so it should complete before the response</li>
+<li>
+<p><strong>Monitor</strong>: Check if syndication consistently works in production</p>
+</li>
+<li>
+<p><strong>Static File Serving</strong>:</p>
+</li>
+<li>The <code>/uploads</code> static route is disabled when using Cloudinary (which is the default on Vercel)</li>
+<li>
+<p>Ensure all image URLs in the database are full Cloudinary URLs, not relative paths</p>
+</li>
+<li>
+<p><strong>Image Processing in Serverless</strong>:</p>
+</li>
+<li>Sharp (image processing library) works in Lambda but may have memory constraints with very large images</li>
+<li>Current limit: 10MB per file, 10 files max</li>
+<li><strong>Monitor</strong>: Check for memory errors in Vercel logs</li>
+</ol>
+<h3 id="potential-future-improvements">Potential Future Improvements<a class="headerlink" href="#potential-future-improvements" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Background Jobs</strong>: If image uploads or Telegram syndication become timeout issues, consider:</li>
+<li>Vercel Cron Jobs for periodic tasks</li>
+<li>Supabase Edge Functions for background processing</li>
+<li>
+<p>External queue service (e.g., AWS SQS, Redis Queue)</p>
+</li>
+<li>
+<p><strong>Caching</strong>: Add Redis caching for frequently accessed data (listings, categories) to reduce database load</p>
+</li>
+<li>
+<p><strong>CDN for Images</strong>: Cloudinary already provides CDN, but ensure proper cache headers are set</p>
+</li>
+</ol>
+<hr />
+<h2 id="11-summary-of-changes">11. Summary of Changes<a class="headerlink" href="#11-summary-of-changes" title="Permanent link">&para;</a></h2>
+<h3 id="files-created">Files Created<a class="headerlink" href="#files-created" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>/backend/api/index.js</code> - Vercel entry point</li>
+<li><code>/backend/vercel.json</code> - Vercel configuration</li>
+</ul>
+<h3 id="files-modified">Files Modified<a class="headerlink" href="#files-modified" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>/backend/src/server.js</code> - Removed export (local dev only)</li>
+<li><code>/backend/src/app.js</code> - Added configurable CORS origins</li>
+<li><code>/backend/src/config/prisma.js</code> - Added explicit datasource config and cleanup handler</li>
+<li><code>/backend/prisma/schema.prisma</code> - Added directUrl support</li>
+<li><code>/backend/src/utils/imageProcessor.js</code> - Serverless-aware storage and processing</li>
+<li><code>/backend/src/modules/users/user.routes.js</code> - Serverless-aware storage</li>
+</ul>
+<h3 id="files-unchanged">Files Unchanged<a class="headerlink" href="#files-unchanged" title="Permanent link">&para;</a></h3>
+<ul>
+<li>All route files (API contracts preserved)</li>
+<li>All controller files (business logic preserved)</li>
+<li>All middleware files (authentication, validation preserved)</li>
+<li><code>/backend/src/core/listingEmitter.js</code> (EventEmitter unchanged)</li>
+<li><code>/backend/src/modules/syndication/</code> (Telegram integration unchanged)</li>
+</ul>
+<hr />
+<h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">&para;</a></h2>
+<p>The backend has been successfully refactored for Vercel serverless deployment while preserving all existing functionality, API contracts, and business logic. The key changes are:</p>
+<ol>
+<li><strong>Entry point split</strong> for Vercel vs local development</li>
+<li><strong>Database connection</strong> configured for Supabase pooling</li>
+<li><strong>File uploads</strong> refactored to use memory storage and Cloudinary in serverless</li>
+<li><strong>CORS</strong> made configurable via environment variables</li>
+<li><strong>No WebSockets or other incompatible features</strong> found</li>
+</ol>
+<p>The application should deploy successfully to Vercel with the environment variables configured as documented.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Fira-Tech-Solutions/bros_technology" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://t.me/brostechnology" target="_blank" rel="noopener" title="t.me" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M256 8a248 248 0 1 0 0 496 248 248 0 1 0 0-496m115 168.7c-3.7 39.2-19.9 134.4-28.1 178.3-3.5 18.6-10.3 24.8-16.9 25.4-14.4 1.3-25.3-9.5-39.3-18.7-21.8-14.3-34.2-23.2-55.3-37.2-24.5-16.1-8.6-25 5.3-39.5 3.7-3.8 67.1-61.5 68.3-66.7.2-.7.3-3.1-1.2-4.4s-3.6-.8-5.1-.5c-2.2.5-37.1 23.5-104.6 69.1-9.9 6.8-18.9 10.1-26.9 9.9-8.9-.2-25.9-5-38.6-9.1-15.5-5-27.9-7.7-26.8-16.3.6-4.5 6.7-9 18.4-13.7 72.3-31.5 120.5-52.3 144.6-62.3 68.9-28.6 83.2-33.6 92.5-33.8 2.1 0 6.6.5 9.6 2.9 2 1.7 3.2 4.1 3.5 6.7.5 3.2.6 6.5.4 9.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

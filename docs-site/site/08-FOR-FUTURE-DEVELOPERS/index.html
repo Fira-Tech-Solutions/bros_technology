@@ -1,0 +1,1988 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Technical documentation for the BROS Technology marketplace platform">
+      
+      
+      
+        <link rel="canonical" href="https://docs.brostechnology.com/08-FOR-FUTURE-DEVELOPERS/">
+      
+      
+        <link rel="prev" href="../07-KNOWN-ISSUES-AND-TECH-DEBT/">
+      
+      
+        <link rel="next" href="../api-reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>For Future Developers - BROS Technology — Developer Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#08-for-future-developers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="BROS Technology — Developer Documentation" class="md-header__button md-logo" aria-label="BROS Technology — Developer Documentation" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BROS Technology — Developer Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              For Future Developers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Fira-Tech-Solutions/bros_technology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bros_technology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../00-OVERVIEW/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../01-GETTING-STARTED/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../02-ARCHITECTURE/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../03-FEATURES/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Features
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../04-API-REFERENCE/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../05-DEPLOYMENT/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../06-BRAND-AND-DESIGN-SYSTEM/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Brand & Design System
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../07-KNOWN-ISSUES-AND-TECH-DEBT/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Known Issues & Tech Debt
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  For Future Developers
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="BROS Technology — Developer Documentation" class="md-nav__button md-logo" aria-label="BROS Technology — Developer Documentation" data-md-component="logo">
+      
+  <img src="../assets/logo.png" alt="logo">
+
+    </a>
+    BROS Technology — Developer Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Fira-Tech-Solutions/bros_technology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bros_technology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00-OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-GETTING-STARTED/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-FEATURES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-API-REFERENCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-DEPLOYMENT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-BRAND-AND-DESIGN-SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Brand & Design System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-KNOWN-ISSUES-AND-TECH-DEBT/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Known Issues & Tech Debt
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    For Future Developers
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    For Future Developers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-files-to-read-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Files to Read First
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Files to Read First">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coding-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coding Conventions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coding Conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-portal_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-app_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-website_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-gotchas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Gotchas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Gotchas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-supabase-connection-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Supabase Connection Strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cors-must-be-before-helmet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. CORS Must Be Before Helmet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-put-vs-patch-for-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. PUT vs PATCH for Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-formdata-for-listing-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. FormData for Listing Updates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-listing-images-are-merged-not-replaced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Listing Images Are Merged, Not Replaced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-agent-view-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Agent View Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-stock-auto-decrement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Stock Auto-Decrement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-dark-mode-class-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Dark Mode Class Naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-product-options-must-be-updated-in-two-places" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Product Options Must Be Updated in Two Places
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-category-schema-rules-drive-the-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Category Schema Rules Drive the UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference (Detailed)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (Detailed)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../authentication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Authentication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../image-processing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image Processing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internationalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Internationalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../telegram-syndication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Telegram Syndication
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vercel-serverless-migration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vercel Serverless Migration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-files-to-read-first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Files to Read First
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Files to Read First">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coding-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coding Conventions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Coding Conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-portal_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#admin-app_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin App
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-website_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-gotchas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Gotchas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Gotchas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-supabase-connection-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Supabase Connection Strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-cors-must-be-before-helmet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. CORS Must Be Before Helmet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-put-vs-patch-for-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. PUT vs PATCH for Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-formdata-for-listing-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. FormData for Listing Updates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-listing-images-are-merged-not-replaced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Listing Images Are Merged, Not Replaced
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-agent-view-filtering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Agent View Filtering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-stock-auto-decrement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Stock Auto-Decrement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-dark-mode-class-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Dark Mode Class Naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-product-options-must-be-updated-in-two-places" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Product Options Must Be Updated in Two Places
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-category-schema-rules-drive-the-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Category Schema Rules Drive the UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="08-for-future-developers">08 — For Future Developers<a class="headerlink" href="#08-for-future-developers" title="Permanent link">&para;</a></h1>
+<h2 id="where-to-start">Where to Start<a class="headerlink" href="#where-to-start" title="Permanent link">&para;</a></h2>
+<p>If you're picking this codebase up cold, read the docs in this order:</p>
+<ol>
+<li><strong><a href="../00-OVERVIEW/">00-OVERVIEW.md</a></strong> — What the system does, who it's for, how the pieces connect</li>
+<li><strong><a href="../01-GETTING-STARTED/">01-GETTING-STARTED.md</a></strong> — How to clone, install, and run locally</li>
+<li><strong><a href="../02-ARCHITECTURE/">02-ARCHITECTURE.md</a></strong> — Folder structure, data flow, database schema, auth flow</li>
+<li><strong><a href="../04-API-REFERENCE/">04-API-REFERENCE.md</a></strong> — Every endpoint, request/response shape</li>
+</ol>
+<p>Then read the 3-5 most important files in each codebase (listed below).</p>
+<h2 id="key-files-to-read-first">Key Files to Read First<a class="headerlink" href="#key-files-to-read-first" title="Permanent link">&para;</a></h2>
+<h3 id="backend">Backend<a class="headerlink" href="#backend" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/app.js</code></td>
+<td>Express app setup: middleware stack, route mounts, error handler. This is the entry point for understanding how requests flow.</td>
+</tr>
+<tr>
+<td><code>prisma/schema.prisma</code></td>
+<td>The single source of truth for all data models. Read this to understand what data exists and how it relates.</td>
+</tr>
+<tr>
+<td><code>src/modules/users/auth.middleware.js</code></td>
+<td>JWT authentication and role authorization. Every protected endpoint depends on this.</td>
+</tr>
+<tr>
+<td><code>src/modules/properties/listing.controller.js</code></td>
+<td>The most complex controller: CRUD, image processing, stock management, dynamic validation.</td>
+</tr>
+<tr>
+<td><code>src/modules/syndication/syndication.routes.js</code></td>
+<td>Telegram integration: config, posting, retry, message editing.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="admin-portal">Admin Portal<a class="headerlink" href="#admin-portal" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/App.tsx</code></td>
+<td>Router setup: all routes, protected/public route wrappers, provider hierarchy.</td>
+</tr>
+<tr>
+<td><code>src/index.css</code></td>
+<td>Design tokens (CSS custom properties), dark mode, responsive utilities. This IS the design system.</td>
+</tr>
+<tr>
+<td><code>src/lib/api.ts</code></td>
+<td>Axios instance with auth interceptor. Every API call goes through here.</td>
+</tr>
+<tr>
+<td><code>src/hooks/useListings.ts</code></td>
+<td>TanStack Query hook pattern. All other hooks follow this same structure.</td>
+</tr>
+<tr>
+<td><code>src/pages/Dashboard.tsx</code></td>
+<td>Shows how hooks, components, and design tokens come together in a page.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="admin-app">Admin App<a class="headerlink" href="#admin-app" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>App.js</code></td>
+<td>Root component: splash → auth → navigation. The app's entry point.</td>
+</tr>
+<tr>
+<td><code>src/api/client.js</code></td>
+<td>Axios instance with auth interceptor (same pattern as admin-portal).</td>
+</tr>
+<tr>
+<td><code>src/context/AuthContext.js</code></td>
+<td>Authentication state management: login, logout, token storage, user hydration.</td>
+</tr>
+<tr>
+<td><code>src/config/theme.js</code></td>
+<td>All color tokens, spacing, typography for light/dark mode.</td>
+</tr>
+<tr>
+<td><code>src/screens/AddListingScreen.js</code></td>
+<td>Most complex screen: 3-step wizard, image picker, dynamic fields. Shows the full pattern.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-website">Public Website<a class="headerlink" href="#public-website" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/routes/__root.tsx</code></td>
+<td>Root layout: providers, SEO, fonts, JSON-LD. The app shell.</td>
+</tr>
+<tr>
+<td><code>src/routes/catalog.tsx</code></td>
+<td>Catalog page: search, filters, grid. Most feature-rich page.</td>
+</tr>
+<tr>
+<td><code>src/lib/api/properties.ts</code></td>
+<td>TypeScript types and API functions. The data layer.</td>
+</tr>
+<tr>
+<td><code>src/styles.css</code></td>
+<td>Tailwind v4 config, OKLCH color tokens, custom utilities.</td>
+</tr>
+<tr>
+<td><code>src/hooks/use-properties.ts</code></td>
+<td>Data fetching pattern with TanStack Query.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="coding-conventions">Coding Conventions<a class="headerlink" href="#coding-conventions" title="Permanent link">&para;</a></h2>
+<h3 id="general">General<a class="headerlink" href="#general" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>No comments in code</strong> unless explicitly requested</li>
+<li><strong>TypeScript</strong> in admin-portal and public-website; <strong>JavaScript</strong> in admin-app and backend</li>
+<li><strong>ES modules</strong> (<code>import/export</code>) in backend and admin-portal; <strong>CommonJS</strong> (<code>require</code>) in admin-app (Expo default)</li>
+</ul>
+<h3 id="backend_1">Backend<a class="headerlink" href="#backend_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Route files</strong> export a <code>Router</code> instance. Controllers are separate files.</li>
+<li><strong>Middleware chain</strong>: <code>authenticate()</code> → <code>authorize('SUPER_ADMIN')</code> → controller</li>
+<li><strong>Response format</strong>: Always <code>{ success: true/false, data: ..., pagination: ... }</code></li>
+<li><strong>Error handling</strong>: Route-level try/catch → <code>next(error)</code> → global error handler in <code>app.js</code></li>
+<li><strong>Prisma queries</strong>: Use <code>include</code> or <code>select</code> to return related data. Never return raw Prisma objects to the client.</li>
+</ul>
+<h3 id="admin-portal_1">Admin Portal<a class="headerlink" href="#admin-portal_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Styling</strong>: Inline <code>React.CSSProperties</code> using CSS custom properties (<code>var(--color-primary)</code>, etc.)</li>
+<li><strong>State management</strong>: TanStack Query for server state, React Context for auth/theme/language</li>
+<li><strong>Components</strong>: Functional components with hooks. No class components.</li>
+<li><strong>Naming</strong>: PascalCase for components (<code>AddListing.tsx</code>), camelCase for hooks (<code>useListings.ts</code>)</li>
+<li><strong>File structure</strong>: One component per file, named to match the export</li>
+</ul>
+<h3 id="admin-app_1">Admin App<a class="headerlink" href="#admin-app_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Styling</strong>: <code>StyleSheet.create()</code> with theme tokens from <code>src/config/theme.js</code></li>
+<li><strong>State management</strong>: React Context only (no Redux)</li>
+<li><strong>Navigation</strong>: React Navigation v7 with bottom tabs + stack navigators</li>
+<li><strong>API calls</strong>: Via <code>src/api/*.js</code> modules, not directly in screens</li>
+<li><strong>Caching</strong>: Two layers — API response cache (<code>utils/cache.js</code>) and disk image cache (<code>utils/mediaCache.js</code>)</li>
+</ul>
+<h3 id="public-website_1">Public Website<a class="headerlink" href="#public-website_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Framework</strong>: TanStack Start (SSR) with file-based routing</li>
+<li><strong>Styling</strong>: Tailwind CSS v4 + shadcn/ui components</li>
+<li><strong>Data fetching</strong>: TanStack Query hooks + server-side loaders for SEO-critical pages</li>
+<li><strong>Components</strong>: shadcn/ui for primitives, custom components for business logic</li>
+</ul>
+<h2 id="common-gotchas">Common Gotchas<a class="headerlink" href="#common-gotchas" title="Permanent link">&para;</a></h2>
+<h3 id="1-supabase-connection-strings">1. Supabase Connection Strings<a class="headerlink" href="#1-supabase-connection-strings" title="Permanent link">&para;</a></h3>
+<p>Use the <strong>pooled</strong> connection string (port 6543, <code>?pgbouncer=true</code>) for <code>DATABASE_URL</code> and the <strong>direct</strong> connection string (port 5432) for <code>DIRECT_URL</code>. Prisma requires the direct URL for <code>migrate deploy</code> but the pooled URL for runtime queries. Using the wrong one causes connection failures.</p>
+<h3 id="2-cors-must-be-before-helmet">2. CORS Must Be Before Helmet<a class="headerlink" href="#2-cors-must-be-before-helmet" title="Permanent link">&para;</a></h3>
+<p>In <code>src/app.js</code>, <code>cors()</code> MUST be registered before <code>helmet()</code>. Helmet strips/overwrites CORS headers if registered first. This was a production bug that caused the admin portal to fail on Vercel.</p>
+<h3 id="3-put-vs-patch-for-settings">3. PUT vs PATCH for Settings<a class="headerlink" href="#3-put-vs-patch-for-settings" title="Permanent link">&para;</a></h3>
+<p>The Settings page uses <code>PUT /api/settings</code> (not PATCH). The CORS config explicitly allows PUT method. If you add a new endpoint that uses PUT, make sure it's in the <code>methods</code> array in the CORS config.</p>
+<h3 id="4-formdata-for-listing-updates">4. FormData for Listing Updates<a class="headerlink" href="#4-formdata-for-listing-updates" title="Permanent link">&para;</a></h3>
+<p>When updating a listing via <code>PATCH /api/listings/:id</code>, the body must be <code>multipart/form-data</code> (not JSON) because the endpoint supports image uploads. The <code>categoryId</code> field MUST be included even if unchanged, because the validation middleware requires it.</p>
+<h3 id="5-listing-images-are-merged-not-replaced">5. Listing Images Are Merged, Not Replaced<a class="headerlink" href="#5-listing-images-are-merged-not-replaced" title="Permanent link">&para;</a></h3>
+<p>When updating a listing with new images, the new images are <strong>appended</strong> to the existing array, not replaced. Old images are cleaned up (deleted from Cloudinary) only when new images are provided AND the listing already had images.</p>
+<h3 id="6-agent-view-filtering">6. Agent View Filtering<a class="headerlink" href="#6-agent-view-filtering" title="Permanent link">&para;</a></h3>
+<p>When a user with <code>role: AGENT</code> calls <code>GET /api/listings</code>, they only see their own listings (filtered by <code>agentId</code>). The admin-portal's <code>useListings</code> hook fetches ALL listings by auto-paginating, but this only works for <code>SUPER_ADMIN</code> users.</p>
+<h3 id="7-stock-auto-decrement">7. Stock Auto-Decrement<a class="headerlink" href="#7-stock-auto-decrement" title="Permanent link">&para;</a></h3>
+<p>When a listing's status changes to <code>SOLD</code>, the <code>stockQuantity</code> is automatically decremented by 1. When stock reaches 0, the status is automatically changed to <code>ARCHIVED</code>. This happens in <code>updateListing</code> controller.</p>
+<h3 id="8-dark-mode-class-naming">8. Dark Mode Class Naming<a class="headerlink" href="#8-dark-mode-class-naming" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Admin Portal &amp; Admin App</strong>: Dark mode is activated by adding <code>.dark</code> class to <code>&lt;html&gt;</code> (or <code>&lt;html&gt;</code> in React Native)</li>
+<li><strong>Public Website</strong>: Dark mode is the DEFAULT. Light mode is activated by adding <code>.light</code> class. This is inverted from the other codebases.</li>
+</ul>
+<h3 id="9-product-options-must-be-updated-in-two-places">9. Product Options Must Be Updated in Two Places<a class="headerlink" href="#9-product-options-must-be-updated-in-two-places" title="Permanent link">&para;</a></h3>
+<p>If you add new brands, models, or options to the product catalog, you must update BOTH:
+- <code>admin-app/src/config/productOptions.js</code>
+- <code>admin-portal/src/config/productOptions.ts</code></p>
+<p>These files are independent and must be kept in sync manually.</p>
+<h3 id="10-category-schema-rules-drive-the-ui">10. Category Schema Rules Drive the UI<a class="headerlink" href="#10-category-schema-rules-drive-the-ui" title="Permanent link">&para;</a></h3>
+<p>The form fields in Add Listing and Listing Detail are dynamically generated from the category's <code>schemaRules</code> JSON field. If a category has no <code>schemaRules</code>, no detail fields are shown. If you need to add a new field to a category's listings, update the category's <code>schemaRules</code> via the Categories admin page — don't modify the form code.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/Fira-Tech-Solutions/bros_technology" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://t.me/brostechnology" target="_blank" rel="noopener" title="t.me" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M256 8a248 248 0 1 0 0 496 248 248 0 1 0 0-496m115 168.7c-3.7 39.2-19.9 134.4-28.1 178.3-3.5 18.6-10.3 24.8-16.9 25.4-14.4 1.3-25.3-9.5-39.3-18.7-21.8-14.3-34.2-23.2-55.3-37.2-24.5-16.1-8.6-25 5.3-39.5 3.7-3.8 67.1-61.5 68.3-66.7.2-.7.3-3.1-1.2-4.4s-3.6-.8-5.1-.5c-2.2.5-37.1 23.5-104.6 69.1-9.9 6.8-18.9 10.1-26.9 9.9-8.9-.2-25.9-5-38.6-9.1-15.5-5-27.9-7.7-26.8-16.3.6-4.5 6.7-9 18.4-13.7 72.3-31.5 120.5-52.3 144.6-62.3 68.9-28.6 83.2-33.6 92.5-33.8 2.1 0 6.6.5 9.6 2.9 2 1.7 3.2 4.1 3.5 6.7.5 3.2.6 6.5.4 9.8z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

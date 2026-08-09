@@ -18,7 +18,11 @@ import {
   Info,
   ChevronDown,
   Phone,
+  BookOpen,
+  FileText,
 } from "lucide-react-native";
+import { Linking } from "react-native";
+import { DOC_LINKS } from "../constants/docLinks";
 
 import { useTheme } from "../context/ThemeContext";
 import { useLanguage } from "../context/LanguageContext";
@@ -209,6 +213,40 @@ export default function SettingsScreen({ navigation }) {
                 {t("version")} 1.0.0
               </Text>
             </View>
+          </View>
+        </View>
+
+        {/* Documentation */}
+        <View style={{ paddingHorizontal: 20, marginBottom: 28 }}>
+          <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
+            Documentation
+          </Text>
+          <View style={{ backgroundColor: colors.card, borderRadius: radii.lg, borderWidth: 1, borderColor: colors.border, overflow: "hidden" }}>
+            <TouchableOpacity
+              onPress={() => Linking.openURL(DOC_LINKS.DEVELOPER_DOCS)}
+              style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 14 }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <BookOpen size={19} color={colors.primary} strokeWidth={1.75} />
+                <Text style={{ color: colors.text, fontSize: 15, fontWeight: "500", marginLeft: 14 }}>
+                  Developer Docs
+                </Text>
+              </View>
+              <ChevronRight size={18} color={colors.textMuted} strokeWidth={1.75} />
+            </TouchableOpacity>
+            <View style={{ height: 1, backgroundColor: colors.border, marginLeft: 48 }} />
+            <TouchableOpacity
+              onPress={() => Linking.openURL(DOC_LINKS.HANDOVER_PDF)}
+              style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingVertical: 14 }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <FileText size={19} color={colors.primary} strokeWidth={1.75} />
+                <Text style={{ color: colors.text, fontSize: 15, fontWeight: "500", marginLeft: 14 }}>
+                  Client Handover
+                </Text>
+              </View>
+              <ChevronRight size={18} color={colors.textMuted} strokeWidth={1.75} />
+            </TouchableOpacity>
           </View>
         </View>
 
