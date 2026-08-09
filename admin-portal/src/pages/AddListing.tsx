@@ -24,7 +24,7 @@ export default function AddListing() {
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categorySearch, setCategorySearch] = useState('');
   const [form, setForm] = useState<Record<string, any>>({
-    title: '', description: '', price: '', categoryId: '',
+    title: '', description: '', price: '', categoryId: '', stockQuantity: '1',
     images: [], imagePreviews: [],
   });
   const [attributes, setAttributes] = useState<Record<string, any>>({});
@@ -98,6 +98,7 @@ export default function AddListing() {
       fd.append('neighborhood', 'Addis Ababa');
       fd.append('status', 'AVAILABLE');
       fd.append('attributes', JSON.stringify(attributes));
+      fd.append('stockQuantity', form.stockQuantity || '1');
       form.images.forEach((img: any) => fd.append('images', img));
       await post('/api/listings', fd);
       navigate('/properties');
@@ -139,6 +140,7 @@ export default function AddListing() {
           <Input label="Product Title" placeholder="e.g. iPhone 15 Pro Max 256GB" value={form.title} onChange={(e: any) => updateForm('title', e.target.value)} />
           <Textarea label="Description" placeholder="Describe the product condition, features, etc." rows={4} value={form.description} onChange={(e: any) => updateForm('description', e.target.value)} />
           <Input label="Price (ETB)" type="number" placeholder="0" value={form.price} onChange={(e: any) => updateForm('price', e.target.value)} />
+          <Input label="Stock Quantity" type="number" placeholder="1" value={form.stockQuantity} onChange={(e: any) => updateForm('stockQuantity', e.target.value)} />
 
           {/* Category Dropdown */}
           <div>

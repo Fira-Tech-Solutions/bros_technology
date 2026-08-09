@@ -43,10 +43,17 @@ export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) 
         <div className="flex items-center justify-between p-5">
           <div className="flex items-center gap-2">
             {p.inStock ? (
-              <span className="flex items-center gap-1.5 text-xs text-green-500">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                {t("property.inStock")}
-              </span>
+              (p.stockQuantity || 0) > 0 && (p.stockQuantity || 0) <= 3 ? (
+                <span className="flex items-center gap-1.5 text-xs text-orange-500 font-semibold">
+                  <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+                  Only {p.stockQuantity} left!
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 text-xs text-green-500">
+                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                  {p.stockQuantity > 0 ? `${p.stockQuantity} in stock` : t("property.inStock")}
+                </span>
+              )
             ) : (
               <span className="flex items-center gap-1.5 text-xs text-red-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500" />

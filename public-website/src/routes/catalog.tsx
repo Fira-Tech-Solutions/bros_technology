@@ -443,9 +443,13 @@ function Catalog() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span
-                          className={`text-xs ${p.inStock ? "text-green-500" : "text-red-500"}`}
+                          className={`text-xs ${(p.stockQuantity || 0) > 0 && (p.stockQuantity || 0) <= 3 ? "text-orange-500 font-semibold" : p.inStock ? "text-green-500" : "text-red-500"}`}
                         >
-                          {p.inStock ? t("property.inStock") : t("property.outOfStock")}
+                          {(p.stockQuantity || 0) > 0 && (p.stockQuantity || 0) <= 3
+                            ? `Only ${p.stockQuantity} left!`
+                            : p.inStock
+                              ? (p.stockQuantity > 0 ? `${p.stockQuantity} in stock` : t("property.inStock"))
+                              : t("property.outOfStock")}
                         </span>
                         <span className="text-gradient-brand font-display text-lg">
                           {formatPrice(p.price)}

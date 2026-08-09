@@ -39,7 +39,7 @@ export const Route = createFileRoute("/property/$id")({
       p.description?.trim() ||
       `Buy ${p.title} at BROS Technology in Addis Ababa, Ethiopia. ${formatPrice(p.price)}. Warranty included.`;
     const image = absoluteUrl(p.hero || p.gallery?.[0] || "/images/hero/desktop-dark-1920.jpg");
-    const availability = p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+    const availability = (p.stockQuantity || 0) > 0 || p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
 
     return {
       meta: [
@@ -164,7 +164,7 @@ function Detail() {
         description={p.description?.trim() || undefined}
         brand={p.brand || undefined}
         condition={p.attributes?.condition || undefined}
-        availability={p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"}
+        availability={(p.stockQuantity || 0) > 0 || p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"}
         url={`${SITE_URL}/property/${id}`}
       />
       <Nav />
@@ -209,10 +209,17 @@ function Detail() {
                 </span>
               )}
               {p.inStock ? (
-                <span className="flex items-center gap-1.5 text-xs text-green-500">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                  {t("property.inStock")}
-                </span>
+                (p.stockQuantity || 0) > 0 && (p.stockQuantity || 0) <= 3 ? (
+                  <span className="flex items-center gap-1.5 text-xs text-orange-500 font-semibold">
+                    <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+                    Only {p.stockQuantity} left!
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-xs text-green-500">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+                    {p.stockQuantity > 0 ? `${p.stockQuantity} in stock` : t("property.inStock")}
+                  </span>
+                )
               ) : (
                 <span className="flex items-center gap-1.5 text-xs text-red-500">
                   <span className="h-1.5 w-1.5 rounded-full bg-red-500" />

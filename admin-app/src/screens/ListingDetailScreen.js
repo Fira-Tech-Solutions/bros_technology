@@ -208,6 +208,7 @@ export default function ListingDetailScreen({ route, navigation }) {
     neighborhood: "",
     categoryId: "",
     status: "AVAILABLE",
+    stockQuantity: "1",
   });
 
   const [existingImages, setExistingImages] = useState([]);
@@ -236,6 +237,7 @@ export default function ListingDetailScreen({ route, navigation }) {
         neighborhood: data.neighborhood || "",
         categoryId: data.categoryId || "",
         status: data.status || "AVAILABLE",
+        stockQuantity: String(data.stockQuantity ?? 1),
       });
       setExistingImages(data.images || []);
       setDynamicFields(data.attributes || {});
@@ -299,6 +301,7 @@ export default function ListingDetailScreen({ route, navigation }) {
       formData.append("neighborhood", form.neighborhood.trim());
       formData.append("categoryId", form.categoryId);
       formData.append("status", form.status);
+      formData.append("stockQuantity", parseInt(form.stockQuantity || "1", 10));
       const attributes = { ...dynamicFields };
       for (const rule of schemaRules) {
         const val = attributes[rule.field];
@@ -526,6 +529,16 @@ export default function ListingDetailScreen({ route, navigation }) {
             value={form.price}
             onChangeText={(v) => updateForm("price", v)}
             placeholder="0"
+            keyboardType="numeric"
+            colors={colors}
+            radii={radii}
+          />
+
+          <FieldLabel label="Stock Quantity" colors={colors} />
+          <StyledInput
+            value={form.stockQuantity}
+            onChangeText={(v) => updateForm("stockQuantity", v)}
+            placeholder="1"
             keyboardType="numeric"
             colors={colors}
             radii={radii}

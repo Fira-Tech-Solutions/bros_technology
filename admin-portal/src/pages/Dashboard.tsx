@@ -59,10 +59,11 @@ export default function Dashboard() {
         const totalCount = listings.length;
         const cats = Array.isArray(catsRaw.data?.data || catsRaw.data?.categories || catsRaw.data) ? (catsRaw.data?.data || catsRaw.data?.categories || catsRaw.data) : [];
 
-        const statusCounts: Record<string, number> = { total: totalCount, available: 0, sold: 0, pending: 0, archived: 0 };
+        const statusCounts: Record<string, number> = { total: totalCount, available: 0, sold: 0, pending: 0, archived: 0, totalStock: 0 };
         listings.forEach((l: any) => {
           const s = (l.status || 'AVAILABLE').toUpperCase();
           if (statusCounts[s.toLowerCase()] !== undefined) statusCounts[s.toLowerCase()]++;
+          statusCounts.totalStock += (l.stockQuantity || 0);
         });
         setStats(statusCounts);
         setCategories(cats);
@@ -98,6 +99,7 @@ export default function Dashboard() {
         <StatCard title="Total Products" value={stats.total || 0} icon={Package} />
         <StatCard title="Available" value={stats.available || 0} icon={TrendingUp} />
         <StatCard title="Sold" value={stats.sold || 0} icon={Package} />
+        <StatCard title="Total Stock" value={stats.totalStock || 0} icon={Package} />
         <StatCard title="Categories" value={categories.length} icon={FolderOpen} />
       </div>
 

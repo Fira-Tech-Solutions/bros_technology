@@ -41,6 +41,7 @@ export default function ListingDetail() {
           price: data.price || '',
           status: data.status || 'AVAILABLE',
           categoryId: data.category?.id || data.categoryId || '',
+          stockQuantity: data.stockQuantity ?? 1,
         });
       } catch (err) {
         console.error('Failed to load listing:', err);
@@ -80,6 +81,7 @@ export default function ListingDetail() {
       fd.append('status', form.status);
       fd.append('categoryId', form.categoryId || listing.category?.id || '');
       fd.append('attributes', JSON.stringify(attributes));
+      fd.append('stockQuantity', String(form.stockQuantity ?? 1));
       newImages.forEach(img => fd.append('images', img));
       await patch(`/api/listings/${id}`, fd);
       navigate('/properties');
@@ -192,6 +194,7 @@ export default function ListingDetail() {
                 ))}
               </Select>
             </div>
+            <Input label="Stock Quantity" type="number" value={form.stockQuantity} onChange={(e: any) => updateForm('stockQuantity', e.target.value)} />
           </div>
 
           {/* Dynamic Category Fields */}

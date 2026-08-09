@@ -28,6 +28,7 @@ import {
   ChevronDown,
   Plus,
   ArrowRight,
+  Package,
 } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
@@ -524,6 +525,7 @@ export default function AddListingScreen({ navigation }) {
     description: "",
     price: "",
     categoryId: "",
+    stockQuantity: "1",
     images: [],
   });
   const [dynamicFields, setDynamicFields] = useState({});
@@ -619,6 +621,7 @@ export default function AddListingScreen({ navigation }) {
     formData.append("title", form.title.trim());
     formData.append("description", form.description?.trim() || "");
     formData.append("price", parseFloat(form.price));
+    formData.append("stockQuantity", parseInt(form.stockQuantity || "1", 10));
     formData.append("city", "Addis Ababa");
     formData.append("neighborhood", "Addis Ababa");
     formData.append("categoryId", form.categoryId);
@@ -689,6 +692,13 @@ export default function AddListingScreen({ navigation }) {
         keyboardType="numeric"
         error={errors.price}
         required
+      />
+      <Input
+        value={form.stockQuantity}
+        onChangeText={(v) => updateForm("stockQuantity", v)}
+        placeholder="Stock Quantity"
+        icon={Package}
+        keyboardType="numeric"
       />
       <CategoryDropdown
         categories={categories}
