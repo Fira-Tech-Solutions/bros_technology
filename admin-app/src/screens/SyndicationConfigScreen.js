@@ -685,9 +685,6 @@ function PostsTab({ colors }) {
             <Text style={{ color: colors.text, fontSize: 14, fontWeight: "600" }} numberOfLines={1}>
               {item.listing?.title || "Unknown listing"}
             </Text>
-            <Text style={{ color: colors.textMuted, fontSize: 11, marginTop: 2 }}>
-              {item.listing?.city}, {item.listing?.neighborhood}
-            </Text>
             <View style={{ flexDirection: "row", alignItems: "center", marginTop: 6, flexWrap: "wrap", gap: 6 }}>
               <View
                 style={{

@@ -68,10 +68,6 @@ model Listing {
   price                 Decimal          @db.Decimal(12, 2)
   status                ListingStatus    @default(AVAILABLE)
   
-  // High-priority core fields for quick search filtering
-  city                  String           // e.g., "Addis Ababa", "Adama"
-  neighborhood          String           // e.g., "Bole", "Bole Michael"
-  
   // Arrays store compressed WebP paths. Index [0] represents the cover photo
   images                String[]         
   
@@ -97,7 +93,6 @@ model Listing {
 
   @@index([status])
   @@index([categoryId])
-  @@index([city, neighborhood]) // Compound index for fast regional search queries
   @@map("listings")
 }
 

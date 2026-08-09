@@ -304,9 +304,6 @@ export default function Syndication() {
                       <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-body)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {log.listing?.title || log.listingTitle || 'Unknown listing'}
                       </p>
-                      <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', margin: 0, marginTop: 2 }}>
-                        {log.listing?.city || ''}{log.listing?.city && log.listing?.neighborhood ? ', ' : ''}{log.listing?.neighborhood || ''}
-                      </p>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6, flexWrap: 'wrap' }}>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 6, fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)', color: status.color, background: status.bg }}>
                           <StatusIcon size={12} /> {status.label}
@@ -464,9 +461,6 @@ export default function Syndication() {
               <div>
                 <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-body)', margin: 0 }}>
                   {detailModal.listing?.title || 'Unknown listing'}
-                </p>
-                <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', margin: 0, marginTop: 2 }}>
-                  {detailModal.listing?.city || ''}{detailModal.listing?.city && detailModal.listing?.neighborhood ? ', ' : ''}{detailModal.listing?.neighborhood || ''}
                 </p>
                 {detailModal.listing?.price && (
                   <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'var(--font-body)', margin: 0, marginTop: 4 }}>

@@ -84,8 +84,6 @@ export default function AddListing() {
       fd.append('price', form.price);
       fd.append('categoryId', form.categoryId);
       fd.append('agentId', user?.id || '');
-      fd.append('city', 'Addis Ababa');
-      fd.append('neighborhood', 'Addis Ababa');
       fd.append('status', 'AVAILABLE');
       fd.append('attributes', JSON.stringify(attributes));
       fd.append('stockQuantity', form.stockQuantity || '1');
