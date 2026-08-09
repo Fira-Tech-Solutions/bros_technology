@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { get, post, patch, del } from '../lib/api';
+import { useState } from 'react';
+import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../hooks';
 import { Button, DataTable, Modal, Input, Textarea, PageHeader, EmptyState, LoadingSpinner } from '../components/ui';
 import { FolderOpen, Plus, Edit, Trash2, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, X, ChevronDown } from 'lucide-react';
 
@@ -14,31 +14,17 @@ const ICON_MAP: Record<string, any> = {
 const FIELD_TYPES = ['string', 'number', 'boolean', 'select'];
 
 export default function Categories() {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: categories = [], isLoading: loading } = useCategories();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
   const [modal, setModal] = useState<any>(null); // null | 'create' | category object
   const [form, setForm] = useState({ name: '', displayName: '', description: '', icon: 'smartphone', schemaRules: [] as any[] });
-  const [saving, setSaving] = useState(false);
   const [deleteModal, setDeleteModal] = useState<any>(null);
-  const [deleting, setDeleting] = useState(false);
   const [newRuleField, setNewRuleField] = useState('');
   const [newRuleType, setNewRuleType] = useState('string');
   const [newRuleRequired, setNewRuleRequired] = useState(false);
   const [showTypeDropdown, setShowTypeDropdown] = useState(false);
-
-  useEffect(() => { loadCategories(); }, []);
-
-  const loadCategories = async () => {
-    try {
-      const res = await get('/api/categories');
-      const catsRaw = res.data?.data || res.data?.categories || res.data || [];
-      setCategories(Array.isArray(catsRaw) ? catsRaw : []);
-    } catch (err) {
-      console.error('Failed to load categories:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const openCreate = () => {
     setForm({ name: '', displayName: '', description: '', icon: 'smartphone', schemaRules: [] });
@@ -77,7 +63,6 @@ export default function Categories() {
   const handleSave = async () => {
     if (!form.name.trim()) { alert('Category name is required'); return; }
     if (!form.displayName.trim()) { alert('Display name is required'); return; }
-    setSaving(true);
     try {
       const payload = {
         name: form.name.trim(),
@@ -87,35 +72,25 @@ export default function Categories() {
         schemaRules: form.schemaRules,
       };
       if (modal === 'create') {
-        const res = await post('/api/categories', payload);
-        const newCat = res.data?.data || res.data?.category || res.data;
-        setCategories(prev => [...prev, newCat]);
+        await createCategory.mutateAsync(payload);
       } else {
         const catId = modal.id || modal._id;
-        const res = await patch(`/api/categories/${catId}`, payload);
-        const updated = res.data?.data || res.data?.category || res.data;
-        setCategories(prev => prev.map(c => (c.id || c._id) === catId ? updated : c));
+        await updateCategory.mutateAsync({ id: catId, data: payload });
       }
       setModal(null);
     } catch (err) {
       console.error('Save failed:', err);
-    } finally {
-      setSaving(false);
     }
   };
 
   const handleDelete = async () => {
     if (!deleteModal) return;
-    setDeleting(true);
     try {
       const catId = deleteModal.id || deleteModal._id;
-      await del(`/api/categories/${catId}`);
-      setCategories(prev => prev.filter(c => (c.id || c._id) !== catId));
+      await deleteCategory.mutateAsync(catId);
       setDeleteModal(null);
     } catch (err) {
       console.error('Delete failed:', err);
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -417,7 +392,7 @@ export default function Categories() {
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 24 }}>
           <Button variant="secondary" onClick={() => setModal(null)}>Cancel</Button>
-          <Button loading={saving} onClick={handleSave}>
+          <Button loading={createCategory.isPending || updateCategory.isPending} onClick={handleSave}>
             {modal === 'create' ? 'Create' : 'Save'}
           </Button>
         </div>
@@ -429,7 +404,7 @@ export default function Categories() {
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button variant="secondary" onClick={() => setDeleteModal(null)}>Cancel</Button>
-          <Button variant="danger" icon={Trash2} loading={deleting} onClick={handleDelete}>Delete</Button>
+          <Button variant="danger" icon={Trash2} loading={deleteCategory.isPending} onClick={handleDelete}>Delete</Button>
         </div>
       </Modal>
     </div>

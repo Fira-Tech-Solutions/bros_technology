@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { get, patch, del, post } from '../lib/api';
+import { post } from '../lib/api';
+import { useListing, useUpdateListing, useDeleteListing, useCategories } from '../hooks';
 import { Button, Input, Select, Textarea, StatusBadge, PageHeader, LoadingSpinner, Modal } from '../components/ui';
 import { ArrowLeft, Trash2, Save, Send, Upload, X, Image as ImageIcon, ChevronDown, Tag, Plus, Check } from 'lucide-react';
 import { PRODUCT_OPTIONS, FIELD_LABELS } from '../config/productOptions';
@@ -10,11 +11,11 @@ const STATUS_OPTIONS = ['AVAILABLE', 'PENDING', 'SOLD', 'ARCHIVED'];
 export default function ListingDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [listing, setListing] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const { data: listing, isLoading: loading } = useListing(id || '');
+  const updateListing = useUpdateListing();
+  const deleteListing = useDeleteListing();
+  const { data: categories = [] } = useCategories();
   const [deleteModal, setDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [syndicateModal, setSyndicateModal] = useState(false);
   const [syndicating, setSyndicating] = useState(false);
   const [form, setForm] = useState<Record<string, any>>({});
@@ -26,31 +27,19 @@ export default function ListingDetail() {
   const [customValue, setCustomValue] = useState('');
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await get(`/api/listings/${id}`);
-        const data = res.data?.data || res.data?.listing || res.data || {};
-        setListing(data);
-
-        const attrs = data.attributes || {};
-        setAttributes(attrs);
-
-        setForm({
-          title: data.title || '',
-          description: data.description || '',
-          price: data.price || '',
-          status: data.status || 'AVAILABLE',
-          categoryId: data.category?.id || data.categoryId || '',
-          stockQuantity: data.stockQuantity ?? 1,
-        });
-      } catch (err) {
-        console.error('Failed to load listing:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [id]);
+    if (listing) {
+      const attrs = listing.attributes || {};
+      setAttributes(attrs);
+      setForm({
+        title: listing.title || '',
+        description: listing.description || '',
+        price: listing.price || '',
+        status: listing.status || 'AVAILABLE',
+        categoryId: listing.category?.id || listing.categoryId || '',
+        stockQuantity: listing.stockQuantity ?? 1,
+      });
+    }
+  }, [listing]);
 
   const updateForm = (key: string, value: any) => setForm(prev => ({ ...prev, [key]: value }));
   const updateAttribute = (key: string, value: any) => setAttributes(prev => ({ ...prev, [key]: value }));
@@ -72,35 +61,30 @@ export default function ListingDetail() {
   };
 
   const handleSave = async () => {
-    setSaving(true);
     try {
       const fd = new FormData();
       fd.append('title', form.title);
       fd.append('description', form.description || '');
       fd.append('price', String(form.price));
       fd.append('status', form.status);
-      fd.append('categoryId', form.categoryId || listing.category?.id || '');
+      fd.append('categoryId', form.categoryId || listing?.category?.id || '');
       fd.append('attributes', JSON.stringify(attributes));
       fd.append('stockQuantity', String(form.stockQuantity ?? 1));
       newImages.forEach(img => fd.append('images', img));
-      await patch(`/api/listings/${id}`, fd);
+      await updateListing.mutateAsync({ id: id || '', fd });
       navigate('/properties');
     } catch (err) {
       console.error('Save failed:', err);
-    } finally {
-      setSaving(false);
     }
   };
 
   const handleDelete = async () => {
-    setDeleting(true);
     try {
-      await del(`/api/listings/${id}`);
+      await deleteListing.mutateAsync(id || '');
+      setDeleteModal(false);
       navigate('/properties');
     } catch (err) {
       console.error('Delete failed:', err);
-    } finally {
-      setDeleting(false);
     }
   };
 
@@ -473,7 +457,7 @@ export default function ListingDetail() {
             </div>
           </div>
 
-          <Button variant="primary" icon={Save} loading={saving} onClick={handleSave} style={{ width: '100%' }}>
+          <Button variant="primary" icon={Save} loading={updateListing.isPending} onClick={handleSave} style={{ width: '100%' }}>
             Save Changes
           </Button>
         </div>
@@ -485,7 +469,7 @@ export default function ListingDetail() {
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button variant="secondary" onClick={() => setDeleteModal(false)}>Cancel</Button>
-          <Button variant="danger" icon={Trash2} loading={deleting} onClick={handleDelete}>Delete</Button>
+          <Button variant="danger" icon={Trash2} loading={deleteListing.isPending} onClick={handleDelete}>Delete</Button>
         </div>
       </Modal>
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { get, post } from '../lib/api';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
+import { useSyndicationConfig, useSyndicationLogs, useWebhookInfo, useSaveSyndicationConfig, useRetrySyndication, useDeleteSyndicationMessage, useEditSyndicationMessage } from '../hooks';
 import { Button, StatusBadge, Modal, Input, PageHeader, LoadingSpinner } from '../components/ui';
 import { Send, Settings, RefreshCw, Trash2, Save, Eye, EyeOff, Power, MessageCircle, ChevronRight, Clock, CircleCheck, CircleX, Image as ImageIcon, Bot, Hash, X } from 'lucide-react';
 
@@ -33,85 +34,57 @@ function formatDate(dateStr: string) {
 export default function Syndication() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'SUPER_ADMIN';
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'settings' | 'posts'>(isAdmin ? 'settings' : 'posts');
-  const [loading, setLoading] = useState(true);
-  const [config, setConfig] = useState<any>(null);
-  const [botInfo, setBotInfo] = useState<any>(null);
-  const [channelInfo, setChannelInfo] = useState<any>(null);
-  const [logs, setLogs] = useState<any[]>([]);
+  const { data: config, isLoading: configLoading } = useSyndicationConfig();
+  const { data: logs = [], isLoading: logsLoading } = useSyndicationLogs();
+  const { data: webhookInfo } = useWebhookInfo();
+  const saveConfig = useSaveSyndicationConfig();
+  const retryMutation = useRetrySyndication();
+  const deleteMsg = useDeleteSyndicationMessage();
+  const editMsg = useEditSyndicationMessage();
   const [filter, setFilter] = useState<string | null>(null);
   const [configModal, setConfigModal] = useState(false);
   const [botToken, setBotToken] = useState('');
   const [channelId, setChannelId] = useState('');
   const [isActive, setIsActive] = useState(true);
   const [showToken, setShowToken] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [testing, setTesting] = useState(false);
   const [detailModal, setDetailModal] = useState<any>(null);
   const [editCaption, setEditCaption] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
-  const [retrying, setRetrying] = useState<string | null>(null);
+  const [testing, setTesting] = useState(false);
 
-  useEffect(() => { loadAll(); }, []);
-
-  const loadAll = async () => {
-    try {
-      const [configRes, logsRes] = await Promise.all([
-        get('/api/syndication/config'),
-        get('/api/syndication/logs', { params: { limit: 200 } }),
-      ]);
-      const configs = configRes.data?.data || configRes.data || [];
-      const cfg = Array.isArray(configs) ? configs.find((c: any) => c.platform === 'TELEGRAM') || configs[0] : configs;
-      setConfig(cfg);
-      if (cfg) {
-        setBotToken(cfg.botToken || '');
-        setChannelId(cfg.channelId || cfg.telegramChannelId || '');
-        setIsActive(cfg.isActive !== false);
-      }
-      const logsRaw = logsRes.data?.data || logsRes.data?.logs || logsRes.data || [];
-      setLogs(Array.isArray(logsRaw) ? logsRaw : []);
-
-      // Try to load bot/channel info
-      try {
-        const infoRes = await get('/api/syndication/telegram/webhook-info');
-        const info = infoRes.data?.data || infoRes.data;
-        if (info?.botInfo) setBotInfo(info.botInfo);
-        if (info?.channelInfo) setChannelInfo(info.channelInfo);
-      } catch {}
-    } catch (err) {
-      console.error('Failed to load:', err);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (config) {
+      setBotToken(config.botToken || '');
+      setChannelId(config.channelId || config.telegramChannelId || '');
+      setIsActive(config.isActive !== false);
     }
-  };
+  }, [config]);
 
   const handleSaveConfig = async () => {
     if (!botToken.trim()) { alert('Bot token is required'); return; }
     if (!channelId.trim()) { alert('Channel ID is required'); return; }
-    setSaving(true);
     try {
-      await post('/api/syndication/config', {
+      await saveConfig.mutateAsync({
         platform: 'TELEGRAM',
         botToken: botToken.trim(),
         channelId: channelId.trim(),
         isActive,
       });
       setConfigModal(false);
-      loadAll();
     } catch (err: any) {
       alert(err.response?.data?.error || 'Failed to save');
-    } finally {
-      setSaving(false);
     }
   };
 
   const handleTestConnection = async () => {
     setTesting(true);
     try {
-      const res = await get('/api/syndication/telegram/webhook-info');
-      const info = res.data?.data || res.data;
+      // Just refetch the webhook info
+      await queryClient.invalidateQueries({ queryKey: ['webhookInfo'] });
+      const info = webhookInfo;
       if (info?.botInfo) {
-        setBotInfo(info.botInfo);
         alert(`Connected! Bot: @${info.botInfo.username || info.botInfo.first_name}`);
       } else {
         alert('Connection test completed');
@@ -129,14 +102,10 @@ export default function Syndication() {
   }, [logs, filter]);
 
   const handleRetry = async (log: any) => {
-    setRetrying(log.id || log._id);
     try {
-      await post(`/api/syndication/retry/${log.id || log._id}`);
-      loadAll();
+      await retryMutation.mutateAsync(log.id || log._id);
     } catch (err: any) {
       alert(err.response?.data?.error || 'Retry failed');
-    } finally {
-      setRetrying(null);
     }
   };
 
@@ -144,23 +113,18 @@ export default function Syndication() {
     const msgId = log.telegramMessageId || log.messageId;
     if (!msgId) { alert('No message ID found for this post'); return; }
     if (!confirm('Delete this post from Telegram?')) return;
-    setDeleting(log.id || log._id);
     try {
-      await post(`/api/syndication/delete-message/${msgId}`, { logId: log.id || log._id });
-      loadAll();
+      await deleteMsg.mutateAsync({ msgId, logId: log.id || log._id });
     } catch (err: any) {
       alert(err.response?.data?.error || 'Failed to delete');
-    } finally {
-      setDeleting(null);
     }
   };
 
   const handleSaveEdit = async () => {
     if (!detailModal?.messageId) return;
     try {
-      await post(`/api/syndication/edit-message/${detailModal.messageId}`, { caption: editCaption });
+      await editMsg.mutateAsync({ messageId: detailModal.messageId, caption: editCaption });
       setDetailModal(null);
-      loadAll();
     } catch (err: any) {
       alert(err.response?.data?.error || 'Failed to update');
     }
@@ -171,7 +135,7 @@ export default function Syndication() {
     setEditCaption(log.listing?.title || '');
   };
 
-  if (loading) {
+  if (configLoading || logsLoading) {
     return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 256 }}><LoadingSpinner size="lg" /></div>;
   }
 
@@ -218,16 +182,16 @@ export default function Syndication() {
       {activeTab === 'settings' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 560 }}>
           {/* Bot Info Card */}
-          {botInfo && (
+          {webhookInfo?.botInfo && (
             <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', padding: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{ width: 56, height: 56, borderRadius: '50%', border: '2px solid var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, background: 'var(--color-bg)' }}>
                 <Bot size={28} style={{ color: 'var(--color-primary)' }} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: 0 }}>{botInfo.first_name || 'Bot'}</p>
-                <p style={{ fontSize: 13, color: 'var(--color-primary)', fontFamily: 'var(--font-body)', margin: 0 }}>@{botInfo.username || '—'}</p>
-                <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', margin: 0, marginTop: 2 }}>
-                  ID: {botInfo.id} · {botInfo.can_join_groups ? 'Can join groups' : 'Private'}
+                <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: 0 }}>{webhookInfo?.botInfo?.first_name || 'Bot'}</p>
+                <p style={{ fontSize: 13, color: 'var(--color-primary)', fontFamily: 'var(--font-body)', margin: 0 }}>@{webhookInfo?.botInfo?.username || '—'}</p>
+                <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', margin: 0, marginTop: 4 }}>
+                  ID: {webhookInfo?.botInfo?.id} · {webhookInfo?.botInfo?.can_join_groups ? 'Can join groups' : 'Private'}
                 </p>
               </div>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', flexShrink: 0 }} />
@@ -235,18 +199,18 @@ export default function Syndication() {
           )}
 
           {/* Channel Info Card */}
-          {channelInfo && (
+          {webhookInfo?.channelInfo && (
             <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', padding: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
               <div style={{ width: 56, height: 56, borderRadius: '50%', border: '2px solid var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0, background: 'var(--color-bg)' }}>
                 <Send size={24} style={{ color: 'var(--color-primary)' }} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: 0 }}>{channelInfo.title || 'Channel'}</p>
+                <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: 0 }}>{webhookInfo?.channelInfo?.title || 'Channel'}</p>
                 <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', margin: 0 }}>
-                  {channelInfo.type || 'channel'}{channelInfo.memberCount ? ` · ${channelInfo.memberCount} members` : ''}
+                  {webhookInfo?.channelInfo?.type || 'channel'}{webhookInfo?.channelInfo?.memberCount ? ` · ${webhookInfo.channelInfo.memberCount} members` : ''}
                 </p>
-                {channelInfo.username && (
-                  <p style={{ fontSize: 12, color: 'var(--color-primary)', fontFamily: 'var(--font-body)', margin: 0 }}>@{channelInfo.username}</p>
+                {webhookInfo?.channelInfo?.username && (
+                  <p style={{ fontSize: 12, color: 'var(--color-primary)', fontFamily: 'var(--font-body)', margin: 0 }}>@{webhookInfo.channelInfo.username}</p>
                 )}
               </div>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e', flexShrink: 0 }} />
@@ -467,17 +431,17 @@ export default function Syndication() {
             </button>
             <button
               onClick={handleSaveConfig}
-              disabled={saving}
+              disabled={saveConfig.isPending}
               style={{
                 flex: 2, height: 48, borderRadius: 'var(--radius-md)',
                 border: 'none', background: 'var(--color-primary)',
                 fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-body)',
                 color: '#fff', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                opacity: saving ? 0.6 : 1,
+                opacity: saveConfig.isPending ? 0.6 : 1,
               }}
             >
-              {saving ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
+              {saveConfig.isPending ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
               Save Config
             </button>
           </div>
@@ -577,13 +541,13 @@ export default function Syndication() {
                   </button>
                   <button
                     onClick={() => { handleDeleteMessage(detailModal); setDetailModal(null); }}
-                    disabled={deleting === (detailModal.id || detailModal._id)}
+                    disabled={deleteMsg.isPending}
                     style={{
                       width: 46, height: 46, borderRadius: 'var(--radius-md)',
                       border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.15)',
                       color: '#ef4444', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      opacity: deleting === (detailModal.id || detailModal._id) ? 0.5 : 1,
+                      opacity: deleteMsg.isPending ? 0.5 : 1,
                     }}
                   >
                     <Trash2 size={16} />

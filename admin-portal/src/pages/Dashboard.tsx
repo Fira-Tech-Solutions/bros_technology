@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { Package, TrendingUp, FolderOpen, ArrowRight, Smartphone, Laptop, Watch, Headphones, Tablet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { get } from '../lib/api';
+import { useListings, useCategories } from '../hooks';
 import { StatCard, PageHeader, LoadingSpinner } from '../components/ui';
 
 const STATUS_COLORS: Record<string, string> = {
@@ -29,53 +29,23 @@ const CATEGORY_COLORS: string[] = [
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [stats, setStats] = useState<Record<string, number>>({ total: 0, available: 0, sold: 0, pending: 0, archived: 0 });
-  const [categories, setCategories] = useState<any[]>([]);
-  const [recentListings, setRecentListings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: listings = [], isLoading: listingsLoading } = useListings();
+  const { data: categories = [], isLoading: catsLoading } = useCategories();
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const fetchAll = async (endpoint: string) => {
-          let all: any[] = [];
-          let page = 1;
-          while (true) {
-            const res = await get(endpoint, { params: { page, limit: 100 } });
-            const chunk = res.data?.data || res.data?.listings || res.data || [];
-            const arr = Array.isArray(chunk) ? chunk : [];
-            all = [...all, ...arr];
-            const total = res.data?.pagination?.total || 0;
-            if (all.length >= total || arr.length < 100) break;
-            page++;
-          }
-          return all;
-        };
+  const loading = listingsLoading || catsLoading;
 
-        const [listings, catsRaw] = await Promise.all([
-          fetchAll('/api/listings'),
-          get('/api/categories'),
-        ]);
-        const totalCount = listings.length;
-        const cats = Array.isArray(catsRaw.data?.data || catsRaw.data?.categories || catsRaw.data) ? (catsRaw.data?.data || catsRaw.data?.categories || catsRaw.data) : [];
+  const stats = useMemo(() => {
+    const s: Record<string, number> = { total: 0, available: 0, sold: 0, pending: 0, archived: 0, totalStock: 0 };
+    listings.forEach((l: any) => {
+      const st = (l.status || 'AVAILABLE').toUpperCase();
+      if (s[st.toLowerCase()] !== undefined) s[st.toLowerCase()]++;
+      s.totalStock += (l.stockQuantity || 0);
+    });
+    s.total = listings.length;
+    return s;
+  }, [listings]);
 
-        const statusCounts: Record<string, number> = { total: totalCount, available: 0, sold: 0, pending: 0, archived: 0, totalStock: 0 };
-        listings.forEach((l: any) => {
-          const s = (l.status || 'AVAILABLE').toUpperCase();
-          if (statusCounts[s.toLowerCase()] !== undefined) statusCounts[s.toLowerCase()]++;
-          statusCounts.totalStock += (l.stockQuantity || 0);
-        });
-        setStats(statusCounts);
-        setCategories(cats);
-        setRecentListings(listings.slice(0, 5));
-      } catch (err) {
-        console.error('Failed to load dashboard:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
+  const recentListings = useMemo(() => listings.slice(0, 5), [listings]);
 
   const chartData = [
     { name: 'Available', value: stats.available || 0, color: STATUS_COLORS.AVAILABLE },
@@ -127,7 +97,7 @@ export default function Dashboard() {
             Device Analytics
           </h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 16 }}>
-            {categories.map((cat, i) => {
+            {categories.map((cat: any, i: number) => {
               const Icon = CATEGORY_ICONS[cat.name?.toUpperCase()] || CATEGORY_ICONS[cat.displayName?.toUpperCase()] || Package;
               const count = cat.listingCount || 0;
               const color = CATEGORY_COLORS[i % CATEGORY_COLORS.length];

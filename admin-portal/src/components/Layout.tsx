@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   LayoutDashboard,
   Package,
@@ -15,6 +16,7 @@ import {
   ChevronLeft,
   LogOut,
   User,
+  RefreshCw,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -32,6 +34,7 @@ const NAV_ITEMS = [
 export default function Layout() {
   const { user, logout } = useAuth();
   const { dark, toggle: toggleTheme } = useTheme();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -457,6 +460,29 @@ export default function Layout() {
                 </div>
               )}
             </div>
+
+            {/* Refresh data */}
+            <button
+              onClick={() => queryClient.invalidateQueries()}
+              title="Refresh data"
+              style={{
+                width: 40,
+                height: 40,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 'var(--radius-md)',
+                border: 'none',
+                background: 'transparent',
+                color: 'var(--color-text-muted)',
+                cursor: 'pointer',
+                transition: 'all var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >
+              <RefreshCw size={18} />
+            </button>
 
             {/* Theme toggle */}
             <button
