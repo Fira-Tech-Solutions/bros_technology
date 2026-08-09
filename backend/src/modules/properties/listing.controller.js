@@ -221,7 +221,10 @@ export async function updateListing(req, res, next) {
       stockQuantity,
     } = req.body;
 
-    const images = req.images && req.images.length > 0 ? req.images : existing.images;
+    // Merge new images with existing ones (new images append, existing preserved)
+    const images = req.images && req.images.length > 0
+      ? [...existing.images, ...req.images]
+      : existing.images;
 
     if (req.images && req.images.length > 0 && existing.images.length > 0) {
       cleanupImages(existing.images).catch((err) => {
