@@ -160,7 +160,7 @@ export default function Properties() {
     {
       header: 'Actions',
       render: (row: any, hovered: boolean) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 4, opacity: hovered ? 1 : 0, transition: 'opacity var(--transition-fast)' }} onClick={(e: any) => e.stopPropagation()}>
+        <div className={`table-actions ${hovered ? 'active' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 4 }} onClick={(e: any) => e.stopPropagation()}>
           <ActionButton icon={Edit} onClick={() => navigate(`/properties/${row.id || row._id}`)} title="Edit" />
           <ActionButton icon={Send} onClick={() => setSyndicateModal(row)} title="Syndicate" />
           <ActionButton icon={Trash2} onClick={() => setDeleteModal(row)} title="Delete" danger />
