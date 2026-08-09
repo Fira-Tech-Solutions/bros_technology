@@ -78,6 +78,7 @@ export default function ListingDetail() {
       fd.append('description', form.description || '');
       fd.append('price', String(form.price));
       fd.append('status', form.status);
+      fd.append('categoryId', form.categoryId || listing.category?.id || '');
       fd.append('attributes', JSON.stringify(attributes));
       newImages.forEach(img => fd.append('images', img));
       await patch(`/api/listings/${id}`, fd);
