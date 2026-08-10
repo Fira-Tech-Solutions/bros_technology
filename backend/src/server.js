@@ -1,5 +1,4 @@
 import prisma from './config/prisma.js';
-import { initializeListingListeners } from './modules/syndication/listeners/telegramListener.js';
 import { DEFAULT_CATEGORIES } from './modules/properties/defaultCategories.js';
 import app from './app.js';
 
@@ -57,8 +56,6 @@ async function startServer() {
     console.log('[Server] Database connected');
 
     await seedCategories();
-
-    initializeListingListeners();
 
     app.listen(PORT, () => {
       console.log(`[Server] Running on port ${PORT}`);

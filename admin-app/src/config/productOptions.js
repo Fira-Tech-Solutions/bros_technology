@@ -1,3 +1,5 @@
+// IMPORTANT: Keep this file in sync with admin-portal/src/config/productOptions.ts
+// Any changes here must be mirrored in the admin-portal version, and vice versa.
 export const PRODUCT_OPTIONS = {
   IPHONES_SAMSUNG: {
     brand: [

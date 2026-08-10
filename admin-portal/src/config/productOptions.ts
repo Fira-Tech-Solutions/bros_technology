@@ -1,3 +1,5 @@
+// IMPORTANT: Keep this file in sync with admin-app/src/config/productOptions.js
+// Any changes here must be mirrored in the admin-app version, and vice versa.
 export const PRODUCT_OPTIONS: Record<string, Record<string, any>> = {
   IPHONES_SAMSUNG: {
     brand: [

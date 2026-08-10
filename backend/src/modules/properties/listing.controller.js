@@ -1,5 +1,5 @@
 import prisma from '../../config/prisma.js';
-import listingEmitter from '../../core/listingEmitter.js';
+import { handleSyndication } from '../syndication/listeners/telegramListener.js';
 import { cleanupImages } from '../../utils/imageProcessor.js';
 import { createNotification } from '../notifications/notification.controller.js';
 
@@ -57,7 +57,10 @@ export async function createListing(req, res, next) {
       include: LISTING_INCLUDE,
     });
 
-    listingEmitter.emit('listing:created', listing.id);
+    // Fire-and-forget: syndicate to Telegram (don't block response)
+    handleSyndication(listing.id, 'listing:created').catch((err) => {
+      console.error('[Listing] Syndication error:', err.message);
+    });
 
     // Create notification for the agent
     createNotification(
@@ -248,7 +251,10 @@ export async function updateListing(req, res, next) {
       });
     }
 
-    listingEmitter.emit('listing:updated', updated.id);
+    // Fire-and-forget: syndicate to Telegram (don't block response)
+    handleSyndication(updated.id, 'listing:updated').catch((err) => {
+      console.error('[Listing] Syndication error:', err.message);
+    });
 
     if (agentId) {
       createNotification(
@@ -289,8 +295,6 @@ export async function deleteListing(req, res, next) {
     }
 
     await prisma.listing.delete({ where: { id } });
-
-    listingEmitter.emit('listing:deleted', id);
 
     return res.status(200).json({
       success: true,
