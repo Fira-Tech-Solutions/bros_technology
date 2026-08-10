@@ -1,10 +1,14 @@
-import listingEmitter from '../../../core/listingEmitter.js';
 import prisma from '../../../config/prisma.js';
 import TelegramBotService from '../services/telegramBot.service.js';
 
-let listenersInitialized = false;
-
-async function handleSyndication(listingId, eventType) {
+/**
+ * Handles Telegram syndication for a listing.
+ * Called directly from listing controller (fire-and-forget, don't await).
+ *
+ * @param {string} listingId - The listing ID
+ * @param {string} eventType - 'listing:created' or 'listing:updated'
+ */
+export async function handleSyndication(listingId, eventType) {
   try {
     const listing = await prisma.listing.findUnique({
       where: { id: listingId },
@@ -120,24 +124,4 @@ async function handleSyndication(listingId, eventType) {
       err.message,
     );
   }
-}
-
-export function initializeListingListeners() {
-  if (listenersInitialized) {
-    console.log('[Listener] Listing syndication listeners already initialized, skipping');
-    return;
-  }
-
-  listingEmitter.on('listing:created', (listingId) => {
-    console.log(`[Listener] Received listing:created for listing ${listingId}`);
-    handleSyndication(listingId, 'listing:created');
-  });
-
-  listingEmitter.on('listing:updated', (listingId) => {
-    console.log(`[Listener] Received listing:updated for listing ${listingId}`);
-    handleSyndication(listingId, 'listing:updated');
-  });
-
-  listenersInitialized = true;
-  console.log('[Listener] Listing syndication listeners initialized');
 }
