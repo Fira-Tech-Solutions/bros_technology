@@ -11,15 +11,16 @@ import {
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft, Lock, Eye, EyeOff, Check } from "lucide-react-native";
+import { ArrowLeft, Lock, Eye, EyeOff, Check, Mail, Link } from "lucide-react-native";
 
 import { useTheme } from "../context/ThemeContext";
 import { resetPassword } from "../api/auth";
 
 export default function ResetPasswordScreen({ route, navigation }) {
   const { colors } = useTheme();
-  const { email } = route.params;
+  const { email: defaultEmail } = route.params || {};
 
+  const [email, setEmail] = useState(defaultEmail || "");
   const [token, setToken] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,13 +29,13 @@ export default function ResetPasswordScreen({ route, navigation }) {
   const [resetting, setResetting] = useState(false);
 
   const handleReset = async () => {
-    if (!token.trim()) {
-      Alert.alert("Error", "Reset code is required");
+    if (!email.trim()) {
+      Alert.alert("Error", "Email is required");
       return;
     }
 
-    if (token.length !== 6) {
-      Alert.alert("Error", "Reset code must be 6 digits");
+    if (!token.trim()) {
+      Alert.alert("Error", "Reset token is required");
       return;
     }
 
@@ -55,7 +56,7 @@ export default function ResetPasswordScreen({ route, navigation }) {
 
     setResetting(true);
     try {
-      await resetPassword(email, token.trim(), password);
+      await resetPassword(email.trim(), token.trim(), password);
       Alert.alert(
         "Password Reset",
         "Your password has been reset successfully. You can now login with your new password.",
@@ -64,7 +65,7 @@ export default function ResetPasswordScreen({ route, navigation }) {
         ]
       );
     } catch (err) {
-      const message = err.response?.data?.error || "Failed to reset password";
+      const message = err.response?.data?.error || "Failed to reset password. The link may have expired.";
       Alert.alert("Error", message);
     } finally {
       setResetting(false);
@@ -118,8 +119,52 @@ export default function ResetPasswordScreen({ route, navigation }) {
                 lineHeight: 24,
               }}
             >
-              Enter the 6-digit code sent to {email} and your new password.
+              Open the reset link from your email, then copy the token from the link URL and paste it below.
             </Text>
+          </View>
+
+          {/* Email Input */}
+          <View style={{ paddingHorizontal: 20, marginBottom: 20 }}>
+            <Text
+              style={{
+                color: colors.textSecondary,
+                fontSize: 12,
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: 0.5,
+                marginBottom: 8,
+              }}
+            >
+              Email Address
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: colors.input,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.inputBorder,
+                paddingHorizontal: 14,
+                height: 52,
+              }}
+            >
+              <Mail size={18} color={colors.textMuted} />
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="your@email.com"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                style={{
+                  flex: 1,
+                  marginLeft: 10,
+                  color: colors.text,
+                  fontSize: 15,
+                }}
+              />
+            </View>
           </View>
 
           {/* Token Input */}
@@ -134,7 +179,7 @@ export default function ResetPasswordScreen({ route, navigation }) {
                 marginBottom: 8,
               }}
             >
-              Reset Code (6 digits)
+              Reset Token
             </Text>
             <View
               style={{
@@ -148,20 +193,19 @@ export default function ResetPasswordScreen({ route, navigation }) {
                 height: 52,
               }}
             >
-              <Lock size={18} color={colors.textMuted} />
+              <Link size={18} color={colors.textMuted} />
               <TextInput
                 value={token}
                 onChangeText={setToken}
-                placeholder="123456"
+                placeholder="Paste token from email link"
                 placeholderTextColor={colors.textMuted}
-                keyboardType="numeric"
-                maxLength={6}
+                autoCapitalize="none"
+                autoCorrect={false}
                 style={{
                   flex: 1,
                   marginLeft: 10,
                   color: colors.text,
-                  fontSize: 15,
-                  letterSpacing: 4,
+                  fontSize: 13,
                 }}
               />
             </View>
@@ -294,13 +338,13 @@ export default function ResetPasswordScreen({ route, navigation }) {
               }}
             >
               {resetting ? (
-                <ActivityIndicator color={colors.primaryText} />
+                <ActivityIndicator color={colors.primaryText || "#FFFFFF"} />
               ) : (
                 <>
-                  <Check size={18} color={colors.primaryText} />
+                  <Check size={18} color={colors.primaryText || "#FFFFFF"} />
                   <Text
                     style={{
-                      color: colors.primaryText,
+                      color: colors.primaryText || "#FFFFFF",
                       fontSize: 16,
                       fontWeight: "700",
                       marginLeft: 8,
