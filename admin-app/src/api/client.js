@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getItemAsync, deleteItemAsync } from "../utils/storage";
 
-const API_BASE_URL = "https://bros-technology-api.vercel.app";
+const API_BASE_URL = "https://api.broslaptop.com";
 
 const client = axios.create({
   baseURL: API_BASE_URL,

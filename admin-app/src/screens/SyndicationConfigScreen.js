@@ -50,7 +50,7 @@ import {
   retrySyndication,
 } from "../api/syndication";
 
-const API_BASE_URL = "https://bros-technology-api.vercel.app";
+const API_BASE_URL = "https://api.broslaptop.com";
 
 const STATUS_MAP = {
   PENDING: { label: "Pending", color: "#F59E0B", Icon: Clock },

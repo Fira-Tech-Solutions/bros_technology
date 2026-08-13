@@ -43,7 +43,7 @@ import { getCategories } from "../api/categories";
 import LoadingOverlay from "../components/LoadingOverlay";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const API_BASE_URL = "https://bros-technology-api.vercel.app";
+const API_BASE_URL = "https://api.broslaptop.com";
 
 const STATUS_MAP = {
   AVAILABLE: { label: "Available", color: "#22C55E", bg: "#DCFCE7", darkBg: "#0D2E1A" },
