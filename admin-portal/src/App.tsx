@@ -106,7 +106,7 @@ function AppRoutes() {
         <Route path="properties" element={<Properties />} />
         <Route path="properties/new" element={<AddListing />} />
         <Route path="properties/:id" element={<ListingDetail />} />
-        <Route path="categories" element={<AdminRoute><Categories /></AdminRoute>} />
+        <Route path="categories" element={<Categories />} />
         <Route path="agents" element={<AdminRoute><Agents /></AdminRoute>} />
         <Route path="syndication" element={<Syndication />} />
         <Route path="finance" element={<AdminRoute><Finance /></AdminRoute>} />

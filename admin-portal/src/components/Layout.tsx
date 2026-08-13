@@ -29,7 +29,7 @@ import { DOC_LINKS } from '../constants/docLinks';
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/properties', icon: Package, label: 'Products' },
-  { to: '/categories', icon: FolderOpen, label: 'Categories', adminOnly: true },
+  { to: '/categories', icon: FolderOpen, label: 'Categories' },
   { to: '/syndication', icon: Send, label: 'Syndication' },
   { to: '/finance', icon: DollarSign, label: 'Finance', adminOnly: true },
   { to: '/agents', icon: Users, label: 'Agents', adminOnly: true },
