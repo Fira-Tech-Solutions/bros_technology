@@ -166,7 +166,8 @@ export default function LoginScreen({ navigation }) {
       } else if (!err.response) {
         setLoginError("Unable to reach the server. Check your connection.");
       } else {
-        setLoginError(err.response?.data?.error || t("invalidCredentials"));
+        const errData = err.response?.data?.error;
+        setLoginError(typeof errData === 'string' ? errData : errData?.message || t("invalidCredentials"));
       }
     } finally {
       setLoading(false);
