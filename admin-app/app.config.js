@@ -50,7 +50,7 @@ export default {
     },
     owner: "codearchitect001",
     env: {
-      EXPO_PUBLIC_API_URL: "https://bros-technology-api.vercel.app",
+      EXPO_PUBLIC_API_URL: "https://api.broslaptop.com",
     },
   },
 };
