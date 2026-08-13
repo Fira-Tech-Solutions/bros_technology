@@ -3,7 +3,7 @@
 
 export const DOC_LINKS = {
   // Developer documentation (MkDocs Material site)
-  DEVELOPER_DOCS: 'https://docs.brostechnology.com',
+  DEVELOPER_DOCS: 'https://docs.broslaptop.com',
 
   // Client handover document (PDF stored in Supabase Storage)
   // TODO: Update this URL after uploading PDF to Supabase Storage
