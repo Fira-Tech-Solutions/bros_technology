@@ -34,6 +34,7 @@ const productionOrigins = [
   'https://api.broslaptop.com',
   'https://www.broslaptop.com',
   'https://broslaptop.com',
+  'https://admin.broslaptop.com',
   'https://bros-technology-api-henna.vercel.app'
 ];
 
