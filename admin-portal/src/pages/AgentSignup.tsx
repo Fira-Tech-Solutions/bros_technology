@@ -11,8 +11,8 @@ export default function AgentSignup() {
   const [codeError, setCodeError] = useState('');
   const [verifying, setVerifying] = useState(false);
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
+    phone: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -41,16 +41,16 @@ export default function AgentSignup() {
       setError('Passwords do not match');
       return;
     }
-    if (form.password.length < 6) {
-      setError('Password must be at least 6 characters');
+    if (form.password.length < 8) {
+      setError('Password must be at least 8 characters');
       return;
     }
     setRegistering(true);
     setError('');
     try {
       await post('/api/auth/register', {
-        firstName: form.firstName,
-        lastName: form.lastName,
+        name: form.name,
+        phone: form.phone,
         email: form.email,
         password: form.password,
         agentCode: code.trim(),
@@ -107,18 +107,17 @@ export default function AgentSignup() {
               </div>
             )}
             <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <Input
-                  placeholder="First name"
-                  value={form.firstName}
-                  onChange={(e) => setForm(p => ({ ...p, firstName: e.target.value }))}
-                />
-                <Input
-                  placeholder="Last name"
-                  value={form.lastName}
-                  onChange={(e) => setForm(p => ({ ...p, lastName: e.target.value }))}
-                />
-              </div>
+              <Input
+                placeholder="Full name"
+                value={form.name}
+                onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))}
+              />
+              <Input
+                type="tel"
+                placeholder="Phone number"
+                value={form.phone}
+                onChange={(e) => setForm(p => ({ ...p, phone: e.target.value }))}
+              />
               <Input
                 type="email"
                 placeholder="Email"
