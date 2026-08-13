@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAgentCodes, useAgents, useGenerateAgentCode, useRevokeAgentCode } from '../hooks';
+import { useAgentCodes, useAgents, useGenerateAgentCode, useRevokeAgentCode, useRemoveAgent } from '../hooks';
 import { Button, DataTable, Modal, Input, PageHeader, EmptyState, LoadingSpinner } from '../components/ui';
 import { Users, Plus, Trash2, Copy, Check, Shield, UserX, RefreshCw } from 'lucide-react';
 
@@ -9,6 +9,7 @@ export default function Agents() {
   const { data: agents = [], isLoading: agentsLoading } = useAgents();
   const generateCode = useGenerateAgentCode();
   const revokeCode = useRevokeAgentCode();
+  const removeAgent = useRemoveAgent();
   const [generateModal, setGenerateModal] = useState(false);
   const [codeName, setCodeName] = useState('');
   const [codeRole, setCodeRole] = useState('agent');
@@ -37,11 +38,15 @@ export default function Agents() {
   const handleRevoke = async () => {
     if (!deleteModal) return;
     try {
-      const codeId = deleteModal.id || deleteModal._id;
-      await revokeCode.mutateAsync(codeId);
+      const id = deleteModal.id || deleteModal._id;
+      if (deleteModal._isAgent) {
+        await removeAgent.mutateAsync(id);
+      } else {
+        await revokeCode.mutateAsync(id);
+      }
       setDeleteModal(null);
     } catch (err) {
-      console.error('Revoke failed:', err);
+      console.error('Action failed:', err);
     }
   };
 
@@ -243,7 +248,7 @@ export default function Agents() {
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <Button variant="secondary" onClick={() => setDeleteModal(null)}>Cancel</Button>
-          <Button variant="danger" icon={Trash2} loading={revokeCode.isPending} onClick={handleRevoke}>Confirm</Button>
+          <Button variant="danger" icon={Trash2} loading={deleteModal?._isAgent ? removeAgent.isPending : revokeCode.isPending} onClick={handleRevoke}>Confirm</Button>
         </div>
       </Modal>
     </div>

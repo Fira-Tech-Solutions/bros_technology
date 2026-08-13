@@ -43,3 +43,13 @@ export function useRevokeAgentCode() {
     },
   });
 }
+
+export function useRemoveAgent() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => del(`/api/auth/agents/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['agents'] });
+    },
+  });
+}
