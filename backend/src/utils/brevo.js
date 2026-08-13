@@ -31,7 +31,7 @@ export async function sendEmail({ to, subject, htmlContent, textContent, from })
 }
 
 export async function sendPasswordResetEmail(to, resetCode) {
-  const subject = 'Your Password Reset Code - Retailment Marketplace';
+  const subject = 'Your Password Reset Code - BROS Technology';
   
   const htmlContent = `
     <!DOCTYPE html>
@@ -58,7 +58,7 @@ export async function sendPasswordResetEmail(to, resetCode) {
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
               <tr>
                 <td style="font-size: 16px; line-height: 26px; color: #333;">
-                  <p style="margin: 0 0 16px;">You requested a password reset for your Retailment Marketplace account.</p>
+                  <p style="margin: 0 0 16px;">You requested a password reset for your BROS Technology account.</p>
                   
                   <p style="margin: 0 0 24px;">Use the following 6-digit code to reset your password:</p>
                   
@@ -90,7 +90,7 @@ export async function sendPasswordResetEmail(to, resetCode) {
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 32px;">
               <tr>
                 <td style="text-align: center; font-size: 12px; color: #aaa;">
-                  <p style="margin: 0 0 8px;">Retailment Marketplace</p>
+                  <p style="margin: 0 0 8px;">BROS Technology</p>
                   <p style="margin: 0;">&copy; ${new Date().getFullYear()} All rights reserved.</p>
                 </td>
               </tr>
@@ -103,9 +103,9 @@ export async function sendPasswordResetEmail(to, resetCode) {
   `;
 
   const textContent = `
-    Password Reset Code - Retailment Marketplace
+    Password Reset Code - BROS Technology
     
-    You requested a password reset for your Retailment Marketplace account.
+    You requested a password reset for your BROS Technology account.
     
     Your 6-digit code: ${resetCode}
     
@@ -113,7 +113,7 @@ export async function sendPasswordResetEmail(to, resetCode) {
     
     If you didn't request this, please ignore this email.
     
-    Retailment Marketplace
+    BROS Technology
   `;
 
   return sendEmail({
