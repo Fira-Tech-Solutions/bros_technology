@@ -17,8 +17,6 @@ import {
   LogOut,
   User,
   RefreshCw,
-  BookOpen,
-  FileText,
   ExternalLink,
   Download,
 } from 'lucide-react';
