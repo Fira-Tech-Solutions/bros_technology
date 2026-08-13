@@ -30,8 +30,8 @@ export async function sendEmail({ to, subject, htmlContent, textContent, from })
   }
 }
 
-export async function sendPasswordResetEmail(to, resetCode) {
-  const subject = 'Your Password Reset Code - BROS Technology';
+export async function sendPasswordResetEmail(to, resetLink) {
+  const subject = 'Reset Your Password - BROS Technology';
   
   const htmlContent = `
     <!DOCTYPE html>
@@ -48,7 +48,7 @@ export async function sendPasswordResetEmail(to, resetCode) {
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 32px;">
               <tr>
                 <td style="text-align: center;">
-                  <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #c85a2a; letter-spacing: -0.5px;">Retailment</h1>
+                  <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #1878B4; letter-spacing: -0.5px;">BROS Technology</h1>
                   <p style="margin: 8px 0 0; font-size: 14px; color: #888;">Secure Access</p>
                 </td>
               </tr>
@@ -60,19 +60,24 @@ export async function sendPasswordResetEmail(to, resetCode) {
                 <td style="font-size: 16px; line-height: 26px; color: #333;">
                   <p style="margin: 0 0 16px;">You requested a password reset for your BROS Technology account.</p>
                   
-                  <p style="margin: 0 0 24px;">Use the following 6-digit code to reset your password:</p>
+                  <p style="margin: 0 0 24px;">Click the button below to reset your password:</p>
                   
-                  <!-- Code Box -->
+                  <!-- Button -->
                   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
                     <tr>
-                      <td style="background-color: #fef3e8; border: 2px solid #c85a2a; border-radius: 12px; padding: 24px; text-align: center;">
-                        <div style="font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #c85a2a; font-family: 'Courier New', monospace;">${resetCode}</div>
+                      <td style="text-align: center;">
+                        <a href="${resetLink}" style="display: inline-block; background-color: #1878B4; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px;">Reset Password</a>
                       </td>
                     </tr>
                   </table>
                   
                   <p style="margin: 24px 0 0; font-size: 14px; color: #666;">
-                    This code expires in <strong>15 minutes</strong>. Do not share this code with anyone.
+                    This link expires in <strong>1 hour</strong>. If you didn't request this, please ignore this email.
+                  </p>
+
+                  <p style="margin: 16px 0 0; font-size: 13px; color: #999;">
+                    If the button doesn't work, copy and paste this link into your browser:<br>
+                    <a href="${resetLink}" style="color: #1878B4; word-break: break-all;">${resetLink}</a>
                   </p>
                 </td>
               </tr>
@@ -103,15 +108,14 @@ export async function sendPasswordResetEmail(to, resetCode) {
   `;
 
   const textContent = `
-    Password Reset Code - BROS Technology
+    Reset Your Password - BROS Technology
     
     You requested a password reset for your BROS Technology account.
     
-    Your 6-digit code: ${resetCode}
+    Click the link below to reset your password:
+    ${resetLink}
     
-    This code expires in 15 minutes. Do not share this code with anyone.
-    
-    If you didn't request this, please ignore this email.
+    This link expires in 1 hour. If you didn't request this, please ignore this email.
     
     BROS Technology
   `;

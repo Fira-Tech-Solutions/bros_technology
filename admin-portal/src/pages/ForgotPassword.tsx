@@ -45,12 +45,9 @@ export default function ForgotPassword() {
               </div>
               <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: '0 0 4px' }}>Check your email</h2>
               <p style={{ fontSize: 14, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)' }}>
-                If an account exists with <strong>{email}</strong>, a 6-digit reset code has been sent.
+                If an account exists with <strong>{email}</strong>, a password reset link has been sent.
               </p>
-              <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <Button variant="primary" style={{ width: '100%' }} onClick={() => navigate(`/reset-password?email=${encodeURIComponent(email)}`)}>
-                  Enter Reset Code
-                </Button>
+              <div style={{ marginTop: 16 }}>
                 <Button variant="secondary" style={{ width: '100%' }} onClick={() => navigate('/login')}>
                   Back to Login
                 </Button>

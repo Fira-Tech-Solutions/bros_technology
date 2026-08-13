@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import prisma from '../../config/prisma.js';
 import { generateToken } from './auth.middleware.js';
 import { processProfileImage } from '../../utils/imageProcessor.js';
@@ -305,9 +306,9 @@ export async function forgotPassword(req, res, next) {
       });
     }
 
-    // Generate reset token (6-digit code)
-    const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    // Generate reset token (UUID)
+    const resetToken = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     await prisma.user.update({
       where: { id: user.id },
@@ -317,8 +318,11 @@ export async function forgotPassword(req, res, next) {
       },
     });
 
-    // Send email with reset token via Brevo
-    const emailResult = await sendPasswordResetEmail(user.email, resetToken);
+    // Build reset link
+    const resetLink = `https://admin.broslaptop.com/reset-password?email=${encodeURIComponent(user.email)}&token=${resetToken}`;
+
+    // Send email with reset link via Brevo
+    const emailResult = await sendPasswordResetEmail(user.email, resetLink);
     if (!emailResult.success) {
       console.error('[Password Reset] Failed to send email:', emailResult.error);
     }

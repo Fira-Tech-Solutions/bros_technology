@@ -2,13 +2,13 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { post } from '../lib/api';
 import { Button, Input } from '../components/ui';
-import { ArrowLeft, Lock, Check, Mail } from 'lucide-react';
+import { ArrowLeft, Lock, Check } from 'lucide-react';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [email, setEmail] = useState(searchParams.get('email') || '');
-  const [token, setToken] = useState(searchParams.get('token') || '');
+  const email = searchParams.get('email') || '';
+  const token = searchParams.get('token') || '';
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -16,10 +16,12 @@ export default function ResetPassword() {
   const [done, setDone] = useState(false);
   const [error, setError] = useState('');
 
+  const isValidLink = email && token;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !token) {
-      setError('Email and reset code are required');
+    if (!isValidLink) {
+      setError('Invalid or expired reset link');
       return;
     }
     if (password !== confirmPassword) {
@@ -36,7 +38,7 @@ export default function ResetPassword() {
       await post('/api/auth/reset-password', { email, token, password });
       setDone(true);
     } catch (err) {
-      setError(err.response?.data?.error || err.response?.data?.message || 'Reset failed');
+      setError(err.response?.data?.error || err.response?.data?.message || 'Reset failed. The link may have expired.');
     } finally {
       setLoading(false);
     }
@@ -67,6 +69,17 @@ export default function ResetPassword() {
                 </Button>
               </div>
             </div>
+          ) : !isValidLink ? (
+            <div style={{ textAlign: 'center', padding: '16px 0' }}>
+              <p style={{ fontSize: 14, color: 'var(--color-danger)', fontFamily: 'var(--font-body)' }}>
+                Invalid or expired reset link. Please request a new one.
+              </p>
+              <div style={{ marginTop: 16 }}>
+                <Button variant="secondary" style={{ width: '100%' }} onClick={() => navigate('/forgot-password')}>
+                  Request New Link
+                </Button>
+              </div>
+            </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {error && (
@@ -74,23 +87,6 @@ export default function ResetPassword() {
                   {error}
                 </div>
               )}
-              <Input
-                label="Email"
-                type="email"
-                icon={Mail}
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Input
-                label="Reset Code"
-                type="text"
-                icon={Lock}
-                placeholder="Enter 6-digit code"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                maxLength={6}
-              />
               <Input
                 label="New Password"
                 type="password"
