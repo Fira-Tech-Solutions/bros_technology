@@ -32,6 +32,8 @@ const allowedOriginsEnv = process.env.ALLOWED_ORIGINS
 
 const productionOrigins = [
   'https://api.broslaptop.com',
+  'https://www.broslaptop.com',
+  'https://broslaptop.com',
   'https://bros-technology-api-henna.vercel.app'
 ];
 
