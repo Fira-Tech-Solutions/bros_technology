@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://bros-technology-api.vercel.app';
+const API_URL = 'https://api.broslaptop.com';
 
 const api = axios.create({
   baseURL: API_URL,
