@@ -405,6 +405,83 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
+
+        {/* Links — mobile */}
+        <div style={{ padding: '8px 8px 0', borderTop: '1px solid var(--color-border)' }}>
+          {user?.role === 'SUPER_ADMIN' && (
+            <>
+              <a
+                href={DOC_LINKS.DEVELOPER_DOCS}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  height: NAV_HEIGHT,
+                  padding: '0 16px',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--color-text-muted)',
+                  textDecoration: 'none',
+                  transition: 'all var(--transition-fast)',
+                }}
+              >
+                <BookOpen size={20} />
+                <span>Developer Docs</span>
+                <ExternalLink size={12} style={{ marginLeft: 'auto', opacity: 0.5 }} />
+              </a>
+              <a
+                href={DOC_LINKS.HANDOVER_PDF}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  height: NAV_HEIGHT,
+                  padding: '0 16px',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--color-text-muted)',
+                  textDecoration: 'none',
+                  transition: 'all var(--transition-fast)',
+                }}
+              >
+                <FileText size={20} />
+                <span>Client Handover</span>
+                <ExternalLink size={12} style={{ marginLeft: 'auto', opacity: 0.5 }} />
+              </a>
+            </>
+          )}
+          <a
+            href={DOC_LINKS.APK_DOWNLOAD}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              height: NAV_HEIGHT,
+              padding: '0 16px',
+              borderRadius: 'var(--radius-md)',
+              fontSize: 14,
+              fontWeight: 500,
+              fontFamily: 'var(--font-body)',
+              color: 'var(--color-text-muted)',
+              textDecoration: 'none',
+              transition: 'all var(--transition-fast)',
+            }}
+          >
+            <Download size={20} />
+            <span>Download APK</span>
+            <ExternalLink size={12} style={{ marginLeft: 'auto', opacity: 0.5 }} />
+          </a>
+        </div>
       </aside>
 
       {/* ═══ MAIN CONTENT ═══ */}
