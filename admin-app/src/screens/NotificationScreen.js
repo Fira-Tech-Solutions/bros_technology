@@ -59,7 +59,7 @@ export default function NotificationScreen({ navigation }) {
       if (item.data?.listingId) {
         navigation.navigate("Properties", {
           screen: "ListingDetail",
-          params: { id: item.data.listingId },
+          params: { listingId: item.data.listingId },
         });
       }
       return;
@@ -73,7 +73,7 @@ export default function NotificationScreen({ navigation }) {
       if (item.data?.listingId) {
         navigation.navigate("Properties", {
           screen: "ListingDetail",
-          params: { id: item.data.listingId },
+          params: { listingId: item.data.listingId },
         });
       }
     } catch {}

@@ -239,7 +239,7 @@ export default function ListingDetailScreen({ route, navigation }) {
       setDynamicFields(data.attributes || {});
     } catch {
       Alert.alert("Error", "Failed to load product");
-      navigation.goBack();
+      navigation.navigate("PropertiesHome");
     } finally {
       setLoading(false);
     }
@@ -315,7 +315,7 @@ export default function ListingDetailScreen({ route, navigation }) {
       });
       await updateListing(listingId, formData);
       Alert.alert("Success", "Product updated", [
-        { text: "OK", onPress: () => navigation.goBack() },
+        { text: "OK", onPress: () => navigation.navigate("PropertiesHome") },
       ]);
     } catch (err) {
       const msg = err.response?.data?.error || err.response?.data?.details?.[0]?.message || "Failed to update product";
@@ -334,7 +334,7 @@ export default function ListingDetailScreen({ route, navigation }) {
         onPress: async () => {
           try {
             await deleteListing(listingId);
-            navigation.goBack();
+            navigation.navigate("PropertiesHome");
           } catch {
             Alert.alert("Error", "Failed to delete product");
           }
@@ -373,7 +373,7 @@ export default function ListingDetailScreen({ route, navigation }) {
           }}
         >
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("PropertiesHome")}
             style={{ flexDirection: "row", alignItems: "center" }}
           >
             <ChevronLeft size={20} color={colors.text} strokeWidth={1.75} />
