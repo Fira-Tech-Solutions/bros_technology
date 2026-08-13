@@ -20,6 +20,7 @@ import {
   BookOpen,
   FileText,
   ExternalLink,
+  Download,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -246,6 +247,31 @@ export default function Layout() {
             >
               <FileText size={20} style={{ flexShrink: 0 }} />
               <span>Client Handover</span>
+              <ExternalLink size={12} style={{ marginLeft: 'auto', opacity: 0.5 }} />
+            </a>
+            <a
+              href={DOC_LINKS.APK_DOWNLOAD}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                height: NAV_HEIGHT,
+                padding: '0 16px',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 14,
+                fontWeight: 500,
+                fontFamily: 'var(--font-body)',
+                color: 'var(--color-text-muted)',
+                textDecoration: 'none',
+                transition: 'all var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg)'; e.currentTarget.style.color = 'var(--color-text)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}
+            >
+              <Download size={20} style={{ flexShrink: 0 }} />
+              <span>Download APK</span>
               <ExternalLink size={12} style={{ marginLeft: 'auto', opacity: 0.5 }} />
             </a>
           </div>
