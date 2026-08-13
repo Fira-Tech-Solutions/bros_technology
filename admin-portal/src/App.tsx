@@ -32,6 +32,20 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+function AdminRoute({ children }) {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-bg">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'SUPER_ADMIN') return <Navigate to="/" replace />;
+  return children;
+}
+
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) {
@@ -92,10 +106,10 @@ function AppRoutes() {
         <Route path="properties" element={<Properties />} />
         <Route path="properties/new" element={<AddListing />} />
         <Route path="properties/:id" element={<ListingDetail />} />
-        <Route path="categories" element={<Categories />} />
-        <Route path="agents" element={<Agents />} />
+        <Route path="categories" element={<AdminRoute><Categories /></AdminRoute>} />
+        <Route path="agents" element={<AdminRoute><Agents /></AdminRoute>} />
         <Route path="syndication" element={<Syndication />} />
-        <Route path="finance" element={<Finance />} />
+        <Route path="finance" element={<AdminRoute><Finance /></AdminRoute>} />
         <Route path="settings" element={<Settings />} />
         <Route path="profile" element={<Profile />} />
       </Route>

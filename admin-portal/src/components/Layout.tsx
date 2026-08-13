@@ -29,10 +29,10 @@ import { DOC_LINKS } from '../constants/docLinks';
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/properties', icon: Package, label: 'Products' },
-  { to: '/categories', icon: FolderOpen, label: 'Categories' },
+  { to: '/categories', icon: FolderOpen, label: 'Categories', adminOnly: true },
   { to: '/syndication', icon: Send, label: 'Syndication' },
-  { to: '/finance', icon: DollarSign, label: 'Finance' },
-  { to: '/agents', icon: Users, label: 'Agents' },
+  { to: '/finance', icon: DollarSign, label: 'Finance', adminOnly: true },
+  { to: '/agents', icon: Users, label: 'Agents', adminOnly: true },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ];
 
@@ -163,7 +163,7 @@ export default function Layout() {
 
         {/* Nav */}
         <nav style={{ flex: 1, padding: '12px 8px', overflowY: 'auto' }}>
-          {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+          {NAV_ITEMS.filter(item => !item.adminOnly || user?.role === 'SUPER_ADMIN').map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
@@ -375,7 +375,7 @@ export default function Layout() {
           </button>
         </div>
         <nav style={{ flex: 1, padding: '12px 8px', overflowY: 'auto' }}>
-          {NAV_ITEMS.map(({ to, icon: Icon, label }) => (
+          {NAV_ITEMS.filter(item => !item.adminOnly || user?.role === 'SUPER_ADMIN').map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
               to={to}
