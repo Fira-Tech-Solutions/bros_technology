@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bros-technology.vercel.app/sitemap.xml
+Sitemap: https://www.broslaptop.com/sitemap.xml
