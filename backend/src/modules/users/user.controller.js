@@ -301,7 +301,7 @@ export async function forgotPassword(req, res, next) {
     if (!user) {
       return res.status(200).json({
         success: true,
-        message: 'If the email exists, a password reset code has been sent',
+        message: 'If an account exists with that email, a reset code has been sent',
       });
     }
 
@@ -325,7 +325,7 @@ export async function forgotPassword(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      message: 'If the email exists, a password reset code has been sent',
+      message: 'If an account exists with that email, a reset code has been sent',
     });
   } catch (error) {
     next(error);
