@@ -53,10 +53,7 @@ export type PropertyFilters = {
   limit?: string;
 };
 
-export type FilterOptions = Record<
-  string,
-  SchemaRule & { options: string[] }
->;
+export type FilterOptions = Record<string, SchemaRule & { options: string[] }>;
 
 export async function fetchProperties(params?: PropertyFilters): Promise<Property[]> {
   const searchParams = new URLSearchParams();
@@ -115,6 +112,27 @@ export const formatPrice = (n: number) =>
     currency: "ETB",
     maximumFractionDigits: 0,
   }).format(n);
+
+export function optimizeImageUrl(
+  url: string,
+  options?: { width?: number; quality?: number },
+): string {
+  if (!url || !url.includes("res.cloudinary.com")) return url;
+
+  const parts = url.split("/upload/");
+  if (parts.length !== 2) return url;
+
+  const transformations = [
+    "f_auto",
+    "q_auto",
+    options?.width ? `w_${options.width}` : null,
+    options?.quality ? `q_${options.quality}` : null,
+  ]
+    .filter(Boolean)
+    .join(",");
+
+  return `${parts[0]}/upload/${transformations}/${parts[1]}`;
+}
 
 const ICON_MAP: Record<string, string> = {
   smartphone: "Smartphone",

@@ -86,7 +86,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
       },
       {
-        title: "BROS Technology — Buy Laptops, iPhones, Samsung, iPads, MacBooks & Accessories in Ethiopia",
+        title:
+          "BROS Technology — Buy Laptops, iPhones, Samsung, iPads, MacBooks & Accessories in Ethiopia",
       },
       {
         name: "description",
@@ -100,7 +101,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { name: "theme-color", content: "#1878B4" },
       { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" },
-      { property: "og:title", content: "BROS Technology — Buy Laptops, iPhones, Samsung & Electronics in Ethiopia" },
+      {
+        property: "og:title",
+        content: "BROS Technology — Buy Laptops, iPhones, Samsung & Electronics in Ethiopia",
+      },
       {
         property: "og:description",
         content:
@@ -111,7 +115,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:locale", content: "en_ET" },
       { property: "og:site_name", content: "BROS Technology" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "BROS Technology — Buy Laptops, iPhones, Samsung & Electronics in Ethiopia" },
+      {
+        name: "twitter:title",
+        content: "BROS Technology — Buy Laptops, iPhones, Samsung & Electronics in Ethiopia",
+      },
       {
         name: "twitter:description",
         content:
@@ -125,6 +132,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       // would mark every page as a duplicate of the homepage.
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "preconnect", href: "https://res.cloudinary.com" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&family=Noto+Sans+Ethiopic:wght@300;400;500;600&family=Noto+Serif+Ethiopic:wght@400;600&display=swap",
@@ -144,6 +152,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "/images/hero/mobile-dark-828.avif",
         media: "(max-width: 767px)",
       },
+      { rel: "alternate", hrefLang: "en", href: SITE_URL },
+      { rel: "alternate", hrefLang: "om", href: SITE_URL },
+      { rel: "alternate", hrefLang: "am", href: SITE_URL },
+      { rel: "alternate", hrefLang: "x-default", href: SITE_URL },
     ],
   }),
   shellComponent: RootShell,

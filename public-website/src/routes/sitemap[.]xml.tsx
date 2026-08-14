@@ -8,32 +8,48 @@ type UrlEntry = {
   changefreq: "daily" | "weekly" | "monthly";
   priority: string;
   lastmod?: string;
+  images?: { loc: string; title?: string }[];
 };
 
 const escapeXml = (s: string) =>
-  s.replace(/[<>&'"]/g, (c) =>
-    ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c] as string,
+  s.replace(
+    /[<>&'"]/g,
+    (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", "'": "&apos;", '"': "&quot;" })[c] as string,
   );
 
 // encodeURIComponent leaves !'()* alone; percent-encoding them keeps the query
 // string free of characters that would otherwise need XML entity escaping.
 const encodeParam = (s: string) =>
-  encodeURIComponent(s).replace(/[!'()*]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`);
+  encodeURIComponent(s).replace(
+    /[!'()*]/g,
+    (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
 
 function renderSitemap(entries: UrlEntry[]) {
   const urls = entries
     .map(
-      ({ loc, changefreq, priority, lastmod }) =>
+      ({ loc, changefreq, priority, lastmod, images }) =>
         `  <url>\n` +
         `    <loc>${escapeXml(loc)}</loc>\n` +
         (lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : "") +
         `    <changefreq>${changefreq}</changefreq>\n` +
         `    <priority>${priority}</priority>\n` +
+        (images
+          ? images
+              .map(
+                (img) =>
+                  `    <image:image>\n` +
+                  `      <image:loc>${escapeXml(img.loc)}</image:loc>\n` +
+                  (img.title ? `      <image:title>${escapeXml(img.title)}</image:title>\n` : "") +
+                  `    </image:image>`,
+              )
+              .join("\n")
+          : "") +
         `  </url>`,
     )
     .join("\n");
 
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls}\n</urlset>\n`;
 }
 
 export const Route = createFileRoute("/sitemap.xml")({
@@ -69,6 +85,7 @@ export const Route = createFileRoute("/sitemap.xml")({
             lastmod: today,
             changefreq: "daily",
             priority: "0.7",
+            images: p.hero ? [{ loc: p.hero, title: p.title }] : undefined,
           });
         }
 
