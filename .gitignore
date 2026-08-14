@@ -46,6 +46,13 @@ coverage/
 # Linux
 local-credentials.json
 
+# Generated outputs (keep local, don't track)
+temp/
+DataBase/
+.claude/
+telegram-migration/output/
+docs-site/site/
+
 # Misc
 .cache/
 *.tmp
