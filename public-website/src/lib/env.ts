@@ -1,6 +1,6 @@
 export const env = {
   API_URL: import.meta.env.VITE_API_URL || "http://localhost:5000",
-  SITE_URL: (import.meta.env.VITE_SITE_URL || "https://bros-technology.vercel.app").replace(/\/$/, ""),
+  SITE_URL: (import.meta.env.VITE_SITE_URL || "https://broslaptop.com").replace(/\/$/, ""),
 } as const;
 
 /** Absolute site origin, no trailing slash. Use for canonical, og:url, and JSON-LD. */
