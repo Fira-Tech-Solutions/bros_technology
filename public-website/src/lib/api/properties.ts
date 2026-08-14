@@ -76,6 +76,7 @@ export async function fetchProperties(params?: PropertyFilters): Promise<Propert
   if (params?.connectivity) searchParams.set("connectivity", params.connectivity);
   if (params?.caseSize) searchParams.set("caseSize", params.caseSize);
   if (params?.limit) searchParams.set("limit", params.limit);
+  else searchParams.set("limit", "300");
 
   const qs = searchParams.toString();
   const url = `${API_BASE}/api/public/listings${qs ? `?${qs}` : ""}`;

@@ -106,7 +106,7 @@ export async function getPublicListings(req, res, next) {
 
     const listings = await prisma.listing.findMany({
       where,
-      take: Math.min(100, parseInt(limit, 10) || 50),
+      take: Math.min(300, parseInt(limit, 10) || 200),
       orderBy: { createdAt: 'desc' },
       include: {
         category: { select: { id: true, name: true, displayName: true, icon: true } },
