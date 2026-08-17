@@ -94,6 +94,18 @@ type TranslationKeys = {
   "404.subtitle": string;
   "404.description": string;
   "404.goHome": string;
+
+  // About section
+  "about.badge": string;
+  "about.title": string;
+  "about.p1": string;
+  "about.p2": string;
+  "about.offerHeading": string;
+  "about.offer1": string;
+  "about.offer2": string;
+  "about.offer3": string;
+  "about.offer4": string;
+  "about.offer5": string;
 };
 
 export const translations: Record<Locale, TranslationKeys> = {
@@ -171,6 +183,19 @@ export const translations: Record<Locale, TranslationKeys> = {
     "404.subtitle": "Page not found",
     "404.description": "The page you\u2019re looking for doesn\u2019t exist or has been moved.",
     "404.goHome": "Go home",
+
+    "about.badge": "About BROS Technology",
+    "about.title": "Your Trusted Electronics Store in Addis Ababa",
+    "about.p1":
+      "BROS Technology is Ethiopia\u2019s premier destination for laptops, smartphones, tablets, and accessories. Whether you\u2019re looking for a brand-new MacBook, a Samsung Galaxy, an iPhone, or a reliable Dell laptop for work, we have something for every budget and need.",
+    "about.p2":
+      "All our products come with warranty, and our expert team in Addis Ababa is ready to help you find the perfect device. We stock top brands including Apple, Samsung, Dell, Lenovo, HP, and more.",
+    "about.offerHeading": "What We Offer",
+    "about.offer1": "Laptops \u2014 Dell, Lenovo, HP, MacBook for students and professionals",
+    "about.offer2": "iPhones & Samsung \u2014 Latest models with warranty",
+    "about.offer3": "iPads & MacBooks \u2014 For creatives and students",
+    "about.offer4": "AirPods & Smartwatches \u2014 Premium audio and wearables",
+    "about.offer5": "Nationwide delivery across Ethiopia",
   },
 
   om: {
@@ -247,6 +272,19 @@ export const translations: Record<Locale, TranslationKeys> = {
     "404.subtitle": "Fuula hin argamne",
     "404.description": "Fuula barbaadduun hin jiru ykn of irra jijjiiramee jira.",
     "404.goHome": "Maqaa deebi\u2019i",
+
+    "about.badge": "BROS Technology Waliin",
+    "about.title": "Maqaan Keessan Elektirooniksii Amanamaa Addis Ababa Keessa",
+    "about.p1":
+      "BROS Technology Etiyophiyaa keessa elektirooniksii, laptoppii, smartfoonii, teebilii, fi jecnulli keessa bu\u2019aa guyyaa ta\u2019u. MacBook haaraa, Samsung Galaxy, iPhone, ykn Dell laptoppii amanamaa barbaadde, karaa hundaa fi needs hundaa qofa jechuun kan si\u2019ifame.",
+    "about.p2":
+      "Oonuu hunduu warantii waliin argamu, fi gareen gochaanii Addis Ababa keessa jiru ati device sirrii barbaadduuf si\u2019ifame. Apple, Samsung, Dell, Lenovo, HP fi kan kaawu irratti oonuu godhina.",
+    "about.offerHeading": "Maal Arginna",
+    "about.offer1": "Laptoppii \u2014 Dell, Lenovo, HP, MacBook barattoota fi hojjettootaaf",
+    "about.offer2": "iPhones & Samsung \u2014 Fooyya\u2019ama haaraa warantii waliin",
+    "about.offer3": "iPads & MacBooks \u2014 Abbaa karoottii fi barattootaaf",
+    "about.offer4": "AirPods & Smartwatches \u2014 Soodduu fi waan ulfataa",
+    "about.offer5": "Ergina biyya bulchiinsa Etiyophiyaa keessaa",
   },
 
   am: {
@@ -340,6 +378,26 @@ export const translations: Record<Locale, TranslationKeys> = {
     "404.description":
       "\u1273\u12E9\u1228\u1349\u1293\u1295 \u12EB\u1233\u12AB\u1293\u1295\u12E8\u1295\u1235\u1276 \u12E8\u1218\u12F5\u1228\u1349\u1228\u1276 \u12A8\u12F5\u1325\u1233\u1295 \u12E8\u1273\u1308\u1237\u1233\u1228 \u12E8\u121B\u1293\u12CD\u1295\u1228\u12F5\u1323\u1228\u12CD\u1228\u1295\u1295.",
     "404.goHome": "\u1230\u1295\u12CD\u12E8",
+
+    "about.badge": "\u1265\u1295\u12CB\u1295\u1293 \u1273\u1228\u1228\u1235\u1293\u1295",
+    "about.title":
+      "\u1265\u1293\u12D3\u12E8\u1295 \u1265\u1295\u12CB\u1295\u1293 \u1285\u12A8 \u12A6\u122A\u122B\u1228\u122A\u134D \u12E8\u1320\u1293\u12CD\u1295\u1297\u12EB",
+    "about.p1":
+      "\u1265\u1295\u12CB\u1295\u1293 \u1273\u1228\u1228\u1235\u1293\u1295 \u12E8\u1320\u1293\u12CD\u1295\u1297\u12EB \u127A\u1295\u1295\u122A\u1228 \u12EB\u1233\u12AB\u1293\u1295 \u1265\u1295\u12CB\u1295\u1293 \u1270\u12AD\u1293\u1295\u1348\u1295 \u1265\u1295\u12CB\u1295\u1293 \u12A0\u1295\u12F3\u1237\u1228\u1235\u1295\u1349\u1295 \u1260\u124D\u1230\u1295\u1293\u1295 \u12E8\u1218\u1295\u12F5\u1233\u1295\u1297\u12EB\u1295. MacBook \u1270\u1228\u1276\u12CD\u122A\u1295\u123B\u1228\u1295\u1295\u1285\u12A8\u1235 Samsung Galaxy \u1285\u12A8\u1235 iPhone \u1285\u12A8\u1235 \u12A0\u1295\u12F3\u1237\u1228\u1235 \u12D3\u1229\u1295 \u1273\u1229\u1295 Dell laptop \u1270\u12AD\u1295\u1231\u1237\u1228\u1235\u1295\u1349\u1295 \u1270\u12AD\u122A\u1295\u123B\u1228\u1295\u1295\u1285\u12A8\u1235 \u1265\u1293\u12D3\u12E8\u1295 \u12A6\u122D\u1293\u1228\u1295\u1349\u1295 \u1260\u124D\u1293\u1228\u1295\u1349\u1295 \u12A0\u1295\u12F3\u1237\u1228\u1235 \u1290\u1295\u1237\u1295\u1293.",
+    "about.p2":
+      "\u1265\u1295\u12CB\u1295\u1293\u1295\u1349\u1295 \u1273\u1228\u1228\u1235\u1293\u1295\u1349\u1295 \u1265\u1293\u12D3\u12E8\u1295 \u1265\u1295\u12CB\u1295\u1293 \u1273\u1228\u1228\u1235\u1293\u1295\u1295\u1349\u1295\u12E8 \u1270\u12AD\u1295\u1231\u1237\u1228\u1235\u1295\u1349\u1295 \u1290\u1295\u1237\u1295\u1293 \u12A6\u122A\u122B\u1228\u122A\u134D \u12E8\u1320\u1293\u12CD\u1295\u1297\u12EB \u12A0\u1295\u12F3\u1237\u1228\u1235 \u1260\u1293\u1234\u1295\u1295\u1295\u1285\u12A8\u1235 \u1265\u1293\u12D3\u12E8\u1295 \u1285\u12A8\u1235 \u1265\u1295\u12CB\u1295\u1293\u1295\u1349\u1295 \u1260\u124D\u1230\u1295\u1293\u1295 \u12A0\u1295\u12F3\u1237\u1228\u1235 \u1290\u1295. Apple, Samsung, Dell, Lenovo, HP \u1260\u124D\u1293\u1293\u1228\u1295\u1349\u1295\u1295\u1349\u1295 \u1265\u1293\u12D3\u12E8\u1295 \u1270\u1228\u1276\u12CD\u122A\u1295\u123B\u1228\u1295\u1295.",
+    "about.offerHeading":
+      "\u1270\u12AD\u1295\u1231\u1237\u1228\u1235 \u1273\u1295\u1293\u1295\u1349\u1295",
+    "about.offer1":
+      "\u1265\u1295\u12CB\u1295\u1293\u1295\u1349\u1295 \u2014 Dell, Lenovo, HP, MacBook \u1265\u1295\u12CB\u1295\u1293\u1295\u1349\u1295 \u1260\u124D\u1293\u1228\u1295\u1349\u1295\u1295\u1349\u1295\u1296\u1295",
+    "about.offer2":
+      "iPhones & Samsung \u2014 \u1270\u1228\u1276\u12CD\u122A\u1295\u123B\u1228\u1295\u1295 \u1273\u1228\u1228\u1235\u1293\u1295\u1295\u1349\u1295\u12E8",
+    "about.offer3":
+      "iPads & MacBooks \u2014 \u1270\u1228\u1276\u12CD\u122A \u12A0\u1293\u1293\u1295\u1295 \u1260\u124D\u1293\u1228\u1295\u1349\u1295\u1295\u1349\u1295\u1296\u1295",
+    "about.offer4":
+      "AirPods & Smartwatches \u2014 \u1273\u1229\u1295\u1349\u1295 \u12A6\u1229\u1295\u1349\u1295 \u1260\u124D\u1293\u1228\u1295\u1349\u1295\u1295\u1349\u1295\u1296\u1295",
+    "about.offer5":
+      "\u12E8\u1320\u1293\u12CD\u1295\u1297\u12EB \u1265\u1293\u12D3\u12E8\u1295 \u1265\u1233\u1295\u1295\u1349\u1228\u1293\u1295\u1295\u1349\u1295",
   },
 };
 

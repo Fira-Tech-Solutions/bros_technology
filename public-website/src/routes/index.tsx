@@ -427,45 +427,34 @@ function Index() {
               <div className="grid gap-10 lg:grid-cols-2">
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] text-brand">
-                    About BROS Technology
+                    {t("about.badge")}
                   </p>
-                  <h2 className="mt-3 font-display text-2xl md:text-4xl">
-                    Your Trusted Electronics Store in Addis Ababa
-                  </h2>
-                  <p className="mt-4 leading-relaxed text-muted-foreground">
-                    BROS Technology is Ethiopia&apos;s premier destination for laptops, smartphones,
-                    tablets, and accessories. Whether you&apos;re looking for a brand-new MacBook, a
-                    Samsung Galaxy, an iPhone, or a reliable Dell laptop for work, we have something
-                    for every budget and need.
-                  </p>
-                  <p className="mt-3 leading-relaxed text-muted-foreground">
-                    All our products come with warranty, and our expert team in Addis Ababa is ready
-                    to help you find the perfect device. We stock top brands including Apple,
-                    Samsung, Dell, Lenovo, HP, and more.
-                  </p>
+                  <h2 className="mt-3 font-display text-2xl md:text-4xl">{t("about.title")}</h2>
+                  <p className="mt-4 leading-relaxed text-muted-foreground">{t("about.p1")}</p>
+                  <p className="mt-3 leading-relaxed text-muted-foreground">{t("about.p2")}</p>
                 </div>
                 <div className="space-y-4">
-                  <h3 className="font-display text-lg">What We Offer</h3>
+                  <h3 className="font-display text-lg">{t("about.offerHeading")}</h3>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                      Laptops — Dell, Lenovo, HP, MacBook for students and professionals
+                      {t("about.offer1")}
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                      iPhones & Samsung — Latest models with warranty
+                      {t("about.offer2")}
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                      iPads & MacBooks — For creatives and students
+                      {t("about.offer3")}
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                      AirPods & Smartwatches — Premium audio and wearables
+                      {t("about.offer4")}
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                      Nationwide delivery across Ethiopia
+                      {t("about.offer5")}
                     </li>
                   </ul>
                 </div>
