@@ -8,7 +8,7 @@ export const LOCALES: {
 }[] = [
   { code: "en", label: "English", nativeLabel: "English", script: "latin" },
   { code: "om", label: "Afaan Oromoo", nativeLabel: "Afaan Oromoo", script: "latin" },
-  { code: "am", label: "Amharic", nativeLabel: "\u1260\u121A\u1295\u1348\u1293", script: "geez" },
+  { code: "am", label: "Amharic", nativeLabel: "\u1260\u121A\u1235\u1348\u1293", script: "geez" },
 ];
 
 type TranslationKeys = {
