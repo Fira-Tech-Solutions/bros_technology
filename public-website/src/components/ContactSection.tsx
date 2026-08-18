@@ -100,12 +100,8 @@ export function ContactSection() {
       <div className="rounded-3xl border border-border bg-card p-8 md:p-16">
         {/* Header */}
         <div className="mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-brand">
-            {t("footer.badge")}
-          </p>
-          <h2 className="mt-3 font-display text-3xl md:text-5xl">
-            {t("footer.title")}
-          </h2>
+          <p className="text-xs uppercase tracking-[0.2em] text-brand">{t("footer.badge")}</p>
+          <h2 className="mt-3 font-display text-3xl md:text-5xl">{t("footer.title")}</h2>
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[1fr_1px_1fr]">
@@ -182,10 +178,7 @@ export function ContactSection() {
               <h3 className="mb-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">
                 Email
               </h3>
-              <a
-                href={`mailto:${CONTACT.email}`}
-                className="flex items-center gap-3 group"
-              >
+              <a href={`mailto:${CONTACT.email}`} className="flex items-center gap-3 group">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand transition-colors group-hover:bg-brand/20">
                   <Mail className="h-4 w-4" />
                 </span>

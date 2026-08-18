@@ -175,11 +175,17 @@ export function FilterPanel({
   onChange,
   onReset,
   filterOptions,
+  categories,
+  selectedCategory,
+  onCategoryChange,
 }: {
   value: FilterState;
   onChange: (next: FilterState) => void;
   onReset: () => void;
   filterOptions?: FilterOptions;
+  categories?: string[];
+  selectedCategory?: string;
+  onCategoryChange?: (category: string) => void;
 }) {
   const { t } = useLocale();
   const patch = (p: Partial<FilterState>) => onChange({ ...value, ...p });
@@ -193,6 +199,31 @@ export function FilterPanel({
 
   return (
     <div className="space-y-6">
+      {/* Category Tabs */}
+      {categories && categories.length > 0 && onCategoryChange && (
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Category</p>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => {
+              const isActive = (selectedCategory || "All") === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => onCategoryChange(cat)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                    isActive
+                      ? "bg-brand text-primary-foreground"
+                      : "border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Price Range */}
       <FilterSection label={t("filter.price")}>
         <div className="flex items-baseline justify-between">

@@ -14,7 +14,7 @@ const LocaleContext = createContext<LocaleContextValue | undefined>(undefined);
 function getStoredLocale(): Locale | null {
   if (typeof window === "undefined") return null;
   const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored === "en" || stored === "om" || stored === "am") return stored;
+  if (stored === "en") return stored;
   return null;
 }
 

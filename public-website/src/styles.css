@@ -287,3 +287,8 @@ html[lang="om"] body {
     .card-lift:hover { transform: none; }
   }
 }
+
+/* Amharic locale: apply Noto Sans Ethiopic to all text */
+html[lang="am"] {
+  font-family: "Noto Sans Ethiopic", "Inter", ui-sans-serif, system-ui, sans-serif;
+}

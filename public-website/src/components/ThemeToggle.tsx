@@ -20,7 +20,11 @@ export function ThemeToggle({ className }: { className?: string }) {
         transition={{ type: "spring", stiffness: 260, damping: 20 }}
         className="absolute"
       >
-        {isDark ? <Sun className="h-4 w-4 text-brand" /> : <Moon className="h-4 w-4 text-primary" />}
+        {isDark ? (
+          <Sun className="h-4 w-4 text-brand" />
+        ) : (
+          <Moon className="h-4 w-4 text-primary" />
+        )}
       </motion.span>
     </button>
   );

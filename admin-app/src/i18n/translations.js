@@ -104,7 +104,7 @@ const translations = {
   am: {
     // Navigation
     dashboard: "ዳሽቦርድ",
-    properties: "נכסים",
+    properties: "ዝርዝሮች",
     settings: "ቅንብሮች",
     syndication: "የመዝገቢ ስርጭት",
 
@@ -114,7 +114,7 @@ const translations = {
     email: "ኢሜይል",
     password: "የይለፍ ቃል",
     loginTitle: "እንኳን በደህና ተመለስ",
-    loginSubtitle: "�ዕስ መግለጫ ላይ ይግቡ",
+    loginSubtitle: "መ账户 ላይ ይግቡ",
     loginButton: "ይግቡ",
     invalidCredentials: "የተሳሳተ ኢሜይል ወይም የይለፍ ቃል",
     sessionExpired: "ክፍል ጊዜው አብቅቧል። እባክዎን እንደገና ይግቡ።",
@@ -129,10 +129,10 @@ const translations = {
     viewSyndicationLogs: "የስርጭት መዝገቦችን ይመልከቱ",
 
     // Properties
-    propertiesTitle: "ሁሉም ንቁ ሀረጎች",
+    propertiesTitle: "ሁሉም ዝርዝሮች",
     createListing: "ዝርዝር ይፍጠሩ",
     search: "ፈልግ",
-    noResults: "ንቁ ሀረጎች አልተገኙም",
+    noResults: "ዝርዝሮች አልተገኙም",
     pullToRefresh: "ለመнов ይጎትቱ",
     loadingMore: "ተጨማሪ በመጫን ላይ...",
 
@@ -146,8 +146,8 @@ const translations = {
     price: "ዋጋ",
     city: "ከተማ",
     neighborhood: "አካባቢ",
-    category: "ምድር",
-    selectCategory: "ምድር ይምረጡ",
+    category: "አማራጭ",
+    selectCategory: "አማራጭ ይምረጡ",
     bedrooms: "የመኝታ ክፍሎች",
     bathrooms: "መታጠቢያ ክፍሎች",
     area: "ስፋት (ስ.ሜ)",
@@ -163,13 +163,13 @@ const translations = {
 
     // Settings
     settingsTitle: "ቅንብሮች",
-    appearance: "አጋጣሚ",
+    appearance: "አቀራረብ",
     language: "ቋንቋ",
     darkMode: "ጥላ ዘይቤ",
     lightMode: "የብርሀን ዘይቤ",
     theme: "ዘይቤ",
     appLanguage: "የመተግበሪያ ቋንቋ",
-    version: "ስርጭት",
+    version: "ፓርሽን",
     about: "ስለ",
 
     // Syndication
@@ -190,9 +190,9 @@ const translations = {
 
     // Common
     save: "አስቀምጥ",
-    cancel: "ሰርዝ",
+    cancel: "ተወው",
     delete: "ሰርዝ",
-    edit: "ቀይሽ",
+    edit: "አስተካክል",
     close: "ዝጋ",
     error: "ስህተት",
     success: "ተሳክቷል",
@@ -250,8 +250,8 @@ const translations = {
     neighborhood: "Naannoo",
     category: "Gosa",
     selectCategory: "Gosa filadhu",
-    bedrooms: "Kutaa maatii",
-    bathrooms: "Kutaa raabii",
+    bedrooms: "Kutaa humnaa",
+    bathrooms: "Basii",
     area: "Bal'ina (m2)",
     selectImages: "Fakkii filadhu",
     uploadImages: "Fakkii hordofi",
@@ -267,11 +267,11 @@ const translations = {
     settingsTitle: "Qindaayina",
     appearance: "Mul'ata",
     language: "Afaan",
-    darkMode: "Gaabina",
-    lightMode: "Ifa",
-    theme: "Gaabina",
+    darkMode: "Gaabbina",
+    lightMode: "Ifaa",
+    theme: "Dhangii",
     appLanguage: "Afaan fayyilamaa",
-    version: "Lakkoofsa",
+    version: "Vershinii",
     about: "Waa'ee",
 
     // Syndication

@@ -1,11 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useCallback, useEffect, useRef } from "react";
-import { ArrowLeft, MapPin, Phone, MessageCircle, Send, Check, X, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  MapPin,
+  Phone,
+  MessageCircle,
+  Send,
+  Check,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { ErrorState } from "@/components/ErrorState";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { ProductJsonLd } from "@/components/JsonLd";
+import { RelatedProducts } from "@/components/RelatedProducts";
 import { useProperty } from "@/hooks/use-properties";
 import { formatPrice, trackInquiryClick, fetchProperty } from "@/lib/api/properties";
 import { useLocale } from "@/providers/locale";
@@ -29,7 +40,10 @@ export const Route = createFileRoute("/property/$id")({
 
     if (!p) {
       return {
-        meta: [{ title: "Product Not Found — BROS Technology" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Product Not Found — BROS Technology" },
+          { name: "robots", content: "noindex" },
+        ],
         links: [{ rel: "canonical", href: url }],
       };
     }
@@ -39,7 +53,10 @@ export const Route = createFileRoute("/property/$id")({
       p.description?.trim() ||
       `Buy ${p.title} at BROS Technology in Addis Ababa, Ethiopia. ${formatPrice(p.price)}. Warranty included.`;
     const image = absoluteUrl(p.hero || p.gallery?.[0] || "/images/hero/desktop-dark-1920.jpg");
-    const availability = (p.stockQuantity || 0) > 0 || p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+    const availability =
+      (p.stockQuantity || 0) > 0 || p.inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock";
 
     return {
       meta: [
@@ -164,7 +181,11 @@ function Detail() {
         description={p.description?.trim() || undefined}
         brand={p.brand || undefined}
         condition={p.attributes?.condition || undefined}
-        availability={(p.stockQuantity || 0) > 0 || p.inStock ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"}
+        availability={
+          (p.stockQuantity || 0) > 0 || p.inStock
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock"
+        }
         url={`${SITE_URL}/property/${id}`}
       />
       <Nav />
@@ -334,6 +355,9 @@ function Detail() {
               </div>
             </div>
           )}
+
+          {/* Related Products */}
+          <RelatedProducts currentId={id} category={p.category} />
         </div>
 
         {/* Desktop sticky order sidebar */}
@@ -460,7 +484,10 @@ function Detail() {
             {/* Prev */}
             {p.gallery.length > 1 && (
               <button
-                onClick={(e) => { e.stopPropagation(); prevImage(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevImage();
+                }}
                 className="absolute left-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors md:left-6"
                 aria-label="Previous image"
               >
@@ -483,7 +510,10 @@ function Detail() {
             {/* Next */}
             {p.gallery.length > 1 && (
               <button
-                onClick={(e) => { e.stopPropagation(); nextImage(); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextImage();
+                }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 z-10 rounded-full bg-white/10 p-3 text-white hover:bg-white/20 transition-colors md:right-6"
                 aria-label="Next image"
               >
@@ -497,9 +527,14 @@ function Detail() {
                 {p.gallery.map((src, i) => (
                   <button
                     key={i}
-                    onClick={(e) => { e.stopPropagation(); setLightboxIndex(i); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLightboxIndex(i);
+                    }}
                     className={`h-12 w-12 overflow-hidden rounded-lg border-2 transition-all ${
-                      i === lightboxIndex ? "border-white scale-110" : "border-white/30 opacity-60 hover:opacity-100"
+                      i === lightboxIndex
+                        ? "border-white scale-110"
+                        : "border-white/30 opacity-60 hover:opacity-100"
                     }`}
                   >
                     <img src={src} alt="" className="h-full w-full object-cover" />
