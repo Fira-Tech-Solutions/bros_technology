@@ -586,11 +586,10 @@ function Catalog() {
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.2 }}
-        className="fixed bottom-20 right-4 z-40 mb-safe flex items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
+        className="fixed bottom-20 right-4 z-40 mb-safe flex h-12 w-12 items-center justify-center rounded-full bg-gradient-brand text-primary-foreground shadow-glow md:hidden"
+        aria-label={t("catalog.filters")}
       >
-        <SlidersHorizontal className="h-4 w-4" />
-        {t("catalog.filters")}
-        {activeCount > 0 ? ` (${activeCount} ${t("catalog.active")})` : ""}
+        <SlidersHorizontal className="h-5 w-5" />
       </motion.button>
 
       {/* Mobile filter sheet */}
