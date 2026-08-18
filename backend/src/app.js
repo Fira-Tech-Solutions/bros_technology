@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
@@ -46,20 +45,30 @@ const devOrigins = [
 // Production origins are always allowed; env var and dev origins are merged in
 const allowedOrigins = [...new Set([...productionOrigins, ...allowedOriginsEnv, ...devOrigins])];
 
-// CORS MUST be registered before helmet() — helmet can strip CORS headers
-app.use(cors({
-  origin(origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    if (/^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin)) return callback(null, true);
-    if (/^http:\/\/10\.\d+\.\d+\.\d+:\d+$/.test(origin)) return callback(null, true);
-    if (process.env.NODE_ENV === 'development') return callback(null, true);
-    callback(null, false);
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+// CORS — MUST be registered before helmet()
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowed = allowedOrigins.includes(origin) ||
+    /^http:\/\/192\.168\.\d+\.\d+:\d+$/.test(origin) ||
+    /^http:\/\/10\.\d+\.\d+\.\d+:\d+$/.test(origin) ||
+    (!origin && process.env.NODE_ENV !== 'production');
+
+  if (allowed && origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (allowed && !origin) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  }
+
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With');
+  res.setHeader('Vary', 'Origin');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 app.use(helmet());
 
