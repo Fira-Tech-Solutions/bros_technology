@@ -140,8 +140,8 @@ html.light {
     scroll-behavior: smooth;
     /* Keeps anchor targets clear of the fixed header. */
     scroll-padding-top: 6rem;
-    /* Prevent any element from causing horizontal scroll on mobile. */
-    overflow-x: hidden;
+    /* Prevent horizontal scroll without breaking position:sticky. */
+    overflow-x: clip;
   }
   body {
     background: var(--color-background);
@@ -153,8 +153,8 @@ html.light {
     /* Prevent Android browsers from auto-zooming on input focus or text scaling. */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* Safety: prevent horizontal overflow from any child element. */
-    overflow-x: hidden;
+    /* Safety: prevent horizontal overflow without breaking sticky. */
+    overflow-x: clip;
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
