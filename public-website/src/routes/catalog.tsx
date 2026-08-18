@@ -586,7 +586,7 @@ function Catalog() {
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.2 }}
-        className="fixed bottom-20 left-1/2 z-40 mb-safe flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
+        className="fixed bottom-20 right-4 z-40 mb-safe flex items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
       >
         <SlidersHorizontal className="h-4 w-4" />
         {t("catalog.filters")}
