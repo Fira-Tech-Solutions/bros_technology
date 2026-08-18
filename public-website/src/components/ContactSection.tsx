@@ -96,8 +96,8 @@ export function ContactSection() {
   ];
 
   return (
-    <section id="contact" className="mx-auto max-w-7xl px-6 py-20">
-      <div className="rounded-3xl border border-border bg-card p-8 md:p-16">
+    <section id="contact" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 md:py-20">
+      <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 md:p-16">
         {/* Header */}
         <div className="mb-12">
           <p className="text-xs uppercase tracking-[0.2em] text-brand">{t("footer.badge")}</p>
@@ -200,7 +200,7 @@ export function ContactSection() {
               <h3 className="mb-5 text-xs uppercase tracking-[0.2em] text-muted-foreground">
                 Follow Us
               </h3>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
                 {SOCIALS.map((s) => (
                   <a
                     key={s.name}

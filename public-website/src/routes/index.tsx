@@ -78,11 +78,11 @@ function StatsSection() {
   ];
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16">
-      <div className="rounded-3xl border border-border bg-card p-8 md:p-12">
+    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
+      <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 md:p-12">
         <div className="mb-8 text-center">
           <p className="text-xs uppercase tracking-[0.25em] text-brand">Why Choose Us</p>
-          <h2 className="mt-3 font-display text-3xl md:text-5xl">Trusted by Thousands</h2>
+          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">Trusted by Thousands</h2>
           <p className="mt-3 max-w-xl mx-auto text-muted-foreground">
             We provide genuine, brand-new electronics with warranty and reliable after-sales support
             across Ethiopia.
@@ -107,7 +107,7 @@ function StatsSection() {
           ))}
         </div>
 
-        <div className="mt-10 grid grid-cols-3 gap-4 text-center">
+        <div className="mt-10 grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
           {[
             { icon: "🛡️", text: "Warranty on all products" },
             { icon: "🚚", text: "Fast delivery nationwide" },
@@ -164,11 +164,11 @@ function TestimonialsSection() {
   ];
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16">
+    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
       <RevealSection>
         <div className="mb-10 text-center">
           <p className="text-xs uppercase tracking-[0.25em] text-brand">Testimonials</p>
-          <h2 className="mt-3 font-display text-3xl md:text-5xl">What Our Customers Say</h2>
+          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">What Our Customers Say</h2>
         </div>
       </RevealSection>
 
@@ -317,14 +317,14 @@ function Index() {
       {/* Content scrolls over the sticky hero */}
       <div className="relative z-10 bg-background">
         {/* CATEGORIES */}
-        <section id="categories" className="mx-auto max-w-7xl px-6 py-16">
+        <section id="categories" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
           <RevealSection>
             <div className="flex items-end justify-between gap-6">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   {t("categories.browse")}
                 </p>
-                <h2 className="mt-2 font-display text-3xl md:text-4xl">{t("categories.title")}</h2>
+                <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl">{t("categories.title")}</h2>
               </div>
             </div>
           </RevealSection>
@@ -337,7 +337,7 @@ function Index() {
                   <Link
                     to="/catalog"
                     search={{ category: c.name === "All" ? undefined : c.displayName }}
-                    className="card-lift flex items-center gap-3 whitespace-nowrap rounded-2xl border border-border bg-card px-5 py-5"
+                    className="card-lift flex items-center gap-3 whitespace-nowrap rounded-2xl border border-border bg-card px-4 py-4 sm:px-5 sm:py-5"
                   >
                     <IconComp size={22} className="text-brand shrink-0" />
                     <span className="font-display text-base md:text-lg">{c.displayName}</span>
@@ -349,14 +349,14 @@ function Index() {
         </section>
 
         {/* FEATURED */}
-        <section id="featured" className="mx-auto max-w-7xl px-6 py-16">
+        <section id="featured" className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
           <RevealSection>
             <div className="mb-10 flex items-end justify-between">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   {t("featured.badge")}
                 </p>
-                <h2 className="mt-2 font-display text-3xl md:text-5xl">{t("featured.title")}</h2>
+                <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-5xl">{t("featured.title")}</h2>
               </div>
               <Link
                 to="/catalog"
@@ -421,15 +421,15 @@ function Index() {
         <TestimonialsSection />
 
         {/* SEO CONTENT */}
-        <section className="mx-auto max-w-7xl px-6 py-16">
+        <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
           <RevealSection>
-            <div className="rounded-3xl border border-border bg-card p-8 md:p-12">
+            <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 md:p-12">
               <div className="grid gap-10 lg:grid-cols-2">
                 <div>
                   <p className="text-xs uppercase tracking-[0.25em] text-brand">
                     {t("about.badge")}
                   </p>
-                  <h2 className="mt-3 font-display text-2xl md:text-4xl">{t("about.title")}</h2>
+                  <h2 className="mt-3 font-display text-xl sm:text-2xl md:text-4xl">{t("about.title")}</h2>
                   <p className="mt-4 leading-relaxed text-muted-foreground">{t("about.p1")}</p>
                   <p className="mt-3 leading-relaxed text-muted-foreground">{t("about.p2")}</p>
                 </div>

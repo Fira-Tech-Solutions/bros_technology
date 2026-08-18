@@ -83,7 +83,7 @@ export function Nav() {
       </div>
 
       {/* Mobile bottom dock */}
-      <nav className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full glass border border-border px-2 py-2 md:hidden">
+      <nav className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-0.5 rounded-full glass border border-border px-1.5 py-2 sm:gap-1 sm:px-2 md:hidden">
         <DockLink to="/" icon={<Home className="h-5 w-5" />} label={t("nav.home")} />
         <DockLink
           to="/catalog"
@@ -92,7 +92,7 @@ export function Nav() {
         />
         <a
           href="#contact"
-          className="flex flex-col items-center gap-0.5 rounded-full px-4 py-1.5 text-[10px] text-muted-foreground"
+          className="flex flex-col items-center gap-0.5 rounded-full px-2.5 py-1.5 text-[10px] text-muted-foreground sm:px-4"
         >
           <Phone className="h-5 w-5" /> {t("nav.contact")}
         </a>
@@ -101,7 +101,7 @@ export function Nav() {
             href={s.shopGoogleMapUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center gap-0.5 rounded-full px-4 py-1.5 text-[10px] text-muted-foreground"
+            className="flex flex-col items-center gap-0.5 rounded-full px-2.5 py-1.5 text-[10px] text-muted-foreground sm:px-4"
           >
             <MapPin className="h-5 w-5" /> Map
           </a>
@@ -117,7 +117,7 @@ function DockLink({ to, icon, label }: { to: string; icon: React.ReactNode; labe
       to={to}
       activeOptions={{ exact: to === "/" }}
       activeProps={{ className: "bg-accent text-foreground" }}
-      className="flex flex-col items-center gap-0.5 rounded-full px-4 py-1.5 text-[10px] text-muted-foreground transition-colors"
+      className="flex flex-col items-center gap-0.5 rounded-full px-2.5 py-1.5 text-[10px] text-muted-foreground transition-colors sm:px-4"
     >
       {icon}
       {label}

@@ -315,7 +315,7 @@ function Catalog() {
     <div className="min-h-screen bg-background pb-32 pt-24 md:pt-32">
       <CollectionPageJsonLd />
       <Nav />
-      <div className="mx-auto max-w-7xl px-5 md:px-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-5 md:px-6">
         <Breadcrumbs
           items={
             category === "All"
@@ -329,7 +329,7 @@ function Catalog() {
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {t("catalog.badge")}
             </p>
-            <h1 className="mt-2 font-display text-4xl md:text-6xl">
+            <h1 className="mt-2 font-display text-3xl sm:text-4xl md:text-6xl">
               {category === "All" ? t("catalog.allProducts") : category}
             </h1>
             <motion.p
@@ -357,7 +357,7 @@ function Catalog() {
                 value={qInput}
                 onChange={(e) => setQInput(e.target.value)}
                 placeholder={t("catalog.searchPlaceholder")}
-                className="w-full rounded-full border border-border bg-card py-3 pl-11 pr-24 text-sm transition-colors focus:border-brand focus:outline-none"
+                className="w-full rounded-full border border-border bg-card py-3 pl-11 pr-20 text-sm transition-colors focus:border-brand focus:outline-none sm:pr-24"
               />
               <AnimatePresence>
                 {qInput && (
@@ -586,7 +586,7 @@ function Catalog() {
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.2 }}
-        className="fixed bottom-24 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
+        className="fixed bottom-20 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
       >
         <SlidersHorizontal className="h-4 w-4" />
         {t("catalog.filters")}

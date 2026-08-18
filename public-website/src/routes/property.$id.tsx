@@ -196,13 +196,13 @@ function Detail() {
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="relative h-[60svh] w-full overflow-hidden lg:h-[80svh]"
+          className="relative h-[50svh] w-full overflow-hidden sm:h-[60svh] lg:h-[80svh]"
         >
           <img src={p.hero} alt={p.title} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/40" />
         </motion.div>
 
-        <div className="absolute inset-x-0 top-20 z-10 px-6 md:top-32">
+        <div className="absolute inset-x-0 top-20 z-10 px-4 sm:px-6 md:top-32">
           <div className="mx-auto max-w-7xl">
             <Link
               to="/catalog"
@@ -213,7 +213,7 @@ function Detail() {
           </div>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 z-10 px-6 pb-12 md:pb-20">
+        <div className="absolute inset-x-0 bottom-0 z-10 px-4 pb-8 sm:px-6 sm:pb-12 md:pb-20">
           <div className="mx-auto max-w-7xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -252,7 +252,7 @@ function Detail() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, type: "spring", stiffness: 70, damping: 18 }}
-              className="mt-3 font-display text-4xl text-balance md:text-7xl"
+              className="mt-3 font-display text-3xl text-balance sm:text-4xl md:text-7xl"
             >
               {p.title}
             </motion.h1>
@@ -260,7 +260,7 @@ function Detail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, type: "spring", stiffness: 80, damping: 18 }}
-              className="mt-3 font-display text-3xl text-gradient-brand"
+              className="mt-3 font-display text-2xl sm:text-3xl text-gradient-brand"
             >
               {formatPrice(p.price)}
             </motion.p>
@@ -280,7 +280,7 @@ function Detail() {
         />
       </div>
 
-      <div className="mx-auto mt-6 max-w-7xl gap-12 px-6 lg:grid lg:grid-cols-[1fr_360px]">
+      <div className="mx-auto mt-6 max-w-7xl gap-12 px-4 sm:px-6 lg:grid lg:grid-cols-[1fr_360px]">
         <div>
           {/* Specs Table */}
           {p.features.length > 0 && (
@@ -293,8 +293,8 @@ function Detail() {
               <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
                 {t("property.specs")}
               </p>
-              <div className="mt-6 overflow-hidden rounded-2xl border border-border">
-                <table className="w-full text-sm">
+              <div className="mt-6 overflow-x-auto rounded-2xl border border-border">
+                <table className="w-full min-w-[300px] text-sm">
                   <tbody>
                     {p.features.map((f, i) => {
                       const [label, ...valueParts] = f.split(": ");
