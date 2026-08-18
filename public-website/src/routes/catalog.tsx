@@ -2,7 +2,17 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
-import { LayoutGrid, List, SlidersHorizontal, Search, X, Command, SearchX } from "lucide-react";
+import {
+  LayoutGrid,
+  List,
+  SlidersHorizontal,
+  Search,
+  X,
+  Command,
+  SearchX,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { CollectionPageJsonLd } from "@/components/JsonLd";
@@ -10,7 +20,12 @@ import { PropertyCard, PropertyCardSkeleton } from "@/components/PropertyCard";
 import { ErrorState } from "@/components/ErrorState";
 import { useProperties } from "@/hooks/use-properties";
 import { useDebounce } from "@/hooks/use-debounce";
-import { fetchCategories, fetchFilterOptions, PRICE_BOUNDS, formatPrice } from "@/lib/api/properties";
+import {
+  fetchCategories,
+  fetchFilterOptions,
+  PRICE_BOUNDS,
+  formatPrice,
+} from "@/lib/api/properties";
 import type { Category, FilterOptions } from "@/lib/api/properties";
 import { SITE_URL, absoluteUrl } from "@/lib/env";
 import { useLocale } from "@/providers/locale";
@@ -42,6 +57,8 @@ const searchSchema = z.object({
 });
 type Search = z.infer<typeof searchSchema>;
 
+const ITEMS_PER_PAGE = 12;
+
 const ATTRIBUTE_KEYS = [
   "brand",
   "condition",
@@ -63,7 +80,8 @@ export const Route = createFileRoute("/catalog")({
   head: () => ({
     meta: [
       {
-        title: "Buy Laptops, iPhones, Samsung, iPads, MacBooks & Accessories — BROS Technology Ethiopia",
+        title:
+          "Buy Laptops, iPhones, Samsung, iPads, MacBooks & Accessories — BROS Technology Ethiopia",
       },
       {
         name: "description",
@@ -75,7 +93,10 @@ export const Route = createFileRoute("/catalog")({
         content:
           "buy laptop Ethiopia, iPhone price Ethiopia, Samsung phone Addis Ababa, MacBook price, iPad Ethiopia, AirPods price, smartwatch Ethiopia, electronics store",
       },
-      { property: "og:title", content: "Buy Laptops, iPhones, Samsung & Electronics — BROS Technology" },
+      {
+        property: "og:title",
+        content: "Buy Laptops, iPhones, Samsung & Electronics — BROS Technology",
+      },
       {
         property: "og:description",
         content:
@@ -98,6 +119,7 @@ function Catalog() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [filterOptions, setFilterOptions] = useState<FilterOptions>({});
+  const [page, setPage] = useState(1);
   const { t, locale } = useLocale();
 
   useEffect(() => {
@@ -123,6 +145,29 @@ function Catalog() {
   const [qInput, setQInput] = useState(q);
   const debouncedQ = useDebounce(qInput, 300);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [
+    category,
+    debouncedQ,
+    search.priceMin,
+    search.priceMax,
+    search.brand,
+    search.condition,
+    search.storage,
+    search.ram,
+    search.color,
+    search.processor,
+    search.screenSize,
+    search.os,
+    search.model,
+    search.connectivity,
+    search.caseSize,
+    search.hasWarranty,
+    search.hasAppleCare,
+  ]);
 
   useEffect(() => {
     if (debouncedQ === (search.q ?? "")) return;
@@ -259,6 +304,12 @@ function Catalog() {
   });
 
   const count = data?.length ?? 0;
+  const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
+  const paginatedData = useMemo(() => {
+    if (!data) return [];
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    return data.slice(start, start + ITEMS_PER_PAGE);
+  }, [data, page]);
 
   return (
     <div className="min-h-screen bg-background pb-32 pt-24 md:pt-32">
@@ -403,6 +454,9 @@ function Catalog() {
                 onChange={setFilters}
                 onReset={resetFilters}
                 filterOptions={filterOptions}
+                categories={categoryNames}
+                selectedCategory={category}
+                onCategoryChange={setCategory}
               />
             </div>
           </aside>
@@ -421,7 +475,7 @@ function Catalog() {
               <EmptyState onReset={resetAll} />
             ) : layout === "list" ? (
               <div className="flex flex-col gap-4">
-                {data!.map((p) => (
+                {paginatedData.map((p) => (
                   <Link
                     key={p.id}
                     to="/property/$id"
@@ -448,7 +502,9 @@ function Catalog() {
                           {(p.stockQuantity || 0) > 0 && (p.stockQuantity || 0) <= 3
                             ? `Only ${p.stockQuantity} left!`
                             : p.inStock
-                              ? (p.stockQuantity > 0 ? `${p.stockQuantity} in stock` : t("property.inStock"))
+                              ? p.stockQuantity > 0
+                                ? `${p.stockQuantity} in stock`
+                                : t("property.inStock")
                               : t("property.outOfStock")}
                         </span>
                         <span className="text-gradient-brand font-display text-lg">
@@ -461,13 +517,67 @@ function Catalog() {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {data!.map((p, i) => (
+                {paginatedData.map((p, i) => (
                   <PropertyCard key={p.id} p={p} index={i} />
                 ))}
               </div>
             )}
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {t("pagination.previous")}
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 1)
+                .reduce<(number | string)[]>((acc, p, i, arr) => {
+                  if (i > 0 && p - (arr[i - 1] as number) > 1) {
+                    acc.push("...");
+                  }
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, i) =>
+                  typeof p === "string" ? (
+                    <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">
+                      ...
+                    </span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p)}
+                      className={`min-w-[36px] rounded-full px-3 py-2 text-sm transition-colors ${
+                        page === p
+                          ? "bg-brand text-primary-foreground font-medium"
+                          : "hover:bg-accent"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ),
+                )}
+            </div>
+
+            <button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="flex items-center gap-1 rounded-full border border-border px-4 py-2 text-sm transition-colors hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {t("pagination.next")}
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Mobile sticky filter button */}
@@ -531,6 +641,9 @@ function Catalog() {
                 onChange={setFilters}
                 onReset={resetFilters}
                 filterOptions={filterOptions}
+                categories={categoryNames}
+                selectedCategory={category}
+                onCategoryChange={setCategory}
               />
 
               <button

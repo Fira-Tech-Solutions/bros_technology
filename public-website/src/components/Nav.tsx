@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Search, Home, LayoutGrid, Phone, MapPin } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { LanguagePicker } from "@/components/LanguagePicker";
 import { useLocale } from "@/providers/locale";
 import { isTelegramMiniApp } from "@/lib/telegram";
 import { useSettings, DEFAULT_SETTINGS } from "@/hooks/use-settings";
@@ -56,7 +55,6 @@ export function Nav() {
             )}
           </nav>
           <div className="flex items-center gap-2">
-            <LanguagePicker />
             <ThemeToggle />
             <Link
               to="/catalog"
@@ -74,7 +72,6 @@ export function Nav() {
           BROS<span className="text-gradient-brand"> Technology</span>
         </Link>
         <div className="flex items-center gap-2">
-          <LanguagePicker />
           <ThemeToggle />
           <Link
             to="/catalog"
