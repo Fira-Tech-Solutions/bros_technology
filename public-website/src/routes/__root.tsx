@@ -20,7 +20,7 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
+        <h1 className="text-fluid-4xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.
@@ -175,7 +175,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <WebSiteJsonLd />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var tg=window.Telegram&&window.Telegram.WebApp;if(tg){document.documentElement.classList.toggle('dark',tg.colorScheme==='dark');document.documentElement.classList.toggle('light',tg.colorScheme==='light');if(tg.themeParams&&tg.themeParams.bg_color){document.documentElement.style.setProperty('--background',tg.themeParams.bg_color)}}}catch(e){}})()`,
+            __html: `(function(){try{var tg=window.Telegram&&window.Telegram.WebApp;if(tg){document.documentElement.classList.toggle('dark',tg.colorScheme==='dark');document.documentElement.classList.toggle('light',tg.colorScheme==='light');if(tg.themeParams&&tg.themeParams.bg_color){document.documentElement.style.setProperty('--background',tg.themeParams.bg_color)}}}catch(e){}})();(function(){try{var s=document.createElement('style');s.textContent=':root{--svh:100svh;--dvh:100dvh}';if(window.CSS&&CSS.supports&&CSS.supports('height:100svh')){document.head.appendChild(s)}}catch(e){}})()`,
           }}
         />
         {children}

@@ -196,7 +196,7 @@ function Detail() {
           initial={{ opacity: 0, scale: 1.04 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-          className="relative h-[50svh] w-full overflow-hidden sm:h-[60svh] lg:h-[80svh]"
+          className="relative h-[50vh] w-full overflow-hidden sm:h-[60vh] lg:h-[80vh]"
         >
           <img src={p.hero} alt={p.title} className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/40" />
@@ -252,7 +252,7 @@ function Detail() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, type: "spring", stiffness: 70, damping: 18 }}
-              className="mt-3 font-display text-3xl text-balance sm:text-4xl md:text-7xl"
+              className="mt-3 font-display text-fluid-3xl text-balance"
             >
               {p.title}
             </motion.h1>
@@ -260,7 +260,7 @@ function Detail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, type: "spring", stiffness: 80, damping: 18 }}
-              className="mt-3 font-display text-2xl sm:text-3xl text-gradient-brand"
+              className="mt-3 font-display text-fluid-xl text-gradient-brand"
             >
               {formatPrice(p.price)}
             </motion.p>
@@ -410,7 +410,7 @@ function Detail() {
 
       {/* Mobile sticky order bar */}
       {!isTelegramMiniApp() && (
-        <div className="fixed bottom-20 left-3 right-3 z-40 lg:hidden">
+        <div className="fixed bottom-20 left-3 right-3 z-40 mb-safe lg:hidden">
           <div className="rounded-2xl glass border border-border p-3 shadow-elegant">
             <div className="flex items-center justify-between gap-3">
               <div>

@@ -67,7 +67,7 @@ export function Nav() {
       </motion.header>
 
       {/* Mobile top brand */}
-      <div className="fixed top-0 z-50 flex w-full items-center justify-between px-5 py-4 md:hidden glass">
+      <div className="fixed top-0 z-50 flex w-full items-center justify-between px-5 pt-safe pb-4 md:hidden glass">
         <Link to="/" className="font-display text-xl">
           BROS<span className="text-gradient-brand"> Technology</span>
         </Link>
@@ -83,7 +83,7 @@ export function Nav() {
       </div>
 
       {/* Mobile bottom dock */}
-      <nav className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-0.5 rounded-full glass border border-border px-1.5 py-2 sm:gap-1 sm:px-2 md:hidden">
+      <nav className="fixed bottom-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-0.5 rounded-full glass border border-border px-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 sm:gap-1 sm:px-2 md:hidden">
         <DockLink to="/" icon={<Home className="h-5 w-5" />} label={t("nav.home")} />
         <DockLink
           to="/catalog"

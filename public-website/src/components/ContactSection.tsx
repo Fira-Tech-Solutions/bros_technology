@@ -101,7 +101,7 @@ export function ContactSection() {
         {/* Header */}
         <div className="mb-12">
           <p className="text-xs uppercase tracking-[0.2em] text-brand">{t("footer.badge")}</p>
-          <h2 className="mt-3 font-display text-3xl md:text-5xl">{t("footer.title")}</h2>
+          <h2 className="mt-3 font-display text-fluid-2xl">{t("footer.title")}</h2>
         </div>
 
         <div className="grid gap-12 lg:grid-cols-[1fr_1px_1fr]">

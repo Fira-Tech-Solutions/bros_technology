@@ -329,7 +329,7 @@ function Catalog() {
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
               {t("catalog.badge")}
             </p>
-            <h1 className="mt-2 font-display text-3xl sm:text-4xl md:text-6xl">
+            <h1 className="mt-2 font-display text-fluid-3xl">
               {category === "All" ? t("catalog.allProducts") : category}
             </h1>
             <motion.p
@@ -586,7 +586,7 @@ function Catalog() {
         initial={{ y: 80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 22, delay: 0.2 }}
-        className="fixed bottom-20 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
+        className="fixed bottom-20 left-1/2 z-40 mb-safe flex -translate-x-1/2 items-center gap-2 rounded-full bg-gradient-brand px-5 py-3 text-sm font-medium text-primary-foreground shadow-glow md:hidden"
       >
         <SlidersHorizontal className="h-4 w-4" />
         {t("catalog.filters")}
@@ -612,7 +612,7 @@ function Catalog() {
               // svh, not vh: vh measures the viewport with the browser toolbars
               // hidden, so 88vh on a bottom-anchored sheet overflows the top of
               // the screen and takes the header and first filters with it.
-              className="fixed bottom-0 left-0 right-0 z-[61] max-h-[85svh] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-border bg-card p-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] md:hidden"
+              className="fixed bottom-0 left-0 right-0 z-[61] max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-3xl border-t border-border bg-card p-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] md:hidden"
             >
               <div className="sticky top-0 -mx-6 -mt-6 mb-2 bg-card px-6 pb-3 pt-4">
                 <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-border" />

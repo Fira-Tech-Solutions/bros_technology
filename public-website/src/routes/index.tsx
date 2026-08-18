@@ -82,7 +82,7 @@ function StatsSection() {
       <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 md:p-12">
         <div className="mb-8 text-center">
           <p className="text-xs uppercase tracking-[0.25em] text-brand">Why Choose Us</p>
-          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">Trusted by Thousands</h2>
+          <h2 className="mt-3 font-display text-fluid-3xl">Trusted by Thousands</h2>
           <p className="mt-3 max-w-xl mx-auto text-muted-foreground">
             We provide genuine, brand-new electronics with warranty and reliable after-sales support
             across Ethiopia.
@@ -99,7 +99,7 @@ function StatsSection() {
               transition={{ delay: i * 0.1, type: "spring", stiffness: 80, damping: 18 }}
               className="text-center"
             >
-              <p className="font-display text-4xl text-gradient-brand md:text-5xl">
+              <p className="font-display text-3xl text-gradient-brand md:text-5xl">
                 <AnimatedCounter target={stat.value} suffix={stat.suffix} />
               </p>
               <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
@@ -168,7 +168,7 @@ function TestimonialsSection() {
       <RevealSection>
         <div className="mb-10 text-center">
           <p className="text-xs uppercase tracking-[0.25em] text-brand">Testimonials</p>
-          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">What Our Customers Say</h2>
+          <h2 className="mt-3 font-display text-fluid-2xl">What Our Customers Say</h2>
         </div>
       </RevealSection>
 
@@ -324,7 +324,7 @@ function Index() {
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   {t("categories.browse")}
                 </p>
-                <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl">{t("categories.title")}</h2>
+                <h2 className="mt-2 font-display text-fluid-2xl">{t("categories.title")}</h2>
               </div>
             </div>
           </RevealSection>
@@ -337,10 +337,10 @@ function Index() {
                   <Link
                     to="/catalog"
                     search={{ category: c.name === "All" ? undefined : c.displayName }}
-                    className="card-lift flex items-center gap-3 whitespace-nowrap rounded-2xl border border-border bg-card px-4 py-4 sm:px-5 sm:py-5"
+                    className="card-lift flex min-w-0 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-4 text-left sm:px-5 sm:py-5"
                   >
                     <IconComp size={22} className="text-brand shrink-0" />
-                    <span className="font-display text-base md:text-lg">{c.displayName}</span>
+                    <span className="min-w-0 font-display text-sm break-words md:text-base">{c.displayName}</span>
                   </Link>
                 </RevealSection>
               );
@@ -356,7 +356,7 @@ function Index() {
                 <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   {t("featured.badge")}
                 </p>
-                <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-5xl">{t("featured.title")}</h2>
+                <h2 className="mt-2 font-display text-fluid-3xl">{t("featured.title")}</h2>
               </div>
               <Link
                 to="/catalog"
@@ -429,7 +429,7 @@ function Index() {
                   <p className="text-xs uppercase tracking-[0.25em] text-brand">
                     {t("about.badge")}
                   </p>
-                  <h2 className="mt-3 font-display text-xl sm:text-2xl md:text-4xl">{t("about.title")}</h2>
+                  <h2 className="mt-3 font-display text-fluid-xl">{t("about.title")}</h2>
                   <p className="mt-4 leading-relaxed text-muted-foreground">{t("about.p1")}</p>
                   <p className="mt-3 leading-relaxed text-muted-foreground">{t("about.p2")}</p>
                 </div>

@@ -53,6 +53,12 @@
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
+  /* Viewport height fallbacks: svh/dvh not supported on older Android WebViews.
+     Use 100vh as fallback, then override with svh where supported. */
+  --vh: 100vh;
+  --svh: 100vh;
+  --dvh: 100vh;
+
   --background: oklch(0.158 0.007 258);      /* #0B0D10 */
   --foreground: oklch(0.96 0.005 258);       /* #F0F2F5 */
   --card: oklch(0.208 0.009 256);            /* #15181C */
@@ -134,6 +140,8 @@ html.light {
     scroll-behavior: smooth;
     /* Keeps anchor targets clear of the fixed header. */
     scroll-padding-top: 6rem;
+    /* Prevent any element from causing horizontal scroll on mobile. */
+    overflow-x: hidden;
   }
   body {
     background: var(--color-background);
@@ -142,6 +150,11 @@ html.light {
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Prevent Android browsers from auto-zooming on input focus or text scaling. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Safety: prevent horizontal overflow from any child element. */
+    overflow-x: hidden;
   }
   h1, h2, h3, .font-display {
     font-family: var(--font-display);
@@ -285,6 +298,32 @@ html[lang="om"] body {
     .marquee-track { animation: none; }
     .skeleton-shimmer { animation: none; }
     .card-lift:hover { transform: none; }
+  }
+
+  /* ── Safe-area padding helpers for iPhone notch/home indicator ── */
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  .pl-safe { padding-left: env(safe-area-inset-left, 0px); }
+  .pr-safe { padding-right: env(safe-area-inset-right, 0px); }
+  .mb-safe { margin-bottom: env(safe-area-inset-bottom, 0px); }
+
+  /* ── Text safety: prevent long words/URLs from overflowing containers ── */
+  .text-safe { overflow-wrap: break-word; word-break: break-word; hyphens: auto; }
+
+  /* ── Fluid typography: clamp(min, preferred, max) ──
+     Prevents oversized headings on 320-375px screens while scaling to desktop.
+     These are utility helpers — apply via className on headings. */
+  .text-fluid-xl {
+    font-size: clamp(1.5rem, 0.25rem + 2.5vw, 3rem);
+  }
+  .text-fluid-2xl {
+    font-size: clamp(1.75rem, 0.3rem + 3vw, 3.75rem);
+  }
+  .text-fluid-3xl {
+    font-size: clamp(1.75rem, 0.5rem + 3.5vw, 4.5rem);
+  }
+  .text-fluid-4xl {
+    font-size: clamp(2rem, 0.5rem + 4vw, 5.625rem);
   }
 }
 

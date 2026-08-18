@@ -94,7 +94,7 @@ export function HeroBackground() {
       <section
         ref={heroRef}
         aria-label="BROS Technology showroom"
-        className="relative h-[100svh] overflow-hidden"
+        className="relative h-[100vh] overflow-hidden"
         style={{ position: "sticky", top: 0, zIndex: 0 }}
       >
         <motion.div className="absolute inset-0 z-0" style={parallaxStyle}>
