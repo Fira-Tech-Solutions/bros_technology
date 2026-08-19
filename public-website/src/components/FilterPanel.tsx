@@ -62,34 +62,61 @@ function SelectFilter({
   options,
   value,
   onChange,
+  isOpen,
+  onToggle,
 }: {
   field: string;
   label: string;
   options: string[];
   value?: string;
   onChange: (field: string, val: string | undefined) => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
   return (
-    <FilterSection label={label} defaultOpen={false}>
-      <select
-        value={value || ""}
-        onChange={(e) => onChange(field, e.target.value || undefined)}
-        className="w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm text-foreground appearance-none cursor-pointer transition-colors hover:border-brand focus:border-brand focus:outline-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 12px center",
-          paddingRight: "36px",
-        }}
+    <section>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between py-2"
       >
-        <option value="">All</option>
-        {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
-          </option>
-        ))}
-      </select>
-    </FilterSection>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
+        {isOpen ? (
+          <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        )}
+      </button>
+      {isOpen && (
+        <div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-border bg-card">
+          <button
+            type="button"
+            onClick={() => { onChange(field, undefined); onToggle(); }}
+            className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors ${
+              !value
+                ? "bg-brand/10 text-brand font-medium"
+                : "text-foreground hover:bg-accent"
+            }`}
+          >
+            All
+          </button>
+          {options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              onClick={() => { onChange(field, opt); onToggle(); }}
+              className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors border-t border-border ${
+                value === opt
+                  ? "bg-brand/10 text-brand font-medium"
+                  : "text-foreground hover:bg-accent"
+              }`}
+            >
+              {opt}
+            </button>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -98,33 +125,68 @@ function BooleanFilter({
   label,
   value,
   onChange,
+  isOpen,
+  onToggle,
 }: {
   field: string;
   label: string;
   value?: boolean;
   onChange: (field: string, val: boolean | undefined) => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
   return (
-    <FilterSection label={label} defaultOpen={false}>
-      <select
-        value={value === undefined ? "" : value ? "true" : "false"}
-        onChange={(e) => {
-          if (e.target.value === "") onChange(field, undefined);
-          else onChange(field, e.target.value === "true");
-        }}
-        className="w-full rounded-xl border border-border bg-card px-3 py-2.5 text-sm text-foreground appearance-none cursor-pointer transition-colors hover:border-brand focus:border-brand focus:outline-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")`,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 12px center",
-          paddingRight: "36px",
-        }}
+    <section>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between py-2"
       >
-        <option value="">All</option>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-    </FilterSection>
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
+        {isOpen ? (
+          <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+        ) : (
+          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+        )}
+      </button>
+      {isOpen && (
+        <div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-border bg-card">
+          <button
+            type="button"
+            onClick={() => { onChange(field, undefined); onToggle(); }}
+            className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors ${
+              value === undefined
+                ? "bg-brand/10 text-brand font-medium"
+                : "text-foreground hover:bg-accent"
+            }`}
+          >
+            All
+          </button>
+          <button
+            type="button"
+            onClick={() => { onChange(field, true); onToggle(); }}
+            className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors border-t border-border ${
+              value === true
+                ? "bg-brand/10 text-brand font-medium"
+                : "text-foreground hover:bg-accent"
+            }`}
+          >
+            Yes
+          </button>
+          <button
+            type="button"
+            onClick={() => { onChange(field, false); onToggle(); }}
+            className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors border-t border-border ${
+              value === false
+                ? "bg-brand/10 text-brand font-medium"
+                : "text-foreground hover:bg-accent"
+            }`}
+          >
+            No
+          </button>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -190,6 +252,8 @@ export function FilterPanel({
   const { t } = useLocale();
   const patch = (p: Partial<FilterState>) => onChange({ ...value, ...p });
 
+  const [openFilter, setOpenFilter] = useState<string | null>(null);
+
   const fields = Object.keys(filterOptions || {});
   const sortedFields = [...fields].sort((a, b) => {
     const ai = FILTER_ORDER.indexOf(a);
@@ -245,6 +309,9 @@ export function FilterPanel({
       {/* Category-specific filters */}
       {sortedFields.map((field) => {
         const rule = filterOptions![field];
+        const isOpen = openFilter === field;
+        const toggle = () => setOpenFilter(isOpen ? null : field);
+
         if (rule.type === "boolean") {
           return (
             <BooleanFilter
@@ -253,6 +320,8 @@ export function FilterPanel({
               label={LABEL_MAP[field] || rule.field}
               value={value[field] as boolean | undefined}
               onChange={(f, val) => patch({ [f]: val })}
+              isOpen={isOpen}
+              onToggle={toggle}
             />
           );
         }
@@ -266,6 +335,8 @@ export function FilterPanel({
               options={rule.options}
               value={value[field] as string | undefined}
               onChange={(f, val) => patch({ [f]: val })}
+              isOpen={isOpen}
+              onToggle={toggle}
             />
           );
         }
@@ -279,6 +350,8 @@ export function FilterPanel({
               options={rule.options}
               value={value[field] as string | undefined}
               onChange={(f, val) => patch({ [f]: val })}
+              isOpen={isOpen}
+              onToggle={toggle}
             />
           );
         }
