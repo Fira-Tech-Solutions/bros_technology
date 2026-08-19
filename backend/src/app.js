@@ -24,6 +24,17 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Disable ETag generation — 304 responses strip CORS headers on Vercel's edge,
+// causing "CORS header does not match" errors when multiple origins hit the
+// same endpoint. Always return 200 with full CORS headers instead.
+app.set('etag', false);
+
+// Prevent any caching of API responses (CORS headers must be fresh per-request).
+app.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
+
 // Parse allowed origins from environment variable
 const allowedOriginsEnv = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
