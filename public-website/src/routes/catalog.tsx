@@ -440,7 +440,7 @@ function Catalog() {
         <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[280px_1fr]">
           {/* Desktop sidebar */}
           <aside className="hidden md:block">
-            <div className="sticky top-28 rounded-2xl border border-border bg-card/40 p-5">
+            <div className="sticky top-28 max-h-[calc(100vh-9rem)] overflow-y-auto rounded-2xl border border-border bg-card/40 p-5">
               <div className="mb-5 flex items-center justify-between">
                 <h3 className="font-display text-xl">{t("catalog.refine")}</h3>
                 {activeCount > 0 && (
