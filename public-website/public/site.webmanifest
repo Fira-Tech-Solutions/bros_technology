@@ -1,0 +1,21 @@
+{
+  "name": "BROS Technology",
+  "short_name": "BROS Tech",
+  "icons": [
+    {
+      "src": "/images/favicon/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/favicon/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "theme_color": "#1878B4",
+  "background_color": "#0B0D10",
+  "display": "standalone"
+}
