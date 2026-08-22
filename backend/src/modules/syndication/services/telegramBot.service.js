@@ -38,6 +38,28 @@ async function getShopGoogleMapUrl() {
   return '';
 }
 
+async function getCallNumbers() {
+  try {
+    const [num1, num2] = await Promise.all([
+      prisma.setting.findUnique({ where: { key: 'callNumber1' } }),
+      prisma.setting.findUnique({ where: { key: 'callNumber2' } }),
+    ]);
+    return [num1?.value, num2?.value].filter(Boolean);
+  } catch {}
+  return [];
+}
+
+async function getChannelUsername(botToken, channelId) {
+  try {
+    const { data } = await axios.get(
+      `https://api.telegram.org/bot${botToken}/getChat`,
+      { params: { chat_id: channelId }, timeout: 10000 }
+    );
+    if (data.ok && data.result.username) return data.result.username;
+  } catch {}
+  return '';
+}
+
 function buildInlineKeyboard(listingId, listingTitle, firstImage, miniAppUrl, adminTelegram, shopGoogleMapUrl) {
   const row = [];
 
@@ -124,7 +146,22 @@ function formatAttributes(attributes, schemaRules) {
   return lines;
 }
 
-function buildCaption(listing) {
+function buildContactSection(callNumbers, telegramHandle, channelUsername) {
+  const lines = [];
+  for (const num of callNumbers) {
+    lines.push(`📞 Call us: ${num}`);
+  }
+  if (telegramHandle) {
+    lines.push(`💬 Message us: @${telegramHandle}`);
+  }
+  if (channelUsername) {
+    lines.push(`📢 Join channel: @${channelUsername}`);
+  }
+  if (lines.length === 0) return [];
+  return ['', '─────────────────', ...lines];
+}
+
+function buildCaption(listing, context = {}) {
   if (listing.customTelegramCaption && listing.customTelegramCaption.trim()) {
     return listing.customTelegramCaption.trim();
   }
@@ -139,17 +176,19 @@ function buildCaption(listing) {
 
   const sections = [
     `*${title}*`,
-    '',
-    `💰 *Price:* ${price}`,
   ];
 
   if (fields && fields.length > 0) {
+    const attrLines = [];
     for (const field of fields) {
       const value = attributes[field];
       if (value === undefined || value === null || value === '') continue;
       const label = FIELD_LABELS[field] || field;
       const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
-      sections.push(`${label}: ${displayValue}`);
+      attrLines.push(`${label}: ${displayValue}`);
+    }
+    if (attrLines.length > 0) {
+      sections.push('', ...attrLines);
     }
   }
 
@@ -163,13 +202,18 @@ function buildCaption(listing) {
     sections.push('', description);
   }
 
-  sections.push('', '─────────────────', 'Listed on _BROS Technology_');
+  sections.push('', `💰 *Price:* ${price}`);
+
+  const { callNumbers = [], telegramHandle = '', channelUsername = '' } = context;
+  sections.push(...buildContactSection(callNumbers, telegramHandle, channelUsername));
+
+  sections.push('', 'Listed on _BROS Technology_');
 
   return sections.join('\n');
 }
 
-function buildMediaCaption(listing) {
-  const full = buildCaption(listing);
+function buildMediaCaption(listing, context = {}) {
+  const full = buildCaption(listing, context);
   if (full.length <= MAX_CAPTION_LENGTH) return full;
 
   const title = listing.title || 'Untitled Listing';
@@ -180,7 +224,7 @@ function buildMediaCaption(listing) {
     ? listing.attributes
     : {};
 
-  const short = [`*${title}*`, `💰 ${price}`];
+  const short = [`*${title}*`];
 
   if (fields && fields.length > 0) {
     const shown = fields.filter((f) => {
@@ -196,6 +240,7 @@ function buildMediaCaption(listing) {
     }
   }
 
+  short.push('', `💰 *Price:* ${price}`);
   short.push('', '_Full details in the listing post_');
   return short.join('\n');
 }
@@ -329,8 +374,19 @@ async function sendMediaGroup(caption, imagePaths, telegramApi, channelId) {
 }
 
 export default class TelegramBotService {
-  static buildCaption(listingData) {
-    return buildCaption(listingData);
+  static buildCaption(listingData, context) {
+    return buildCaption(listingData, context);
+  }
+
+  static async getContext() {
+    const config = await getTelegramConfig();
+    if (!config || !config.botToken) return {};
+    const [callNumbers, adminTelegram, channelUsername] = await Promise.all([
+      getCallNumbers(),
+      getAdminTelegram(),
+      getChannelUsername(config.botToken, config.channelId),
+    ]);
+    return { callNumbers, telegramHandle: adminTelegram, channelUsername };
   }
 
   static async validateConfig() {
@@ -447,15 +503,23 @@ export default class TelegramBotService {
     const { images = [], category, agent, ...listing } = listingData;
     const listingObj = { ...listing, category, agent, images };
 
+    const [miniAppUrl, adminTelegram, shopGoogleMapUrl, callNumbers, channelUsername] =
+      await Promise.all([
+        getMiniAppUrl(),
+        getAdminTelegram(),
+        getShopGoogleMapUrl(),
+        getCallNumbers(),
+        getChannelUsername(config.botToken, channelId),
+      ]);
+
+    const context = { callNumbers, telegramHandle: adminTelegram, channelUsername };
+
     const caption = images.length > 1
-      ? buildMediaCaption(listingObj)
-      : buildCaption(listingObj);
+      ? buildMediaCaption(listingObj, context)
+      : buildCaption(listingObj, context);
 
-    const fullCaption = images.length > 1 ? buildCaption(listingObj) : caption;
+    const fullCaption = images.length > 1 ? buildCaption(listingObj, context) : caption;
 
-    const miniAppUrl = await getMiniAppUrl();
-    const adminTelegram = await getAdminTelegram();
-    const shopGoogleMapUrl = await getShopGoogleMapUrl();
     const keyboard = buildInlineKeyboard(
       listingData.id,
       listingData.title,
@@ -476,8 +540,7 @@ export default class TelegramBotService {
       if (keyboard) {
         await axios.post(`${telegramApi}/sendMessage`, {
           chat_id: channelId,
-          text: '─────────────────\n🛍 *Explore* this product or *Order Now*',
-          parse_mode: 'Markdown',
+          text: '\u200B',
           reply_markup: keyboard,
         }, { timeout: REQUEST_TIMEOUT_MS });
       }

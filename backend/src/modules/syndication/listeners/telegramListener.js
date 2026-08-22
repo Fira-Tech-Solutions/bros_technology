@@ -50,7 +50,8 @@ export async function handleSyndication(listingId, eventType) {
         });
 
         try {
-          const caption = TelegramBotService.buildCaption(listing);
+          const context = await TelegramBotService.getContext();
+          const caption = TelegramBotService.buildCaption(listing, context);
           await TelegramBotService.editMessageCaption(existingLog.messageId, caption);
 
           await prisma.syndicationLog.update({
