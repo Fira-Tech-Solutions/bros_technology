@@ -180,7 +180,7 @@ function buildContactSection(callNumbers, telegramHandle, channelUsername) {
     lines.push(`📢 Join channel: @${channelUsername.replace(/_/g, '\\_')}`);
   }
   if (lines.length === 0) return [];
-  return ['', '─────────────────', ...lines];
+  return ['', '──────────────────────', ...lines];
 }
 
 function buildCaption(listing, context = {}) {
