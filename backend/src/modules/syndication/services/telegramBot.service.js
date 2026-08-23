@@ -538,11 +538,15 @@ export default class TelegramBotService {
       result = await sendMediaGroup(caption, images, telegramApi, channelId);
 
       if (keyboard) {
-        await axios.post(`${telegramApi}/sendMessage`, {
-          chat_id: channelId,
-          text: '\u200B',
-          reply_markup: keyboard,
-        }, { timeout: REQUEST_TIMEOUT_MS });
+        try {
+          await axios.post(`${telegramApi}/sendMessage`, {
+            chat_id: channelId,
+            text: '.',
+            reply_markup: keyboard,
+          }, { timeout: REQUEST_TIMEOUT_MS });
+        } catch (kbErr) {
+          console.error('[TelegramBot] Failed to send inline keyboard:', kbErr.response?.data?.description || kbErr.message);
+        }
       }
     }
 
