@@ -321,7 +321,7 @@ async function readImageBuffer(imagePath) {
   }
 }
 
-async function sendSinglePhoto(caption, imagePath, telegramApi, channelId) {
+async function sendSinglePhoto(caption, imagePath, telegramApi, channelId, replyMarkup) {
   const imageData = await readImageBuffer(imagePath);
   if (!imageData) {
     throw new Error(`Image file not found or unreadable: ${imagePath}`);
@@ -335,6 +335,10 @@ async function sendSinglePhoto(caption, imagePath, telegramApi, channelId) {
   });
   form.append('caption', caption);
   form.append('parse_mode', 'Markdown');
+
+  if (replyMarkup) {
+    form.append('reply_markup', JSON.stringify(replyMarkup));
+  }
 
   console.log('[TelegramBot] sendSinglePhoto caption length:', caption.length, 'byteSize:', Buffer.byteLength(caption, 'utf8'));
 
@@ -605,13 +609,40 @@ export default class TelegramBotService {
     debugCaptionBytes(caption);
 
     console.log('[TelegramBot] Step 3: Sending to channel. images:', images.length);
+
+    const buttons = [];
+    if (miniAppUrl && listingData.id) {
+      buttons.push({ text: '🛍 View Product', url: `${miniAppUrl}/property/${listingData.id}` });
+    }
+    if (shopGoogleMapUrl) {
+      buttons.push({ text: '📍 Location', url: shopGoogleMapUrl });
+    }
+    const keyboard = buttons.length > 0 ? { inline_keyboard: [buttons] } : null;
+
     let result;
     if (images.length === 0) {
       throw new Error('Listing must have at least one image to send to Telegram channel');
     } else if (images.length === 1) {
-      result = await sendSinglePhoto(caption, images[0], telegramApi, channelId);
+      result = await sendSinglePhoto(caption, images[0], telegramApi, channelId, keyboard);
     } else {
       result = await sendMediaGroup(caption, images, telegramApi, channelId);
+      const mediaGroupId = Array.isArray(result) ? result[0]?.message_id : result?.message_id;
+
+      if (keyboard && mediaGroupId) {
+        try {
+          await axios.post(`${telegramApi}/sendMessage`, {
+            chat_id: channelId,
+            text: '\u200B',
+            reply_markup: keyboard,
+            reply_parameters: {
+              message_id: mediaGroupId,
+              allow_sending_without_reply: true,
+            },
+          }, { timeout: REQUEST_TIMEOUT_MS });
+        } catch (kbErr) {
+          console.error('[TelegramBot] Failed to send inline keyboard:', kbErr.response?.data?.description || kbErr.message);
+        }
+      }
     }
 
     console.log(
