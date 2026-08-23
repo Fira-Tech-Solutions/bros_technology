@@ -613,10 +613,6 @@ export default class TelegramBotService {
     } else {
       result = await sendMediaGroup(caption, images, telegramApi, channelId);
     }
-      } else {
-        console.warn('[TelegramBot] Skipping keyboard — mediaGroupId:', mediaGroupId, 'keyboard:', !!keyboard);
-      }
-    }
 
     console.log(
       `[TelegramBot] Step 4: Done. Sent listing "${listing.title}" (${listing.id}) — ` +
