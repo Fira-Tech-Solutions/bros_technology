@@ -60,7 +60,7 @@ async function getChannelUsername(botToken, channelId) {
   return '';
 }
 
-function buildInlineKeyboard(listingId, listingTitle, firstImage, miniAppUrl, adminTelegram, shopGoogleMapUrl) {
+function buildInlineKeyboard(listingId, listingTitle, listingPrice, miniAppUrl, adminTelegram, shopGoogleMapUrl) {
   const row = [];
 
   if (shopGoogleMapUrl) {
@@ -72,7 +72,8 @@ function buildInlineKeyboard(listingId, listingTitle, firstImage, miniAppUrl, ad
   }
 
   if (adminTelegram) {
-    const message = encodeURIComponent(firstImage || '');
+    const price = formatPrice(listingPrice);
+    const message = encodeURIComponent(`Hi, I'm interested in ${listingTitle || 'your product'} — ${price}`);
     row.push({ text: '📩 Order Now', url: `https://t.me/${adminTelegram}?text=${message}` });
   }
 
@@ -100,9 +101,46 @@ function formatPrice(price) {
   return `${num.toLocaleString('en-US')} ETB`;
 }
 
+function debugCaptionBytes(caption) {
+  const buf = Buffer.from(caption, 'utf8');
+  console.log(`[TelegramBot] Caption stats: charLen=${caption.length}, byteLen=${buf.length}`);
+
+  const specialChars = [];
+  for (let i = 0; i < caption.length; i++) {
+    const ch = caption[i];
+    if ('*_`[]()~>\\'.includes(ch)) {
+      const byteOffset = Buffer.byteLength(caption.slice(0, i), 'utf8');
+      specialChars.push({ char: ch, charIndex: i, byteOffset });
+    }
+  }
+  if (specialChars.length > 0) {
+    console.log('[TelegramBot] Special chars in caption:', JSON.stringify(specialChars));
+  }
+
+  const starIndices = [];
+  for (let i = 0; i < caption.length; i++) {
+    if (caption[i] === '*') starIndices.push(i);
+  }
+  console.log(`[TelegramBot] Star (*) count: ${starIndices.length}, indices: [${starIndices}]`);
+
+  const underscoreIndices = [];
+  for (let i = 0; i < caption.length; i++) {
+    if (caption[i] === '_') underscoreIndices.push(i);
+  }
+  console.log(`[TelegramBot] Underscore (_) count: ${underscoreIndices.length}, indices: [${underscoreIndices}]`);
+
+  const tildeIndices = [];
+  for (let i = 0; i < caption.length; i++) {
+    if (caption[i] === '~') tildeIndices.push(i);
+  }
+  console.log(`[TelegramBot] Tilde (~) count: ${tildeIndices.length}, indices: [${tildeIndices}]`);
+
+  return buf;
+}
+
 function escapeMarkdownV1(text) {
   if (!text) return '';
-  return String(text).replace(/([_*`[\]])/g, '\\$1');
+  return String(text).replace(/([_*`[\]~>!\\])/g, '\\$1');
 }
 
 const FIELD_LABELS = {
@@ -111,7 +149,6 @@ const FIELD_LABELS = {
   storage: '💾 Storage',
   ram: '🧠 RAM',
   color: '🎨 Color',
-  condition: '✅ Condition',
   processor: '⚡ Processor',
   gpu: '🎮 GPU',
   screenSize: '🖥 Screen',
@@ -124,14 +161,15 @@ const FIELD_LABELS = {
   hasAppleCare: '🍎 AppleCare',
   year: '📅 Year',
   storageType: '💿 Storage Type',
+  generation: '🔢 Generation',
 };
 
 const CATEGORY_CAPTIONS = {
-  IPHONES_SAMSUNG: ['brand', 'model', 'storage', 'ram', 'color', 'condition', 'batteryHealth', 'carrier', 'hasWarranty'],
-  IPADS_MACBOOKS: ['brand', 'model', 'storage', 'ram', 'color', 'condition', 'screenSize', 'processor', 'connectivity', 'hasWarranty'],
-  LAPTOPS: ['brand', 'model', 'processor', 'ram', 'storage', 'gpu', 'screenSize', 'color', 'condition', 'os', 'hasWarranty'],
-  AIRPODS: ['brand', 'model', 'color', 'condition', 'hasAppleCare', 'hasWarranty'],
-  SMARTWATCHES: ['brand', 'model', 'caseSize', 'storage', 'color', 'connectivity', 'condition', 'hasWarranty'],
+  IPHONES_SAMSUNG: ['brand', 'model', 'storage', 'ram', 'color', 'batteryHealth', 'carrier', 'hasWarranty'],
+  IPADS_MACBOOKS: ['brand', 'model', 'storage', 'ram', 'color', 'screenSize', 'processor', 'connectivity', 'hasWarranty'],
+  LAPTOPS: ['brand', 'model', 'processor', 'ram', 'storage', 'gpu', 'screenSize', 'color', 'generation', 'os', 'hasWarranty'],
+  AIRPODS: ['brand', 'model', 'color', 'hasAppleCare', 'hasWarranty'],
+  SMARTWATCHES: ['brand', 'model', 'caseSize', 'storage', 'color', 'connectivity', 'hasWarranty'],
 };
 
 function formatAttributes(attributes, schemaRules) {
@@ -157,10 +195,10 @@ function buildContactSection(callNumbers, telegramHandle, channelUsername) {
     lines.push(`📞 Call us: ${num}`);
   }
   if (telegramHandle) {
-    lines.push(`💬 Message us: @${telegramHandle}`);
+    lines.push(`💬 Message us: @${telegramHandle.replace(/_/g, '\\_')}`);
   }
   if (channelUsername) {
-    lines.push(`📢 Join channel: @${channelUsername}`);
+    lines.push(`📢 Join channel: @${channelUsername.replace(/_/g, '\\_')}`);
   }
   if (lines.length === 0) return [];
   return ['', '─────────────────', ...lines];
@@ -216,7 +254,7 @@ function buildCaption(listing, context = {}) {
   const { callNumbers = [], telegramHandle = '', channelUsername = '' } = context;
   sections.push(...buildContactSection(callNumbers, telegramHandle, channelUsername));
 
-  sections.push('', 'Listed on _BROS Technology_');
+  sections.push('', 'Listed on [broslaptop.com](https://broslaptop.com)');
 
   return sections.join('\n');
 }
@@ -257,7 +295,14 @@ function buildMediaCaption(listing, context = {}) {
 async function readImageBuffer(imagePath) {
   if (imagePath.startsWith('http')) {
     try {
-      const response = await axios.get(imagePath, { responseType: 'arraybuffer', timeout: 15000 });
+      const response = await axios.get(imagePath, {
+        responseType: 'arraybuffer',
+        timeout: 30000,
+        maxRedirects: 5,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; BOSTechnologyBot/1.0)',
+        },
+      });
       const ext = imagePath.split('.').pop()?.split('?')[0] || 'webp';
       const contentType = response.headers['content-type'] || `image/${ext}`;
       const blob = new Blob([response.data], { type: contentType });
@@ -268,7 +313,13 @@ async function readImageBuffer(imagePath) {
         contentType,
         fullPath: imagePath,
       };
-    } catch {
+    } catch (err) {
+      console.error(`[TelegramBot] Failed to fetch image: ${imagePath}`, {
+        message: err.message,
+        code: err.code,
+        responseStatus: err.response?.status,
+        responseType: err.response?.headers?.['content-type'],
+      });
       return null;
     }
   }
@@ -282,7 +333,11 @@ async function readImageBuffer(imagePath) {
     const contentType = `image/${ext}`;
     const blob = new Blob([buffer], { type: contentType });
     return { blob, buffer, filename: path.basename(fullPath), contentType, fullPath };
-  } catch {
+  } catch (err) {
+    console.error(`[TelegramBot] Failed to read local image: ${fullPath}`, {
+      message: err.message,
+      code: err.code,
+    });
     return null;
   }
 }
@@ -306,17 +361,31 @@ async function sendSinglePhoto(caption, imagePath, telegramApi, channelId, reply
     form.append('reply_markup', JSON.stringify(replyMarkup));
   }
 
-  const { data } = await axios.post(`${telegramApi}/sendPhoto`, form, {
-    timeout: REQUEST_TIMEOUT_MS,
-    maxContentLength: Infinity,
-    maxBodyLength: Infinity,
-  });
+  console.log('[TelegramBot] sendSinglePhoto caption length:', caption.length, 'byteSize:', Buffer.byteLength(caption, 'utf8'));
 
-  if (!data || !data.ok) {
-    throw new Error(data?.description || 'Telegram sendPhoto returned non-ok');
+  try {
+    const { data } = await axios.post(`${telegramApi}/sendPhoto`, form, {
+      timeout: REQUEST_TIMEOUT_MS,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    });
+
+    if (!data || !data.ok) {
+      throw new Error(data?.description || 'Telegram sendPhoto returned non-ok');
+    }
+
+    return data.result;
+  } catch (err) {
+    const TelegramError = err?.response?.data || {};
+    console.error('[TelegramBot] sendSinglePhoto FAILED:', {
+      error_code: TelegramError.error_code,
+      description: TelegramError.description,
+      parameters: TelegramError.parameters,
+      captionLength: caption.length,
+      captionByteSize: Buffer.byteLength(caption, 'utf8'),
+    });
+    throw err;
   }
-
-  return data.result;
 }
 
 async function sendMediaGroup(caption, imagePaths, telegramApi, channelId) {
@@ -327,8 +396,16 @@ async function sendMediaGroup(caption, imagePaths, telegramApi, channelId) {
   );
 
   const images = readResults
-    .map((r, i) => (r.status === 'fulfilled' ? { ...r.value, originalPath: validPaths[i] } : null))
+    .map((r, i) => (r.status === 'fulfilled' && r.value ? { ...r.value, originalPath: validPaths[i] } : null))
     .filter(Boolean);
+
+  const failedCount = readResults.length - images.length;
+  if (failedCount > 0) {
+    const failedPaths = readResults
+      .map((r, i) => (r.status !== 'fulfilled' || !r.value ? validPaths[i] : null))
+      .filter(Boolean);
+    console.warn(`[TelegramBot] ${failedCount} image(s) failed to load:`, failedPaths);
+  }
 
   if (images.length === 0) {
     throw new Error('No readable images found for media group');
@@ -336,7 +413,6 @@ async function sendMediaGroup(caption, imagePaths, telegramApi, channelId) {
 
   const form = new FormData();
   form.append('chat_id', channelId);
-  form.append('parse_mode', 'Markdown');
 
   if (images.length === 1) {
     form.append('media', JSON.stringify({
@@ -369,17 +445,35 @@ async function sendMediaGroup(caption, imagePaths, telegramApi, channelId) {
     }
   }
 
-  const { data } = await axios.post(`${telegramApi}/sendMediaGroup`, form, {
-    timeout: REQUEST_TIMEOUT_MS,
-    maxContentLength: Infinity,
-    maxBodyLength: Infinity,
-  });
+  const mediaJson = form.get('media');
+  console.log('[TelegramBot] sendMediaGroup media JSON length:', mediaJson?.length);
+  console.log('[TelegramBot] sendMediaGroup first 500 chars of media:', mediaJson?.substring(0, 500));
 
-  if (!data || !data.ok) {
-    throw new Error(data?.description || 'Telegram sendMediaGroup returned non-ok');
+  try {
+    const { data } = await axios.post(`${telegramApi}/sendMediaGroup`, form, {
+      timeout: REQUEST_TIMEOUT_MS,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    });
+
+    if (!data || !data.ok) {
+      throw new Error(data?.description || 'Telegram sendMediaGroup returned non-ok');
+    }
+
+    return data.result;
+  } catch (err) {
+    const TelegramError = err?.response?.data || {};
+    console.error('[TelegramBot] sendMediaGroup FAILED:', {
+      error_code: TelegramError.error_code,
+      description: TelegramError.description,
+      parameters: TelegramError.parameters,
+      captionLength: caption.length,
+      captionByteSize: Buffer.byteLength(caption, 'utf8'),
+      parse_mode: 'Markdown',
+      imageCount: images.length,
+    });
+    throw err;
   }
-
-  return data.result;
 }
 
 export default class TelegramBotService {
@@ -532,11 +626,13 @@ export default class TelegramBotService {
 
     const fullCaption = images.length > 1 ? buildCaption(listingObj, context) : caption;
     console.log('[TelegramBot] Step 2 done. caption length:', caption.length, 'fullCaption length:', fullCaption.length);
+    console.log('[TelegramBot] Caption content:\n' + caption);
+    debugCaptionBytes(caption);
 
     const keyboard = buildInlineKeyboard(
       listingData.id,
       listingData.title,
-      images[0] || null,
+      listingData.price,
       miniAppUrl,
       adminTelegram,
       shopGoogleMapUrl,
@@ -550,17 +646,30 @@ export default class TelegramBotService {
       result = await sendSinglePhoto(caption, images[0], telegramApi, channelId, keyboard);
     } else {
       result = await sendMediaGroup(caption, images, telegramApi, channelId);
+      const mediaGroupId = Array.isArray(result) ? result[0]?.message_id : result?.message_id;
+      console.log('[TelegramBot] mediaGroupId:', mediaGroupId, 'isArray:', Array.isArray(result));
 
-      if (keyboard) {
+      if (keyboard && mediaGroupId) {
         try {
-          await axios.post(`${telegramApi}/sendMessage`, {
+          const kbResult = await axios.post(`${telegramApi}/sendMessage`, {
             chat_id: channelId,
-            text: '.',
+            text: '👇 Tap to order',
             reply_markup: keyboard,
+            reply_parameters: {
+              message_id: mediaGroupId,
+              allow_sending_without_reply: true,
+            },
           }, { timeout: REQUEST_TIMEOUT_MS });
+          console.log('[TelegramBot] Keyboard sent. message_id:', kbResult.data?.result?.message_id);
         } catch (kbErr) {
-          console.error('[TelegramBot] Failed to send inline keyboard:', kbErr.response?.data?.description || kbErr.message);
+          console.error('[TelegramBot] Failed to send inline keyboard:', {
+            description: kbErr.response?.data?.description || kbErr.message,
+            error_code: kbErr.response?.data?.error_code,
+            mediaGroupId,
+          });
         }
+      } else {
+        console.warn('[TelegramBot] Skipping keyboard — mediaGroupId:', mediaGroupId, 'keyboard:', !!keyboard);
       }
     }
 

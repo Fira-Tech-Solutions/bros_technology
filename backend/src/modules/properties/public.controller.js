@@ -44,7 +44,6 @@ export async function getPublicListings(req, res, next) {
       priceMin,
       priceMax,
       brand,
-      condition,
       storage,
       ram,
       color,
@@ -87,7 +86,6 @@ export async function getPublicListings(req, res, next) {
     // Attribute-based filters using JSON path queries
     const attributeFilters = [];
     if (brand) attributeFilters.push({ path: ['brand'], equals: brand });
-    if (condition) attributeFilters.push({ path: ['condition'], equals: condition });
     if (storage) attributeFilters.push({ path: ['storage'], equals: storage });
     if (ram) attributeFilters.push({ path: ['ram'], equals: ram });
     if (color) attributeFilters.push({ path: ['color'], equals: color });

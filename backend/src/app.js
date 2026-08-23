@@ -50,7 +50,9 @@ const productionOrigins = [
 
 const devOrigins = [
   'http://localhost:3000',
-  'http://localhost:3001'
+  'http://localhost:3001',
+  'http://localhost:5173',
+  'http://localhost:5174',
 ];
 
 // Production origins are always allowed; env var and dev origins are merged in

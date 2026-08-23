@@ -109,7 +109,6 @@ export function ProductJsonLd({
   image,
   description,
   brand,
-  condition,
   availability = "https://schema.org/InStock",
   url,
 }: {
@@ -118,7 +117,6 @@ export function ProductJsonLd({
   image: string;
   description?: string;
   brand?: string;
-  condition?: string;
   availability?: string;
   url: string;
 }) {
@@ -137,9 +135,7 @@ export function ProductJsonLd({
           priceCurrency: "ETB",
           price: price.replace(/[^0-9.]/g, ""),
           availability,
-          itemCondition: condition?.includes("New")
-            ? "https://schema.org/NewCondition"
-            : "https://schema.org/UsedCondition",
+          itemCondition: "https://schema.org/UsedCondition",
         },
         seller: {
           "@type": "LocalBusiness",

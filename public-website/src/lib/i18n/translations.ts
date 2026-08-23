@@ -63,7 +63,6 @@ type TranslationKeys = {
   // Filters
   "filter.price": string;
   "filter.brand": string;
-  "filter.condition": string;
   "filter.any": string;
   "filter.resetAll": string;
 
@@ -166,7 +165,6 @@ export const translations: Record<Locale, TranslationKeys> = {
 
     "filter.price": "Price",
     "filter.brand": "Brand",
-    "filter.condition": "Condition",
     "filter.any": "Any",
     "filter.resetAll": "Reset all filters",
 

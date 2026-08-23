@@ -193,7 +193,6 @@ function BooleanFilter({
 const FILTER_ORDER = [
   "brand",
   "model",
-  "condition",
   "storage",
   "ram",
   "color",
@@ -214,7 +213,6 @@ const FILTER_ORDER = [
 const LABEL_MAP: Record<string, string> = {
   brand: "Brand",
   model: "Model",
-  condition: "Condition",
   storage: "Storage",
   ram: "RAM",
   color: "Color",

@@ -30,11 +30,6 @@ export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) 
           <span className="absolute left-4 top-4 rounded-full glass px-3 py-1 text-xs uppercase tracking-widest text-foreground/90">
             {p.category}
           </span>
-          {p.brand && (
-            <span className="absolute right-4 top-4 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-              {t("property.brandNew")}
-            </span>
-          )}
           <div className="absolute bottom-4 left-4 right-4">
             <h3 className="font-display text-2xl text-foreground">{p.title}</h3>
             {p.brand && <p className="text-xs text-muted-foreground">{p.brand}</p>}

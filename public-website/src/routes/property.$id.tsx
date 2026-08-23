@@ -180,7 +180,6 @@ function Detail() {
         image={absoluteUrl(p.hero || p.gallery?.[0] || "/images/hero/desktop-dark-1920.jpg")}
         description={p.description?.trim() || undefined}
         brand={p.brand || undefined}
-        condition={p.attributes?.condition || undefined}
         availability={
           (p.stockQuantity || 0) > 0 || p.inStock
             ? "https://schema.org/InStock"

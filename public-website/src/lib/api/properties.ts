@@ -40,7 +40,6 @@ export type PropertyFilters = {
   priceMin?: number;
   priceMax?: number;
   brand?: string;
-  condition?: string;
   storage?: string;
   ram?: string;
   color?: string;
@@ -62,7 +61,6 @@ export async function fetchProperties(params?: PropertyFilters): Promise<Propert
   if (typeof params?.priceMin === "number") searchParams.set("priceMin", String(params.priceMin));
   if (typeof params?.priceMax === "number") searchParams.set("priceMax", String(params.priceMax));
   if (params?.brand) searchParams.set("brand", params.brand);
-  if (params?.condition) searchParams.set("condition", params.condition);
   if (params?.storage) searchParams.set("storage", params.storage);
   if (params?.ram) searchParams.set("ram", params.ram);
   if (params?.color) searchParams.set("color", params.color);

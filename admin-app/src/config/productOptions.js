@@ -89,7 +89,7 @@ export const PRODUCT_OPTIONS = {
       'Midnight', 'Starlight', 'Space Gray', 'Graphite',
       'Sky Blue', 'Lavender', 'Mint', 'Cream', 'Phantom Black',
     ],
-    condition: ['Brand New', 'Used - Like New', 'Used - Good', 'Used - Fair'],
+
     carrier: ['Unlocked', 'AT&T', 'T-Mobile', 'Verizon', 'Safaricom', 'Ethio Telecom', 'Other'],
   },
 
@@ -113,7 +113,7 @@ export const PRODUCT_OPTIONS = {
       'Space Black', 'Silver', 'Starlight', 'Midnight', 'Space Gray',
       'Natural', 'Blue', 'Purple', 'Pink',
     ],
-    condition: ['Brand New', 'Used - Like New', 'Used - Good', 'Used - Fair'],
+
     screenSize: ['10.2"', '10.9"', '11"', '12.9"', '13.3"', '13.6"', '14.2"', '15.3"', '16.2"'],
     processor: ['M1', 'M2', 'M3', 'M4', 'M3 Pro', 'M3 Max', 'M4 Pro', 'M4 Max'],
     connectivity: ['Wi-Fi Only', 'Wi-Fi + Cellular'],
@@ -214,7 +214,7 @@ export const PRODUCT_OPTIONS = {
       'Black', 'Silver', 'White', 'Gray', 'Blue', 'Green',
       'Space Gray', 'Midnight', 'Starlight', 'Gunmetal', 'Platinum',
     ],
-    condition: ['Brand New', 'Used - Like New', 'Used - Good', 'Used - Fair'],
+    generation: ['6th', '7th', '8th', '9th', '10th', '11th', '12th', '13th', '14th'],
     os: ['Windows 10', 'Windows 11', 'macOS', 'Linux', 'ChromeOS'],
   },
 
@@ -227,7 +227,7 @@ export const PRODUCT_OPTIONS = {
       'AirPods Max (USB-C)', 'AirPods Max (Lightning)',
     ],
     color: ['White', 'Silver', 'Space Gray', 'Sky Blue', 'Green', 'Pink', 'Orange', 'Purple'],
-    condition: ['Brand New', 'Used - Like New', 'Used - Good', 'Used - Fair'],
+
   },
 
   SMARTWATCHES: {
@@ -280,7 +280,7 @@ export const PRODUCT_OPTIONS = {
     ],
     connectivity: ['Wi-Fi Only', 'Wi-Fi + Cellular', 'Bluetooth Only'],
     storage: ['32GB', '64GB', '128GB', '256GB', '32GB eMMC'],
-    condition: ['Brand New', 'Used - Like New', 'Used - Good', 'Used - Fair'],
+
   },
 };
 
@@ -290,7 +290,6 @@ export const FIELD_LABELS = {
   storage: 'Storage',
   ram: 'RAM',
   color: 'Color',
-  condition: 'Condition',
   processor: 'Processor',
   gpu: 'GPU',
   screenSize: 'Screen Size',
@@ -303,4 +302,5 @@ export const FIELD_LABELS = {
   hasAppleCare: 'AppleCare',
   year: 'Year',
   storageType: 'Storage Type',
+  generation: 'Generation',
 };
