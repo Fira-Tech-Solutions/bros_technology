@@ -632,7 +632,7 @@ export default class TelegramBotService {
         try {
           await axios.post(`${telegramApi}/sendMessage`, {
             chat_id: channelId,
-            text: '\u200B',
+            text: '👇 Tap to order',
             reply_markup: keyboard,
             reply_parameters: {
               message_id: mediaGroupId,
