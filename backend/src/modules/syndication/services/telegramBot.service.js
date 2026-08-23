@@ -146,7 +146,7 @@ const FIELD_LABELS = {
 const CATEGORY_CAPTIONS = {
   IPHONES_SAMSUNG: ['brand', 'model', 'storage', 'ram', 'color', 'batteryHealth', 'carrier', 'hasWarranty'],
   IPADS_MACBOOKS: ['brand', 'model', 'storage', 'ram', 'color', 'screenSize', 'processor', 'connectivity', 'hasWarranty'],
-  LAPTOPS: ['brand', 'model', 'processor', 'ram', 'storage', 'gpu', 'screenSize', 'color', 'generation', 'os', 'hasWarranty'],
+  LAPTOPS: ['brand', 'model', 'processor', 'generation', 'ram', 'storage', 'gpu', 'screenSize', 'color', 'os', 'hasWarranty'],
   AIRPODS: ['brand', 'model', 'color', 'hasAppleCare', 'hasWarranty'],
   SMARTWATCHES: ['brand', 'model', 'caseSize', 'storage', 'color', 'connectivity', 'hasWarranty'],
 };
