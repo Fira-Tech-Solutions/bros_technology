@@ -60,27 +60,6 @@ async function getChannelUsername(botToken, channelId) {
   return '';
 }
 
-function buildInlineKeyboard(listingId, listingTitle, listingPrice, miniAppUrl, adminTelegram, shopGoogleMapUrl) {
-  const row = [];
-
-  if (shopGoogleMapUrl) {
-    row.push({ text: '📍 Location', url: shopGoogleMapUrl });
-  }
-
-  if (miniAppUrl) {
-    row.push({ text: '🛍 Explore', url: `${miniAppUrl}/property/${listingId}` });
-  }
-
-  if (adminTelegram) {
-    const price = formatPrice(listingPrice);
-    const message = encodeURIComponent(`Hi, I'm interested in ${listingTitle || 'your product'} — ${price}`);
-    row.push({ text: '📩 Order Now', url: `https://t.me/${adminTelegram}?text=${message}` });
-  }
-
-  if (row.length === 0) return null;
-  return { inline_keyboard: [row] };
-}
-
 async function resolveFileUrl(fileId, botToken) {
   try {
     const { data } = await axios.get(
@@ -342,7 +321,7 @@ async function readImageBuffer(imagePath) {
   }
 }
 
-async function sendSinglePhoto(caption, imagePath, telegramApi, channelId, replyMarkup) {
+async function sendSinglePhoto(caption, imagePath, telegramApi, channelId) {
   const imageData = await readImageBuffer(imagePath);
   if (!imageData) {
     throw new Error(`Image file not found or unreadable: ${imagePath}`);
@@ -356,10 +335,6 @@ async function sendSinglePhoto(caption, imagePath, telegramApi, channelId, reply
   });
   form.append('caption', caption);
   form.append('parse_mode', 'Markdown');
-
-  if (replyMarkup) {
-    form.append('reply_markup', JSON.stringify(replyMarkup));
-  }
 
   console.log('[TelegramBot] sendSinglePhoto caption length:', caption.length, 'byteSize:', Buffer.byteLength(caption, 'utf8'));
 
@@ -629,45 +604,15 @@ export default class TelegramBotService {
     console.log('[TelegramBot] Caption content:\n' + caption);
     debugCaptionBytes(caption);
 
-    const keyboard = buildInlineKeyboard(
-      listingData.id,
-      listingData.title,
-      listingData.price,
-      miniAppUrl,
-      adminTelegram,
-      shopGoogleMapUrl,
-    );
-
     console.log('[TelegramBot] Step 3: Sending to channel. images:', images.length);
     let result;
     if (images.length === 0) {
       throw new Error('Listing must have at least one image to send to Telegram channel');
     } else if (images.length === 1) {
-      result = await sendSinglePhoto(caption, images[0], telegramApi, channelId, keyboard);
+      result = await sendSinglePhoto(caption, images[0], telegramApi, channelId);
     } else {
       result = await sendMediaGroup(caption, images, telegramApi, channelId);
-      const mediaGroupId = Array.isArray(result) ? result[0]?.message_id : result?.message_id;
-      console.log('[TelegramBot] mediaGroupId:', mediaGroupId, 'isArray:', Array.isArray(result));
-
-      if (keyboard && mediaGroupId) {
-        try {
-          const kbResult = await axios.post(`${telegramApi}/sendMessage`, {
-            chat_id: channelId,
-            text: '👇 Tap to order',
-            reply_markup: keyboard,
-            reply_parameters: {
-              message_id: mediaGroupId,
-              allow_sending_without_reply: true,
-            },
-          }, { timeout: REQUEST_TIMEOUT_MS });
-          console.log('[TelegramBot] Keyboard sent. message_id:', kbResult.data?.result?.message_id);
-        } catch (kbErr) {
-          console.error('[TelegramBot] Failed to send inline keyboard:', {
-            description: kbErr.response?.data?.description || kbErr.message,
-            error_code: kbErr.response?.data?.error_code,
-            mediaGroupId,
-          });
-        }
+    }
       } else {
         console.warn('[TelegramBot] Skipping keyboard — mediaGroupId:', mediaGroupId, 'keyboard:', !!keyboard);
       }
