@@ -1,5 +1,5 @@
 export const env = {
-  API_URL: import.meta.env.VITE_API_URL || "http://localhost:5000",
+  API_URL: import.meta.env.VITE_API_URL || "https://api.broslaptop.com",
   SITE_URL: (import.meta.env.VITE_SITE_URL || "https://broslaptop.com").replace(/\/$/, ""),
 } as const;
 
