@@ -100,6 +100,11 @@ function formatPrice(price) {
   return `${num.toLocaleString('en-US')} ETB`;
 }
 
+function escapeMarkdownV1(text) {
+  if (!text) return '';
+  return String(text).replace(/([_*`[\]])/g, '\\$1');
+}
+
 const FIELD_LABELS = {
   brand: '📱 Brand',
   model: '📦 Model',
@@ -166,7 +171,7 @@ function buildCaption(listing, context = {}) {
     return listing.customTelegramCaption.trim();
   }
 
-  const title = listing.title || 'Untitled Listing';
+  const title = escapeMarkdownV1(listing.title) || 'Untitled Listing';
   const price = formatPrice(listing.price);
   const categoryName = listing.category?.name || '';
   const fields = CATEGORY_CAPTIONS[categoryName];
@@ -184,7 +189,9 @@ function buildCaption(listing, context = {}) {
       const value = attributes[field];
       if (value === undefined || value === null || value === '') continue;
       const label = FIELD_LABELS[field] || field;
-      const displayValue = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
+      const displayValue = typeof value === 'boolean'
+        ? (value ? 'Yes' : 'No')
+        : escapeMarkdownV1(value);
       attrLines.push(`${label}: ${displayValue}`);
     }
     if (attrLines.length > 0) {
@@ -193,9 +200,11 @@ function buildCaption(listing, context = {}) {
   }
 
   const description = listing.description
-    ? listing.description.length > 200
-      ? `${listing.description.slice(0, 200)}...`
-      : listing.description
+    ? escapeMarkdownV1(
+        listing.description.length > 200
+          ? `${listing.description.slice(0, 200)}...`
+          : listing.description
+      )
     : '';
 
   if (description) {
@@ -216,7 +225,7 @@ function buildMediaCaption(listing, context = {}) {
   const full = buildCaption(listing, context);
   if (full.length <= MAX_CAPTION_LENGTH) return full;
 
-  const title = listing.title || 'Untitled Listing';
+  const title = escapeMarkdownV1(listing.title) || 'Untitled Listing';
   const price = formatPrice(listing.price);
   const categoryName = listing.category?.name || '';
   const fields = CATEGORY_CAPTIONS[categoryName];
@@ -235,7 +244,7 @@ function buildMediaCaption(listing, context = {}) {
       const label = FIELD_LABELS[field] || field;
       const displayValue = typeof attributes[field] === 'boolean'
         ? (attributes[field] ? 'Yes' : 'No')
-        : attributes[field];
+        : escapeMarkdownV1(attributes[field]);
       short.push(`${label}: ${displayValue}`);
     }
   }
