@@ -503,6 +503,7 @@ export default class TelegramBotService {
     const { images = [], category, agent, ...listing } = listingData;
     const listingObj = { ...listing, category, agent, images };
 
+    console.log('[TelegramBot] Step 1: Fetching settings...');
     const [miniAppUrl, adminTelegram, shopGoogleMapUrl, callNumbers, channelUsername] =
       await Promise.all([
         getMiniAppUrl(),
@@ -511,14 +512,17 @@ export default class TelegramBotService {
         getCallNumbers(),
         getChannelUsername(config.botToken, channelId),
       ]);
+    console.log('[TelegramBot] Step 1 done. callNumbers:', callNumbers, 'channelUsername:', channelUsername);
 
     const context = { callNumbers, telegramHandle: adminTelegram, channelUsername };
 
+    console.log('[TelegramBot] Step 2: Building caption...');
     const caption = images.length > 1
       ? buildMediaCaption(listingObj, context)
       : buildCaption(listingObj, context);
 
     const fullCaption = images.length > 1 ? buildCaption(listingObj, context) : caption;
+    console.log('[TelegramBot] Step 2 done. caption length:', caption.length, 'fullCaption length:', fullCaption.length);
 
     const keyboard = buildInlineKeyboard(
       listingData.id,
@@ -529,6 +533,7 @@ export default class TelegramBotService {
       shopGoogleMapUrl,
     );
 
+    console.log('[TelegramBot] Step 3: Sending to channel. images:', images.length);
     let result;
     if (images.length === 0) {
       throw new Error('Listing must have at least one image to send to Telegram channel');
@@ -551,7 +556,7 @@ export default class TelegramBotService {
     }
 
     console.log(
-      `[TelegramBot] Sent listing "${listing.title}" (${listing.id}) — ` +
+      `[TelegramBot] Step 4: Done. Sent listing "${listing.title}" (${listing.id}) — ` +
       `message_id: ${result?.message_id}, images: ${images.length}`,
     );
 

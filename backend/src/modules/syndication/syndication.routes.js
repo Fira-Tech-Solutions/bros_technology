@@ -281,13 +281,19 @@ router.post('/trigger/:listingId', authenticate(), async (req, res, next) => {
       });
     } catch (err) {
       const errorMessage = err.response?.data?.description || err.message || String(err);
-      await prisma.syndicationLog.update({
-        where: { id: logEntry.id },
-        data: { status: 'FAILED', errorMessage },
-      });
+      console.error('[Syndication] Trigger inner error:', errorMessage);
+      try {
+        await prisma.syndicationLog.update({
+          where: { id: logEntry.id },
+          data: { status: 'FAILED', errorMessage },
+        });
+      } catch (logErr) {
+        console.error('[Syndication] Failed to update log:', logErr.message);
+      }
       return res.status(500).json({ success: false, error: `Failed to post to Telegram: ${errorMessage}` });
     }
   } catch (error) {
+    console.error('[Syndication] Trigger outer error:', error.message, error.stack);
     next(error);
   }
 });
