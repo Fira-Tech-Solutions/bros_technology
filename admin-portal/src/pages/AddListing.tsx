@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCategories, useCreateListing } from '../hooks';
-import { Button, Input, Select, Textarea, PageHeader, LoadingSpinner } from '../components/ui';
+import { Button, Input, Textarea, Select } from '../components/ui';
 import { ArrowLeft, Upload, X, Check, ChevronDown, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, Plus } from 'lucide-react';
 import { PRODUCT_OPTIONS, FIELD_LABELS } from '../config/productOptions';
 
@@ -75,7 +75,7 @@ export default function AddListing() {
     updateForm('imagePreviews', form.imagePreviews.filter((_: any, i: number) => i !== index));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (addAnother = false) => {
     setSubmitting(true);
     try {
       const fd = new FormData();
@@ -89,8 +89,28 @@ export default function AddListing() {
       fd.append('stockQuantity', form.stockQuantity || '1');
       form.images.forEach((img: any) => fd.append('images', img));
       await createListing.mutateAsync(fd);
-      navigate('/properties');
-    } catch (err) { console.error(err); } finally { setSubmitting(false); }
+
+      if (addAnother) {
+        // Reset form for next product but keep category
+        setForm({
+          title: '',
+          description: '',
+          price: '',
+          categoryId: form.categoryId,
+          stockQuantity: '1',
+          images: [],
+          imagePreviews: [],
+        });
+        setAttributes({});
+        setStep(1);
+      } else {
+        navigate('/properties');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const filteredCategories = categories.filter(c =>
@@ -124,11 +144,33 @@ export default function AddListing() {
       </div>
 
       {step === 1 && (
-        <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', padding: 28, display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.2s ease-out' }}>
+        <div className="card-padding" style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.2s ease-out' }}>
           <Input label="Product Title" placeholder="e.g. iPhone 15 Pro Max 256GB" value={form.title} onChange={(e: any) => updateForm('title', e.target.value)} />
           <Textarea label="Description" placeholder="Describe the product condition, features, etc." rows={4} value={form.description} onChange={(e: any) => updateForm('description', e.target.value)} />
-          <Input label="Price (ETB)" type="number" placeholder="0" value={form.price} onChange={(e: any) => updateForm('price', e.target.value)} />
-          <Input label="Stock Quantity" type="number" placeholder="1" value={form.stockQuantity} onChange={(e: any) => updateForm('stockQuantity', e.target.value)} />
+          <div className="form-grid-2">
+            <Input label="Price (ETB)" type="number" placeholder="0" value={form.price} onChange={(e: any) => updateForm('price', e.target.value)} />
+            <Input
+              label="Original Price (ETB) - for Discount Ad"
+              type="number"
+              placeholder="e.g. 50000"
+              value={attributes.originalPrice || ''}
+              onChange={(e: any) => updateAttribute('originalPrice', e.target.value)}
+            />
+          </div>
+          <div className="form-grid-2">
+            <Input label="Stock Quantity" type="number" placeholder="1" value={form.stockQuantity} onChange={(e: any) => updateForm('stockQuantity', e.target.value)} />
+            <Select
+              label="Marketing Priority & Ranking"
+              value={attributes.priority || 'NORMAL'}
+              onChange={(e: any) => updateAttribute('priority', e.target.value)}
+            >
+              <option value="NORMAL">Standard Listing</option>
+              <option value="TOP_PRIORITY">⭐ Top Priority / Top Choice (Cyan Glow)</option>
+              <option value="BEST_SELLER">🏆 Best Seller (Gold Dimlight Glow)</option>
+              <option value="HOT_DEAL">🔥 Hot Deal / Special Promo (Red Aura)</option>
+              <option value="FEATURED">✨ Featured Product</option>
+            </Select>
+          </div>
 
           {/* Category Dropdown */}
           <div>
@@ -236,7 +278,7 @@ export default function AddListing() {
       )}
 
       {step === 2 && (
-        <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', padding: 28, display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.2s ease-out' }}>
+        <div className="card-padding" style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.2s ease-out' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <Tag size={16} style={{ color: 'var(--color-primary)' }} />
             <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-heading)', margin: 0 }}>
@@ -261,27 +303,29 @@ export default function AddListing() {
                       <button
                         onClick={() => updateAttribute(rule.field, !attributes[rule.field])}
                         style={{
-                          position: 'relative',
                           width: 44,
                           height: 24,
                           borderRadius: 12,
                           background: attributes[rule.field] ? 'var(--color-primary)' : 'var(--color-border)',
                           border: 'none',
                           cursor: 'pointer',
-                          transition: 'var(--transition-normal)',
+                          position: 'relative',
+                          transition: 'background var(--transition-fast)',
                         }}
                       >
-                        <span style={{
-                          position: 'absolute',
-                          top: 2,
-                          left: attributes[rule.field] ? 22 : 2,
-                          width: 20,
-                          height: 20,
-                          borderRadius: '50%',
-                          background: '#fff',
-                          boxShadow: 'var(--shadow-sm)',
-                          transition: 'var(--transition-normal)',
-                        }} />
+                        <div
+                          style={{
+                            width: 18,
+                            height: 18,
+                            borderRadius: '50%',
+                            background: '#fff',
+                            position: 'absolute',
+                            top: 3,
+                            left: attributes[rule.field] ? 23 : 3,
+                            transition: 'left var(--transition-fast)',
+                            boxShadow: 'var(--shadow-sm)',
+                          }}
+                        />
                       </button>
                     </div>
                   );
@@ -290,88 +334,39 @@ export default function AddListing() {
                 if (options.length > 0) {
                   const currentValue = attributes[rule.field] || '';
                   const isCustom = customMode === rule.field;
-                  const isOtherOption = !options.includes(currentValue) && currentValue !== '';
+                  const isOtherOption = currentValue && !options.includes(currentValue);
 
                   if (isCustom) {
                     return (
                       <div key={i}>
-                        <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6, fontFamily: 'var(--font-body)' }}>
-                          {fieldLabel} {rule.required && <span style={{ color: 'var(--color-danger)' }}>*</span>}
-                        </label>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                          <input
-                            type="text"
-                            placeholder={`Enter ${fieldLabel.toLowerCase()}`}
-                            value={customValue}
-                            onChange={(e) => setCustomValue(e.target.value)}
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && customValue.trim()) {
-                                updateAttribute(rule.field, customValue.trim());
-                                setCustomMode(null);
-                                setCustomValue('');
-                              }
-                              if (e.key === 'Escape') {
-                                setCustomMode(null);
-                                setCustomValue('');
-                              }
-                            }}
-                            style={{
-                              flex: 1,
-                              height: 44,
-                              padding: '0 14px',
-                              borderRadius: 'var(--radius-md)',
-                              border: '1px solid var(--color-primary)',
-                              background: 'var(--color-surface)',
-                              fontSize: 14,
-                              fontFamily: 'var(--font-body)',
-                              color: 'var(--color-text)',
-                              outline: 'none',
-                              boxShadow: '0 0 0 3px rgba(24,120,180,0.15)',
-                            }}
-                          />
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+                          <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-body)' }}>{fieldLabel}</label>
                           <button
+                            onClick={() => { setCustomMode(null); }}
+                            style={{ fontSize: 12, color: 'var(--color-primary)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+                          >
+                            Back to options
+                          </button>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <Input
+                            placeholder={`Type custom ${fieldLabel.toLowerCase()}...`}
+                            value={customValue}
+                            onChange={(e: any) => setCustomValue(e.target.value)}
+                            style={{ flex: 1 }}
+                            autoFocus
+                          />
+                          <Button
+                            size="sm"
                             onClick={() => {
                               if (customValue.trim()) {
                                 updateAttribute(rule.field, customValue.trim());
-                                setCustomMode(null);
-                                setCustomValue('');
                               }
-                            }}
-                            style={{
-                              width: 44,
-                              height: 44,
-                              borderRadius: 'var(--radius-md)',
-                              border: 'none',
-                              background: 'var(--color-primary)',
-                              color: '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              flexShrink: 0,
+                              setCustomMode(null);
                             }}
                           >
-                            <Check size={18} />
-                          </button>
-                          <button
-                            onClick={() => { setCustomMode(null); setCustomValue(''); }}
-                            style={{
-                              width: 44,
-                              height: 44,
-                              borderRadius: 'var(--radius-md)',
-                              border: '1px solid var(--color-border)',
-                              background: 'var(--color-bg)',
-                              color: 'var(--color-text-muted)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              flexShrink: 0,
-                            }}
-                          >
-                            <X size={18} />
-                          </button>
+                            Set
+                          </Button>
                         </div>
                       </div>
                     );
@@ -379,9 +374,7 @@ export default function AddListing() {
 
                   return (
                     <div key={i} style={{ position: 'relative' }}>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6, fontFamily: 'var(--font-body)' }}>
-                        {fieldLabel} {rule.required && <span style={{ color: 'var(--color-danger)' }}>*</span>}
-                      </label>
+                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6, fontFamily: 'var(--font-body)' }}>{fieldLabel}</label>
                       <button
                         onClick={() => setShowFieldDropdown(showFieldDropdown === rule.field ? null : rule.field)}
                         style={{
@@ -389,7 +382,7 @@ export default function AddListing() {
                           height: 44,
                           padding: '0 14px',
                           borderRadius: 'var(--radius-md)',
-                          border: `1px solid ${isOtherOption ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                          border: '1px solid var(--color-border)',
                           background: 'var(--color-bg)',
                           fontSize: 14,
                           fontFamily: 'var(--font-body)',
@@ -401,9 +394,10 @@ export default function AddListing() {
                           textAlign: 'left',
                         }}
                       >
-                        {currentValue || `Select ${fieldLabel.toLowerCase()}`}
+                        <span>{currentValue || `Select ${fieldLabel.toLowerCase()}`}</span>
                         <ChevronDown size={16} style={{ color: 'var(--color-text-muted)' }} />
                       </button>
+
                       {showFieldDropdown === rule.field && (
                         <div style={{
                           position: 'absolute',
@@ -483,9 +477,9 @@ export default function AddListing() {
       )}
 
       {step === 3 && (
-        <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', padding: 28, animation: 'fadeIn 0.2s ease-out' }}>
+        <div className="card-padding" style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', animation: 'fadeIn 0.2s ease-out' }}>
           <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 12, fontFamily: 'var(--font-body)' }}>Product Photos</label>
-          <div className="sm\:grid-3" style={{ display: 'grid', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: 12 }}>
             {form.imagePreviews.map((src: string, i: number) => (
               <div key={i} style={{ position: 'relative', aspectRatio: '1', borderRadius: 'var(--radius-md)', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
                 <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -527,16 +521,31 @@ export default function AddListing() {
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 28, gap: 12, flexWrap: 'wrap' }}>
         <Button variant="ghost" onClick={() => step > 1 ? setStep(step - 1) : navigate('/properties')}>
           {step === 1 ? 'Cancel' : 'Back'}
         </Button>
         {step < 3 ? (
           <Button onClick={() => setStep(step + 1)}>Next Step</Button>
         ) : (
-          <Button icon={Check} loading={submitting} onClick={handleSubmit} disabled={!form.title || !form.price || !form.categoryId}>
-            Create Product
-          </Button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Button
+              variant="secondary"
+              loading={submitting}
+              onClick={() => handleSubmit(true)}
+              disabled={!form.title || !form.price || !form.categoryId}
+            >
+              Create & Add Another
+            </Button>
+            <Button
+              icon={Check}
+              loading={submitting}
+              onClick={() => handleSubmit(false)}
+              disabled={!form.title || !form.price || !form.categoryId}
+            >
+              Create Product
+            </Button>
+          </div>
         )}
       </div>
     </div>

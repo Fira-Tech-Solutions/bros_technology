@@ -2,8 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../contexts/AuthContext';
 import { useSyndicationConfig, useSyndicationLogs, useWebhookInfo, useSaveSyndicationConfig, useRetrySyndication, useDeleteSyndicationMessage, useEditSyndicationMessage } from '../hooks';
-import { Button, StatusBadge, Modal, Input, PageHeader, LoadingSpinner } from '../components/ui';
-import { Send, Settings, RefreshCw, Trash2, Save, Eye, EyeOff, Power, MessageCircle, ChevronRight, Clock, CircleCheck, CircleX, Image as ImageIcon, Bot, Hash, X } from 'lucide-react';
+import { Modal, PageHeader, LoadingSpinner } from '../components/ui';
+import { Send, Settings, RefreshCw, Trash2, Save, Eye, EyeOff, Power, MessageCircle, ChevronRight, Clock, CircleCheck, CircleX, Image as ImageIcon, Bot, Hash } from 'lucide-react';
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string; Icon: any }> = {
   PENDING: { label: 'Pending', color: '#F59E0B', bg: '#F59E0B18', Icon: Clock },
@@ -51,7 +51,6 @@ export default function Syndication() {
   const [showToken, setShowToken] = useState(false);
   const [detailModal, setDetailModal] = useState<any>(null);
   const [editCaption, setEditCaption] = useState('');
-  const [deleting, setDeleting] = useState<string | null>(null);
   const [testing, setTesting] = useState(false);
 
   useEffect(() => {

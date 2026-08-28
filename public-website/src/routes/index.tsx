@@ -10,6 +10,8 @@ import {
   Watch,
   Tablet,
   Tag,
+  Flame,
+  Star,
 } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { HeroBackground } from "@/components/HeroBackground";
@@ -340,7 +342,9 @@ function Index() {
                     className="card-lift flex min-w-0 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-4 text-left sm:px-5 sm:py-5"
                   >
                     <IconComp size={22} className="text-brand shrink-0" />
-                    <span className="min-w-0 font-display text-sm break-words md:text-base">{c.displayName}</span>
+                    <span className="min-w-0 font-display text-sm break-words md:text-base">
+                      {c.displayName}
+                    </span>
                   </Link>
                 </RevealSection>
               );
@@ -381,6 +385,42 @@ function Index() {
                   ))}
             </div>
           )}
+        </section>
+
+        {/* SPECIAL DISCOUNT / DEALS AD BANNER */}
+        <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+          <RevealSection>
+            <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-r from-red-950/40 via-card to-amber-950/30 p-8 sm:p-12 shadow-2xl">
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-red-500/10 blur-3xl pointer-events-none" />
+              <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+
+              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+                <div className="max-w-2xl space-y-3">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-red-500/10 border border-red-500/30 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-red-400">
+                    <Flame size={14} className="animate-pulse text-red-400" />
+                    Limited Time Offers & Discounts
+                  </div>
+                  <h2 className="font-display text-fluid-2xl text-foreground font-bold tracking-tight">
+                    Exclusive Deals on Premium Laptops & iPhones
+                  </h2>
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed">
+                    Save big on genuine electronics with full store warranty. Discover our best sellers and special discounted devices with fast nationwide delivery!
+                  </p>
+                </div>
+
+                <div className="shrink-0">
+                  <Link
+                    to="/catalog"
+                    className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition-all transform hover:scale-105"
+                  >
+                    <Sparkles size={16} />
+                    Explore Hot Deals
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </RevealSection>
         </section>
 
         {/* BRAND MARQUEE */}

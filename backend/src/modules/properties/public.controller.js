@@ -10,10 +10,41 @@ function mapListingToProperty(listing) {
   const stockQuantity = listing.stockQuantity || 0;
   const inStock = stockQuantity > 0 || listing.status === 'AVAILABLE';
 
+  // Priority & Marketing calculation
+  const priority = attrs.priority || (attrs.isFeatured ? 'TOP_PRIORITY' : 'NORMAL');
+  const isFeatured = attrs.isFeatured === true || priority === 'TOP_PRIORITY' || priority === 'FEATURED';
+  const isBestSeller = priority === 'BEST_SELLER' || attrs.isBestSeller === true;
+  const isHotDeal = priority === 'HOT_DEAL' || attrs.isHotDeal === true;
+
+  const originalPrice = attrs.originalPrice ? parseFloat(attrs.originalPrice) : null;
+  const currentPrice = parseFloat(listing.price) || 0;
+  let discountPercent = null;
+  if (originalPrice && originalPrice > currentPrice) {
+    discountPercent = Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
+  } else if (attrs.discountPercent) {
+    discountPercent = parseInt(attrs.discountPercent, 10);
+  }
+
+  const promoBadge = attrs.promoBadge || attrs.badge || (
+    priority === 'BEST_SELLER' ? 'Best Seller' :
+    priority === 'TOP_PRIORITY' ? 'Top Choice' :
+    priority === 'HOT_DEAL' ? 'Hot Deal' :
+    discountPercent && discountPercent >= 5 ? `${discountPercent}% OFF` :
+    isFeatured ? 'Featured' : null
+  );
+
   return {
     id: listing.id,
     title: listing.title,
-    price: listing.price,
+    price: currentPrice,
+    originalPrice,
+    discountPercent,
+    isFeatured,
+    isBestSeller,
+    isHotDeal,
+    priority,
+    badge: promoBadge,
+    promoNote: attrs.promoNote || null,
     inStock,
     stockQuantity,
     brand: attrs.brand || '',
@@ -21,18 +52,19 @@ function mapListingToProperty(listing) {
     categoryId: listing.categoryId,
     attributes: attrs,
     tags: Object.entries(attrs)
-      .filter(([k]) => !['listingType', 'brand', 'inStock'].includes(k))
+      .filter(([k]) => !['listingType', 'brand', 'inStock', 'priority', 'isFeatured', 'isBestSeller', 'isHotDeal', 'originalPrice', 'discountPercent', 'promoBadge', 'badge', 'promoNote'].includes(k))
       .map(([k, v]) => `${k}: ${v}`)
       .slice(0, 5),
     hero: images[0] || '',
     gallery: images,
     description: listing.description,
     features: Object.entries(attrs)
-      .filter(([k]) => !['listingType', 'brand', 'inStock'].includes(k))
+      .filter(([k]) => !['listingType', 'brand', 'inStock', 'priority', 'isFeatured', 'isBestSeller', 'isHotDeal', 'originalPrice', 'discountPercent', 'promoBadge', 'badge', 'promoNote'].includes(k))
       .map(([k, v]) => {
         const label = k.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase());
         return `${label}: ${typeof v === 'boolean' ? (v ? 'Yes' : 'No') : v}`;
       }),
+    createdAt: listing.createdAt,
   };
 }
 
@@ -111,9 +143,27 @@ export async function getPublicListings(req, res, next) {
       },
     });
 
+    // Marketing Priority Ranking:
+    // 1. TOP_PRIORITY / Featured (score 100)
+    // 2. BEST_SELLER (score 80)
+    // 3. HOT_DEAL / Discounts (score 60)
+    // 4. Then by Listed Date (createdAt)
+    const mapped = listings.map(mapListingToProperty);
+    mapped.sort((a, b) => {
+      const getScore = (item) => {
+        if (item.priority === 'TOP_PRIORITY' || item.isFeatured) return 100;
+        if (item.priority === 'BEST_SELLER' || item.isBestSeller) return 80;
+        if (item.priority === 'HOT_DEAL' || item.isHotDeal || (item.discountPercent && item.discountPercent > 0)) return 60;
+        return 0;
+      };
+      const diff = getScore(b) - getScore(a);
+      if (diff !== 0) return diff;
+      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+    });
+
     return res.status(200).json({
       success: true,
-      data: listings.map(mapListingToProperty),
+      data: mapped,
     });
   } catch (error) {
     next(error);

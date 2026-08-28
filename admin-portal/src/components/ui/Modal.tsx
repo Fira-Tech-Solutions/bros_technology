@@ -25,7 +25,6 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
 
   return (
     <div
-      className="modal-mobile"
       style={{
         position: 'fixed',
         inset: 0,
@@ -33,7 +32,7 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 8,
+        padding: '12px',
       }}
     >
       {/* Backdrop */}
@@ -41,21 +40,24 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
         style={{
           position: 'absolute',
           inset: 0,
-          background: 'rgba(10,10,10,0.4)',
+          background: 'rgba(10,10,10,0.5)',
           backdropFilter: 'blur(4px)',
         }}
         onClick={onClose}
       />
       {/* Panel */}
       <div
+        className={`modal-mobile-panel ${className}`.trim()}
         style={{
           position: 'relative',
           background: 'var(--color-surface)',
           borderRadius: 'var(--radius-xl)',
           border: '1px solid var(--color-border)',
           boxShadow: 'var(--shadow-lg)',
-          width: '100%',
           maxWidth: SIZES[size] || SIZES.md,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
           animation: 'fadeInScale 0.2s ease-out',
         }}
       >
@@ -65,17 +67,19 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '20px 24px',
+            padding: '16px 20px',
             borderBottom: '1px solid var(--color-border)',
+            flexShrink: 0,
           }}
         >
           <h3
             style={{
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: 600,
               fontFamily: 'var(--font-heading)',
               color: 'var(--color-text)',
               lineHeight: 1.2,
+              margin: 0,
             }}
           >
             {title}
@@ -108,7 +112,7 @@ export default function Modal({ open, onClose, title, children, size = 'md', cla
           </button>
         </div>
         {/* Content */}
-        <div style={{ padding: '16px 20px', maxHeight: '70vh', overflowY: 'auto' }}>
+        <div style={{ padding: '16px 20px', overflowY: 'auto', flex: 1, WebkitOverflowScrolling: 'touch' }}>
           {children}
         </div>
       </div>

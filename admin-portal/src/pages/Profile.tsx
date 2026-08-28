@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { put } from '../lib/api';
-import { Button, Input, PageHeader, LoadingSpinner } from '../components/ui';
+import { Button, Input, PageHeader } from '../components/ui';
 import { User, Save, ArrowLeft } from 'lucide-react';
 
 export default function Profile() {

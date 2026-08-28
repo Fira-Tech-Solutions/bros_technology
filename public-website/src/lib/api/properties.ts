@@ -21,6 +21,14 @@ export type Property = {
   id: string;
   title: string;
   price: number;
+  originalPrice?: number | null;
+  discountPercent?: number | null;
+  isFeatured?: boolean;
+  isBestSeller?: boolean;
+  isHotDeal?: boolean;
+  priority?: "TOP_PRIORITY" | "BEST_SELLER" | "HOT_DEAL" | "FEATURED" | "NORMAL";
+  badge?: string | null;
+  promoNote?: string | null;
   inStock: boolean;
   stockQuantity: number;
   brand: string;
@@ -32,6 +40,7 @@ export type Property = {
   gallery: string[];
   description: string;
   features: string[];
+  createdAt?: string;
 };
 
 export type PropertyFilters = {

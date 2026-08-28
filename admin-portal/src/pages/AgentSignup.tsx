@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { post } from '../lib/api';
-import { Button, Input, PageHeader } from '../components/ui';
+import { Button, Input } from '../components/ui';
 import { ArrowLeft, UserPlus } from 'lucide-react';
 
 export default function AgentSignup() {

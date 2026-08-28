@@ -25,6 +25,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { DOC_LINKS } from '../constants/docLinks';
+import { optimizeImageUrl } from '../lib/images';
 
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -69,6 +70,34 @@ export default function Layout() {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handlePrefetch = (to: string) => {
+    switch (to) {
+      case '/':
+      case '/properties':
+        queryClient.prefetchQuery({ queryKey: ['listings'] });
+        queryClient.prefetchQuery({ queryKey: ['categories'] });
+        break;
+      case '/categories':
+        queryClient.prefetchQuery({ queryKey: ['categories'] });
+        break;
+      case '/syndication':
+        queryClient.prefetchQuery({ queryKey: ['syndicationConfig'] });
+        queryClient.prefetchQuery({ queryKey: ['syndicationLogs'] });
+        break;
+      case '/finance':
+        queryClient.prefetchQuery({ queryKey: ['assetStats'] });
+        queryClient.prefetchQuery({ queryKey: ['listings'] });
+        break;
+      case '/agents':
+        queryClient.prefetchQuery({ queryKey: ['agents'] });
+        queryClient.prefetchQuery({ queryKey: ['agentCodes'] });
+        break;
+      case '/settings':
+        queryClient.prefetchQuery({ queryKey: ['settings'] });
+        break;
+    }
   };
 
   const NAV_HEIGHT = 48;
@@ -168,6 +197,7 @@ export default function Layout() {
               key={to}
               to={to}
               end={to === '/'}
+              onMouseEnter={() => handlePrefetch(to)}
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',
@@ -382,6 +412,7 @@ export default function Layout() {
               key={to}
               to={to}
               end={to === '/'}
+              onMouseEnter={() => handlePrefetch(to)}
               style={({ isActive }) => ({
                 display: 'flex',
                 alignItems: 'center',
@@ -707,7 +738,13 @@ export default function Layout() {
                   }}
                 >
                   {user?.profileImage ? (
-                    <img src={user.profileImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img
+                      src={optimizeImageUrl(user.profileImage, 'avatar')}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   ) : (
                     <User size={18} style={{ color: 'var(--color-primary)' }} />
                   )}

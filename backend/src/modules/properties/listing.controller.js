@@ -1,5 +1,4 @@
 import prisma from '../../config/prisma.js';
-import { handleSyndication } from '../syndication/listeners/telegramListener.js';
 import { cleanupImages } from '../../utils/imageProcessor.js';
 import { createNotification } from '../notifications/notification.controller.js';
 
@@ -55,11 +54,6 @@ export async function createListing(req, res, next) {
         stockQuantity: stockQuantity != null ? parseInt(stockQuantity) : 1,
       },
       include: LISTING_INCLUDE,
-    });
-
-    // Fire-and-forget: syndicate to Telegram (don't block response)
-    handleSyndication(listing.id, 'listing:created').catch((err) => {
-      console.error('[Listing] Syndication error:', err.message);
     });
 
     // Create notification for the agent
@@ -208,14 +202,29 @@ export async function updateListing(req, res, next) {
       stockQuantity,
     } = req.body;
 
-    // Merge new images with existing ones (new images append, existing preserved)
-    const images = req.images && req.images.length > 0
-      ? [...existing.images, ...req.images]
-      : existing.images;
+    // Support reordered/filtered existing images
+    let baseImages = existing.images;
+    if (req.body.existingImages) {
+      try {
+        const parsed = typeof req.body.existingImages === 'string'
+          ? JSON.parse(req.body.existingImages)
+          : req.body.existingImages;
+        if (Array.isArray(parsed)) {
+          baseImages = parsed;
+        }
+      } catch (_) {}
+    }
 
-    if (req.images && req.images.length > 0 && existing.images.length > 0) {
-      cleanupImages(existing.images).catch((err) => {
-        console.error('[Listing] Failed to cleanup old images:', err.message);
+    // Merge new images with base ones (new images append)
+    const images = req.images && req.images.length > 0
+      ? [...baseImages, ...req.images]
+      : baseImages;
+
+    // Cleanup only images that were actually removed
+    const removedImages = existing.images.filter(img => !baseImages.includes(img));
+    if (removedImages.length > 0) {
+      cleanupImages(removedImages).catch((err) => {
+        console.error('[Listing] Failed to cleanup removed images:', err.message);
       });
     }
 
@@ -250,11 +259,6 @@ export async function updateListing(req, res, next) {
         include: LISTING_INCLUDE,
       });
     }
-
-    // Fire-and-forget: syndicate to Telegram (don't block response)
-    handleSyndication(updated.id, 'listing:updated').catch((err) => {
-      console.error('[Listing] Syndication error:', err.message);
-    });
 
     if (agentId) {
       createNotification(

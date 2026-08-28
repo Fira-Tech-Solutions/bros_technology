@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAgentCodes, useAgents, useGenerateAgentCode, useRevokeAgentCode, useRemoveAgent } from '../hooks';
-import { Button, DataTable, Modal, Input, PageHeader, EmptyState, LoadingSpinner } from '../components/ui';
-import { Users, Plus, Trash2, Copy, Check, Shield, UserX, RefreshCw } from 'lucide-react';
+import { Button, DataTable, Modal, Input, PageHeader, LoadingSpinner } from '../components/ui';
+import { Users, Plus, Trash2, Copy, Check, Shield, UserX } from 'lucide-react';
 
 export default function Agents() {
   const [activeTab, setActiveTab] = useState('codes');

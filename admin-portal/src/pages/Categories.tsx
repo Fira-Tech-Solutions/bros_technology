@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from '../hooks';
-import { Button, DataTable, Modal, Input, Textarea, PageHeader, EmptyState, LoadingSpinner } from '../components/ui';
+import { Button, DataTable, Modal, Input, Textarea, PageHeader, LoadingSpinner } from '../components/ui';
 import { FolderOpen, Plus, Edit, Trash2, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, X, ChevronDown } from 'lucide-react';
 
 const ICON_MAP: Record<string, any> = {

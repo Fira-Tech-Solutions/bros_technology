@@ -11,7 +11,6 @@ export default function DataTable({
   className = '',
 }: any) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const totalPages = Math.ceil(data.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedData = showPagination ? data.slice(startIndex, startIndex + pageSize) : data;
@@ -77,13 +76,10 @@ export default function DataTable({
               paginatedData.map((row: any, rowIdx: number) => (
                 <tr
                   key={rowIdx}
+                  className="datatable-row"
                   onClick={() => onRowClick?.(row)}
-                  onMouseEnter={() => setHoveredRow(rowIdx)}
-                  onMouseLeave={() => setHoveredRow(null)}
                   style={{
-                    background: hoveredRow === rowIdx ? 'var(--color-bg)' : 'var(--color-surface)',
                     cursor: onRowClick ? 'pointer' : 'default',
-                    transition: 'background var(--transition-fast)',
                   }}
                 >
                   {columns.map((col: any, colIdx: number) => (
@@ -98,7 +94,7 @@ export default function DataTable({
                         verticalAlign: 'middle',
                       }}
                     >
-                      {col.render ? col.render(row, hoveredRow === rowIdx) : row[col.accessor]}
+                      {col.render ? col.render(row) : row[col.accessor]}
                     </td>
                   ))}
                 </tr>

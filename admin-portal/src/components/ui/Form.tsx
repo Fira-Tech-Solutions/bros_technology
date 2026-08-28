@@ -22,7 +22,7 @@ export function Input({ label, error, icon: Icon, className = '', style = {}, ..
   };
 
   return (
-    <div style={{ marginBottom: 0 }}>
+    <div className={className} style={{ marginBottom: 0 }}>
       {label && (
         <label
           style={{
@@ -102,7 +102,7 @@ export function Select({ label, error, children, className = '', style = {}, ...
   };
 
   return (
-    <div style={{ marginBottom: 0 }}>
+    <div className={className} style={{ marginBottom: 0 }}>
       {label && (
         <label
           style={{
@@ -153,11 +153,12 @@ export function Textarea({ label, error, className = '', style = {}, ...props }:
     resize: 'vertical' as const,
     lineHeight: 1.5,
     minHeight: 100,
+    boxSizing: 'border-box' as const,
     ...style,
   };
 
   return (
-    <div style={{ marginBottom: 0 }}>
+    <div className={className} style={{ marginBottom: 0 }}>
       {label && (
         <label
           style={{

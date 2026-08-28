@@ -11,6 +11,10 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Star,
+  Flame,
+  Sparkles,
+  Tag,
 } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { ErrorState } from "@/components/ErrorState";
@@ -218,16 +222,39 @@ function Detail() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 80, damping: 18 }}
-              className="flex items-center gap-3"
+              className="flex flex-wrap items-center gap-2.5 sm:gap-3"
             >
-              <span className="rounded-full glass px-3 py-1 text-xs uppercase tracking-widest text-foreground/90">
+              <span className="rounded-full glass px-3 py-1 text-xs uppercase tracking-widest text-foreground/90 font-medium">
                 {p.category}
               </span>
               {p.brand && (
-                <span className="rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-                  {t("property.brandNew")}
+                <span className="rounded-full bg-primary/20 text-primary border border-primary/30 px-3 py-1 text-xs font-semibold">
+                  {p.brand}
                 </span>
               )}
+
+              {/* Marketing Priority Badges */}
+              {(p.isBestSeller || p.priority === "BEST_SELLER") && (
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-amber-950 bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-300 shadow-md badge-shimmer">
+                  <Star className="h-3.5 w-3.5 fill-amber-950 text-amber-950" />
+                  {p.badge || "Best Seller"}
+                </span>
+              )}
+
+              {(p.priority === "TOP_PRIORITY" || p.isFeatured) && !p.isBestSeller && (
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-white bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 shadow-md badge-shimmer">
+                  <Sparkles className="h-3.5 w-3.5 fill-white text-white" />
+                  {p.badge || "Top Choice"}
+                </span>
+              )}
+
+              {((p.originalPrice && p.originalPrice > p.price) || (p.discountPercent && p.discountPercent > 0)) && (
+                <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold text-white bg-gradient-to-r from-red-500 via-rose-500 to-orange-500 shadow-md animate-pulse">
+                  <Flame className="h-3.5 w-3.5 fill-white text-white" />
+                  {p.discountPercent ? `${p.discountPercent}% OFF` : "Special Discount"}
+                </span>
+              )}
+
               {p.inStock ? (
                 (p.stockQuantity || 0) > 0 && (p.stockQuantity || 0) <= 3 ? (
                   <span className="flex items-center gap-1.5 text-xs text-orange-500 font-semibold">
@@ -255,14 +282,27 @@ function Detail() {
             >
               {p.title}
             </motion.h1>
-            <motion.p
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, type: "spring", stiffness: 80, damping: 18 }}
-              className="mt-3 font-display text-fluid-xl text-gradient-brand"
+              className="mt-3 flex items-baseline gap-3"
             >
-              {formatPrice(p.price)}
-            </motion.p>
+              <span className="font-display text-fluid-xl text-gradient-brand font-bold">
+                {formatPrice(p.price)}
+              </span>
+              {p.originalPrice && p.originalPrice > p.price && (
+                <span className="text-lg text-muted-foreground line-through font-sans">
+                  {formatPrice(p.originalPrice)}
+                </span>
+              )}
+            </motion.div>
+            {p.promoNote && (
+              <p className="mt-2 text-sm font-medium text-amber-400/90 flex items-center gap-1.5">
+                <Sparkles size={14} />
+                {p.promoNote}
+              </p>
+            )}
           </div>
         </div>
       </section>
@@ -365,7 +405,22 @@ function Detail() {
             <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
               {t("property.orderNow")}
             </p>
-            <p className="mt-3 font-display text-3xl text-gradient-brand">{formatPrice(p.price)}</p>
+            <div className="mt-3 flex items-baseline gap-3">
+              <span className="font-display text-3xl text-gradient-brand font-bold">
+                {formatPrice(p.price)}
+              </span>
+              {p.originalPrice && p.originalPrice > p.price && (
+                <span className="text-base text-muted-foreground line-through font-sans">
+                  {formatPrice(p.originalPrice)}
+                </span>
+              )}
+            </div>
+            {p.discountPercent && p.discountPercent > 0 && (
+              <span className="mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20">
+                <Flame size={12} className="text-red-400" />
+                Save {p.discountPercent}% OFF
+              </span>
+            )}
 
             <div className="mt-6 space-y-3">
               {/* Telegram */}
@@ -416,7 +471,14 @@ function Detail() {
                 <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
                   {t("property.from")}
                 </p>
-                <p className="font-display text-lg text-gradient-brand">{formatPrice(p.price)}</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="font-display text-lg text-gradient-brand font-bold">{formatPrice(p.price)}</p>
+                  {p.originalPrice && p.originalPrice > p.price && (
+                    <span className="text-xs text-muted-foreground line-through">
+                      {formatPrice(p.originalPrice)}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex gap-2">
                 <a

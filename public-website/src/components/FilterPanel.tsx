@@ -91,11 +91,12 @@ function SelectFilter({
         <div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-border bg-card">
           <button
             type="button"
-            onClick={() => { onChange(field, undefined); onToggle(); }}
+            onClick={() => {
+              onChange(field, undefined);
+              onToggle();
+            }}
             className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors ${
-              !value
-                ? "bg-brand/10 text-brand font-medium"
-                : "text-foreground hover:bg-accent"
+              !value ? "bg-brand/10 text-brand font-medium" : "text-foreground hover:bg-accent"
             }`}
           >
             All
@@ -104,7 +105,10 @@ function SelectFilter({
             <button
               key={opt}
               type="button"
-              onClick={() => { onChange(field, opt); onToggle(); }}
+              onClick={() => {
+                onChange(field, opt);
+                onToggle();
+              }}
               className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors border-t border-border ${
                 value === opt
                   ? "bg-brand/10 text-brand font-medium"
@@ -153,7 +157,10 @@ function BooleanFilter({
         <div className="mt-2 max-h-48 overflow-y-auto rounded-xl border border-border bg-card">
           <button
             type="button"
-            onClick={() => { onChange(field, undefined); onToggle(); }}
+            onClick={() => {
+              onChange(field, undefined);
+              onToggle();
+            }}
             className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors ${
               value === undefined
                 ? "bg-brand/10 text-brand font-medium"
@@ -164,7 +171,10 @@ function BooleanFilter({
           </button>
           <button
             type="button"
-            onClick={() => { onChange(field, true); onToggle(); }}
+            onClick={() => {
+              onChange(field, true);
+              onToggle();
+            }}
             className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors border-t border-border ${
               value === true
                 ? "bg-brand/10 text-brand font-medium"
@@ -175,7 +185,10 @@ function BooleanFilter({
           </button>
           <button
             type="button"
-            onClick={() => { onChange(field, false); onToggle(); }}
+            onClick={() => {
+              onChange(field, false);
+              onToggle();
+            }}
             className={`flex w-full items-center px-3 py-2.5 text-sm text-left transition-colors border-t border-border ${
               value === false
                 ? "bg-brand/10 text-brand font-medium"

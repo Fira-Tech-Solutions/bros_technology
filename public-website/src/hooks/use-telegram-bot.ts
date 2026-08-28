@@ -7,7 +7,7 @@ interface TelegramBotInfo {
   id: number;
 }
 
-const FALLBACK_USERNAME = import.meta.env.VITE_TELEGRAM_BOT_USERNAME || "brostechnology";
+const FALLBACK_USERNAME = env.TELEGRAM_BOT_USERNAME;
 
 async function fetchTelegramBot(): Promise<TelegramBotInfo> {
   const res = await fetch(`${env.API_URL}/api/public/telegram-bot`);

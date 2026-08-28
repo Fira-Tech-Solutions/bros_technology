@@ -2,18 +2,28 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { get, post, patch, del } from '../lib/api';
 
 const fetchAll = async (endpoint: string) => {
-  let all: any[] = [];
-  let page = 1;
-  while (true) {
-    const res = await get(endpoint, { params: { page, limit: 100 } });
-    const chunk = res.data?.data || res.data?.listings || res.data || [];
-    const arr = Array.isArray(chunk) ? chunk : [];
-    all = [...all, ...arr];
-    const total = res.data?.pagination?.total || 0;
-    if (all.length >= total || arr.length < 100) break;
-    page++;
+  const firstRes = await get(endpoint, { params: { page: 1, limit: 100 } });
+  const firstChunk = firstRes.data?.data || firstRes.data?.listings || firstRes.data || [];
+  const initialList = Array.isArray(firstChunk) ? firstChunk : [];
+  const total = firstRes.data?.pagination?.total || initialList.length;
+  const totalPages = Math.ceil(total / 100);
+
+  if (totalPages <= 1 || initialList.length < 100) {
+    return initialList;
   }
-  return all;
+
+  const remainingPromises = [];
+  for (let p = 2; p <= totalPages; p++) {
+    remainingPromises.push(
+      get(endpoint, { params: { page: p, limit: 100 } }).then((res) => {
+        const chunk = res.data?.data || res.data?.listings || res.data || [];
+        return Array.isArray(chunk) ? chunk : [];
+      })
+    );
+  }
+
+  const remainingResults = await Promise.all(remainingPromises);
+  return [initialList, ...remainingResults].flat();
 };
 
 export function useListings() {

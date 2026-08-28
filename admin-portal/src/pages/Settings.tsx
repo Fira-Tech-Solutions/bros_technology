@@ -4,8 +4,8 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings, useUpdateSettings } from '../hooks';
-import { Button, Input, Textarea, LoadingSpinner } from '../components/ui';
-import { ChevronRight, Sun, Moon, Globe, Store, Phone, Mail, MapPin, ExternalLink, Info, LogOut, Save } from 'lucide-react';
+import { Button, Input, LoadingSpinner } from '../components/ui';
+import { ChevronRight, Sun, Moon, Globe, Phone, Mail, MapPin, ExternalLink, Info, LogOut, Save } from 'lucide-react';
 
 export default function Settings() {
   const navigate = useNavigate();
