@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCategories, useCreateListing } from '../hooks';
 import { Button, Input, Textarea, Select } from '../components/ui';
-import { ArrowLeft, Upload, X, Check, ChevronDown, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, Plus } from 'lucide-react';
+import { ArrowLeft, Upload, X, Check, ChevronDown, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, Plus, AlertTriangle } from 'lucide-react';
 import { PRODUCT_OPTIONS, FIELD_LABELS } from '../config/productOptions';
 
 const ICON_MAP: Record<string, any> = {
@@ -32,6 +32,7 @@ export default function AddListing() {
   const [showFieldDropdown, setShowFieldDropdown] = useState<string | null>(null);
   const [customMode, setCustomMode] = useState<string | null>(null);
   const [customValue, setCustomValue] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   const updateForm = (key: string, value: any) => setForm(prev => ({ ...prev, [key]: value }));
 
@@ -76,6 +77,7 @@ export default function AddListing() {
   };
 
   const handleSubmit = async (addAnother = false) => {
+    setError(null);
     setSubmitting(true);
     try {
       const fd = new FormData();
@@ -106,8 +108,14 @@ export default function AddListing() {
       } else {
         navigate('/properties');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      const data = err.response?.data;
+      if (data?.details && Array.isArray(data.details)) {
+        const msgs = data.details.map((d: any) => d.message).join(', ');
+        setError(msgs || data.error || 'Validation failed');
+      } else {
+        setError(data?.error || err.message || 'Something went wrong');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -142,6 +150,22 @@ export default function AddListing() {
           <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i + 1 <= step ? 'var(--color-primary)' : 'var(--color-border)', transition: 'background 0.3s ease' }} />
         ))}
       </div>
+
+      {error && (
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', marginBottom: 20, borderRadius: 'var(--radius-md)', background: '#fef2f2', border: '1px solid #fecaca', animation: 'fadeIn 0.2s ease-out' }}>
+          <AlertTriangle size={16} style={{ color: '#dc2626', flexShrink: 0, marginTop: 2 }} />
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#991b1b', fontFamily: 'var(--font-body)', margin: 0 }}>Validation Error</p>
+            <p style={{ fontSize: 13, color: '#b91c1c', fontFamily: 'var(--font-body)', margin: '4px 0 0 0' }}>{error}</p>
+          </div>
+          <button
+            onClick={() => setError(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#991b1b', padding: 2, flexShrink: 0 }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {step === 1 && (
         <div className="card-padding" style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.2s ease-out' }}>
