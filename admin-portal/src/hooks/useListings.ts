@@ -58,7 +58,7 @@ export function useDeleteListing() {
 export function useCreateListing() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (fd: FormData) => post('/api/listings', fd),
+    mutationFn: (fd: FormData) => post('/api/listings', fd, { timeout: 120000 }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['listings'] });
     },

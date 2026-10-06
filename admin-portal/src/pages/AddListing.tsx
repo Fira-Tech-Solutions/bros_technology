@@ -131,10 +131,45 @@ export default function AddListing() {
     return Array.isArray(options) ? options : [];
   };
 
-  const handleImageSelect = (e: any) => {
+  const compressImage = (file: File): Promise<File> =>
+    new Promise((resolve) => {
+      if (!file.type.startsWith('image/')) return resolve(file);
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const maxDim = 1200;
+        let { width, height } = img;
+        if (width > maxDim || height > maxDim) {
+          const scale = Math.min(maxDim / width, maxDim / height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return resolve(file);
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (!blob) return resolve(file);
+          const ext = blob.type === 'image/webp' ? 'webp' : (file.name.split('.').pop() || 'jpg');
+          const name = file.name.replace(/\.[^.]+$/, '') + '.' + ext;
+          resolve(new File([blob], name, { type: blob.type || `image/${ext}` }));
+        }, 'image/webp', 0.8);
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      };
+      img.src = url;
+    });
+
+  const handleImageSelect = async (e: any) => {
     const files = Array.from(e.target.files || []) as File[];
-    const newPreviews = files.map(f => URL.createObjectURL(f));
-    updateForm('images', [...form.images, ...files]);
+    const compressed = await Promise.all(files.map(compressImage));
+    const newPreviews = compressed.map(f => URL.createObjectURL(f));
+    updateForm('images', [...form.images, ...compressed]);
     updateForm('imagePreviews', [...form.imagePreviews, ...newPreviews]);
   };
 
