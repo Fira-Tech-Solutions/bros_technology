@@ -165,9 +165,14 @@ export default function AddListing() {
       img.src = url;
     });
 
+  const MAX_IMAGES = 6;
+
   const handleImageSelect = async (e: any) => {
     const files = Array.from(e.target.files || []) as File[];
-    const compressed = await Promise.all(files.map(compressImage));
+    const remaining = MAX_IMAGES - form.images.length;
+    if (remaining <= 0) return;
+    const capped = files.slice(0, remaining);
+    const compressed = await Promise.all(capped.map(compressImage));
     const newPreviews = compressed.map(f => URL.createObjectURL(f));
     updateForm('images', [...form.images, ...compressed]);
     updateForm('imagePreviews', [...form.imagePreviews, ...newPreviews]);
@@ -664,28 +669,30 @@ export default function AddListing() {
                 </button>
               </div>
             ))}
-            <label
-              style={{
-                aspectRatio: '1',
-                borderRadius: 'var(--radius-md)',
-                border: '2px dashed var(--color-border)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'border-color var(--transition-fast)',
-                gap: 6,
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; }}
-            >
-              <Upload size={24} style={{ color: 'var(--color-text-muted)' }} />
-              <span style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)' }}>Add Photo</span>
-              <input type="file" accept="image/*" multiple onChange={handleImageSelect} style={{ display: 'none' }} />
-            </label>
+            {form.images.length < MAX_IMAGES && (
+              <label
+                style={{
+                  aspectRatio: '1',
+                  borderRadius: 'var(--radius-md)',
+                  border: '2px dashed var(--color-border)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'border-color var(--transition-fast)',
+                  gap: 6,
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-primary)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)'; }}
+              >
+                <Upload size={24} style={{ color: 'var(--color-text-muted)' }} />
+                <span style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)' }}>Add Photo</span>
+                <input type="file" accept="image/*" multiple onChange={handleImageSelect} style={{ display: 'none' }} />
+              </label>
+            )}
           </div>
-          <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', marginTop: 12 }}>Upload up to 10 photos. First photo will be the cover.</p>
+          <p style={{ fontSize: 12, color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)', marginTop: 12 }}>Upload up to {MAX_IMAGES} photos. First photo will be the cover.</p>
         </div>
       )}
 
