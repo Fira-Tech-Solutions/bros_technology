@@ -33,8 +33,20 @@ export default function AddListing() {
   const [customMode, setCustomMode] = useState<string | null>(null);
   const [customValue, setCustomValue] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const updateForm = (key: string, value: any) => setForm(prev => ({ ...prev, [key]: value }));
+  const clearError = (key: string) =>
+    setErrors(prev => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+
+  const updateForm = (key: string, value: any) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+    clearError(key);
+  };
 
   const selectCategory = (cat: any) => {
     setSelectedCategory(cat);
@@ -46,6 +58,61 @@ export default function AddListing() {
 
   const updateAttribute = (key: string, value: any) => {
     setAttributes(prev => ({ ...prev, [key]: value }));
+    clearError(key);
+    clearError(`attr.${key}`);
+  };
+
+  const isPresent = (value: any) => value !== undefined && value !== null && value !== '';
+
+  const validateStep1 = (): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (!String(form.title ?? '').trim()) errs.title = 'Product title is required';
+    if (!isPresent(form.price)) {
+      errs.price = 'Price is required';
+    } else if (Number.isNaN(Number(form.price)) || Number(form.price) <= 0) {
+      errs.price = 'Price must be a number greater than 0';
+    }
+    if (!form.categoryId) errs.categoryId = 'Please select a category';
+    if (!isPresent(form.stockQuantity)) {
+      errs.stockQuantity = 'Stock quantity is required';
+    } else if (!Number.isInteger(Number(form.stockQuantity)) || Number(form.stockQuantity) < 1) {
+      errs.stockQuantity = 'Stock quantity must be a whole number of 1 or more';
+    }
+    const originalPrice = attributes.originalPrice;
+    if (isPresent(originalPrice) && (Number.isNaN(Number(originalPrice)) || Number(originalPrice) <= 0)) {
+      errs.originalPrice = 'Original price must be a number greater than 0';
+    }
+    return errs;
+  };
+
+  const validateStep2 = (): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    for (const rule of schemaRules) {
+      const label = FIELD_LABELS[rule.field] || rule.field;
+      const value = attributes[rule.field];
+      const present = isPresent(value);
+      if (rule.required && !present) {
+        errs[`attr.${rule.field}`] = `${label} is required`;
+        continue;
+      }
+      if (present && rule.type === 'number' && Number.isNaN(Number(value))) {
+        errs[`attr.${rule.field}`] = `${label} must be a valid number`;
+      }
+    }
+    return errs;
+  };
+
+  const stepOfKey = (key: string) => (key.startsWith('attr.') ? 2 : 1);
+
+  const focusFirstError = (errs: Record<string, string>) => {
+    const first = Object.keys(errs)[0];
+    if (first) setStep(stepOfKey(first));
+  };
+
+  const goNext = () => {
+    const errs = step === 1 ? validateStep1() : validateStep2();
+    setErrors(errs);
+    if (Object.keys(errs).length === 0) setStep(step + 1);
   };
 
   const getFieldOptions = (fieldName: string, category: any): string[] => {
@@ -78,6 +145,13 @@ export default function AddListing() {
 
   const handleSubmit = async (addAnother = false) => {
     setError(null);
+    const allErrs = { ...validateStep1(), ...validateStep2() };
+    if (Object.keys(allErrs).length > 0) {
+      setErrors(allErrs);
+      focusFirstError(allErrs);
+      return;
+    }
+    setErrors({});
     setSubmitting(true);
     try {
       const fd = new FormData();
@@ -104,6 +178,7 @@ export default function AddListing() {
           imagePreviews: [],
         });
         setAttributes({});
+        setErrors({});
         setStep(1);
       } else {
         navigate('/properties');
@@ -111,6 +186,16 @@ export default function AddListing() {
     } catch (err: any) {
       const data = err.response?.data;
       if (data?.details && Array.isArray(data.details)) {
+        const fieldErrs: Record<string, string> = {};
+        for (const d of data.details) {
+          if (!d?.field) continue;
+          const label = FIELD_LABELS[d.field] || d.field;
+          fieldErrs[`attr.${d.field}`] = d.message || `${label} is required`;
+        }
+        if (Object.keys(fieldErrs).length > 0) {
+          setErrors(prev => ({ ...prev, ...fieldErrs }));
+          focusFirstError(fieldErrs);
+        }
         const msgs = data.details.map((d: any) => d.message).join(', ');
         setError(msgs || data.error || 'Validation failed');
       } else {
@@ -127,6 +212,7 @@ export default function AddListing() {
 
   const schemaRules = selectedCategory?.schemaRules || [];
   const steps = ['Basic Info', 'Details', 'Images'];
+  const fieldErrorStyle = { marginTop: 4, fontSize: 13, color: 'var(--color-danger)', fontFamily: 'var(--font-body)' };
 
   return (
     <div style={{ maxWidth: 720, margin: '0 auto' }}>
@@ -169,20 +255,21 @@ export default function AddListing() {
 
       {step === 1 && (
         <div className="card-padding" style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.2s ease-out' }}>
-          <Input label="Product Title" placeholder="e.g. iPhone 15 Pro Max 256GB" value={form.title} onChange={(e: any) => updateForm('title', e.target.value)} />
+          <Input label="Product Title" required placeholder="e.g. iPhone 15 Pro Max 256GB" value={form.title} error={errors.title} onChange={(e: any) => updateForm('title', e.target.value)} />
           <Textarea label="Description" placeholder="Describe the product condition, features, etc." rows={4} value={form.description} onChange={(e: any) => updateForm('description', e.target.value)} />
           <div className="form-grid-2">
-            <Input label="Price (ETB)" type="number" placeholder="0" value={form.price} onChange={(e: any) => updateForm('price', e.target.value)} />
+            <Input label="Price (ETB)" required type="number" placeholder="0" value={form.price} error={errors.price} onChange={(e: any) => updateForm('price', e.target.value)} />
             <Input
               label="Original Price (ETB) - for Discount Ad"
               type="number"
               placeholder="e.g. 50000"
               value={attributes.originalPrice || ''}
+              error={errors.originalPrice}
               onChange={(e: any) => updateAttribute('originalPrice', e.target.value)}
             />
           </div>
           <div className="form-grid-2">
-            <Input label="Stock Quantity" type="number" placeholder="1" value={form.stockQuantity} onChange={(e: any) => updateForm('stockQuantity', e.target.value)} />
+            <Input label="Stock Quantity" required type="number" placeholder="1" value={form.stockQuantity} error={errors.stockQuantity} onChange={(e: any) => updateForm('stockQuantity', e.target.value)} />
             <Select
               label="Marketing Priority & Ranking"
               value={attributes.priority || 'NORMAL'}
@@ -198,7 +285,9 @@ export default function AddListing() {
 
           {/* Category Dropdown */}
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6, fontFamily: 'var(--font-body)' }}>Category</label>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6, fontFamily: 'var(--font-body)' }}>
+              Category<span style={{ color: 'var(--color-danger)', marginLeft: 2 }}>*</span>
+            </label>
             <div style={{ position: 'relative' }}>
               <button
                 onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
@@ -207,7 +296,7 @@ export default function AddListing() {
                   height: 44,
                   padding: '0 14px',
                   borderRadius: 'var(--radius-md)',
-                  border: '1px solid var(--color-border)',
+                  border: `1px solid ${errors.categoryId ? 'var(--color-danger)' : 'var(--color-border)'}`,
                   background: 'var(--color-bg)',
                   fontSize: 14,
                   fontFamily: 'var(--font-body)',
@@ -295,10 +384,13 @@ export default function AddListing() {
                     })}
                   </div>
                 </div>
-              )}
+                )}
+              </div>
             </div>
+            {errors.categoryId && (
+              <p style={fieldErrorStyle}>{errors.categoryId}</p>
+            )}
           </div>
-        </div>
       )}
 
       {step === 2 && (
@@ -319,38 +411,45 @@ export default function AddListing() {
               {schemaRules.map((rule: any, i: number) => {
                 const fieldLabel = FIELD_LABELS[rule.field] || rule.field;
                 const options = getFieldOptions(rule.field, selectedCategory);
+                const attrError = errors[`attr.${rule.field}`];
 
                 if (rule.type === 'boolean') {
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 'var(--radius-md)', background: 'var(--color-bg)', border: '1px solid var(--color-border)' }}>
-                      <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', fontFamily: 'var(--font-body)' }}>{fieldLabel}</span>
-                      <button
-                        onClick={() => updateAttribute(rule.field, !attributes[rule.field])}
-                        style={{
-                          width: 44,
-                          height: 24,
-                          borderRadius: 12,
-                          background: attributes[rule.field] ? 'var(--color-primary)' : 'var(--color-border)',
-                          border: 'none',
-                          cursor: 'pointer',
-                          position: 'relative',
-                          transition: 'background var(--transition-fast)',
-                        }}
-                      >
-                        <div
+                    <div key={i}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 'var(--radius-md)', background: 'var(--color-bg)', border: `1px solid ${attrError ? 'var(--color-danger)' : 'var(--color-border)'}` }}>
+                        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--color-text)', fontFamily: 'var(--font-body)' }}>
+                          {fieldLabel}
+                          {rule.required && <span style={{ color: 'var(--color-danger)', marginLeft: 2 }}>*</span>}
+                        </span>
+                        <button
+                          onClick={() => updateAttribute(rule.field, !attributes[rule.field])}
                           style={{
-                            width: 18,
-                            height: 18,
-                            borderRadius: '50%',
-                            background: '#fff',
-                            position: 'absolute',
-                            top: 3,
-                            left: attributes[rule.field] ? 23 : 3,
-                            transition: 'left var(--transition-fast)',
-                            boxShadow: 'var(--shadow-sm)',
+                            width: 44,
+                            height: 24,
+                            borderRadius: 12,
+                            background: attributes[rule.field] ? 'var(--color-primary)' : 'var(--color-border)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            position: 'relative',
+                            transition: 'background var(--transition-fast)',
                           }}
-                        />
-                      </button>
+                        >
+                          <div
+                            style={{
+                              width: 18,
+                              height: 18,
+                              borderRadius: '50%',
+                              background: '#fff',
+                              position: 'absolute',
+                              top: 3,
+                              left: attributes[rule.field] ? 23 : 3,
+                              transition: 'left var(--transition-fast)',
+                              boxShadow: 'var(--shadow-sm)',
+                            }}
+                          />
+                        </button>
+                      </div>
+                      {attrError && <p style={fieldErrorStyle}>{attrError}</p>}
                     </div>
                   );
                 }
@@ -364,7 +463,10 @@ export default function AddListing() {
                     return (
                       <div key={i}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                          <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-body)' }}>{fieldLabel}</label>
+                          <label style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-text)', fontFamily: 'var(--font-body)' }}>
+                            {fieldLabel}
+                            {rule.required && <span style={{ color: 'var(--color-danger)', marginLeft: 2 }}>*</span>}
+                          </label>
                           <button
                             onClick={() => { setCustomMode(null); }}
                             style={{ fontSize: 12, color: 'var(--color-primary)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
@@ -376,6 +478,7 @@ export default function AddListing() {
                           <Input
                             placeholder={`Type custom ${fieldLabel.toLowerCase()}...`}
                             value={customValue}
+                            error={attrError}
                             onChange={(e: any) => setCustomValue(e.target.value)}
                             style={{ flex: 1 }}
                             autoFocus
@@ -398,7 +501,10 @@ export default function AddListing() {
 
                   return (
                     <div key={i} style={{ position: 'relative' }}>
-                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6, fontFamily: 'var(--font-body)' }}>{fieldLabel}</label>
+                      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--color-text)', marginBottom: 6, fontFamily: 'var(--font-body)' }}>
+                        {fieldLabel}
+                        {rule.required && <span style={{ color: 'var(--color-danger)', marginLeft: 2 }}>*</span>}
+                      </label>
                       <button
                         onClick={() => setShowFieldDropdown(showFieldDropdown === rule.field ? null : rule.field)}
                         style={{
@@ -406,7 +512,7 @@ export default function AddListing() {
                           height: 44,
                           padding: '0 14px',
                           borderRadius: 'var(--radius-md)',
-                          border: '1px solid var(--color-border)',
+                          border: `1px solid ${attrError ? 'var(--color-danger)' : 'var(--color-border)'}`,
                           background: 'var(--color-bg)',
                           fontSize: 14,
                           fontFamily: 'var(--font-body)',
@@ -482,6 +588,7 @@ export default function AddListing() {
                           </div>
                         </div>
                       )}
+                      {attrError && <p style={fieldErrorStyle}>{attrError}</p>}
                     </div>
                   );
                 }
@@ -490,6 +597,8 @@ export default function AddListing() {
                   <Input
                     key={i}
                     label={fieldLabel}
+                    required={rule.required}
+                    error={attrError}
                     value={attributes[rule.field] || ''}
                     onChange={(e: any) => updateAttribute(rule.field, e.target.value)}
                   />
@@ -550,14 +659,13 @@ export default function AddListing() {
           {step === 1 ? 'Cancel' : 'Back'}
         </Button>
         {step < 3 ? (
-          <Button onClick={() => setStep(step + 1)}>Next Step</Button>
+          <Button onClick={goNext}>Next Step</Button>
         ) : (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <Button
               variant="secondary"
               loading={submitting}
               onClick={() => handleSubmit(true)}
-              disabled={!form.title || !form.price || !form.categoryId}
             >
               Create & Add Another
             </Button>
@@ -565,7 +673,6 @@ export default function AddListing() {
               icon={Check}
               loading={submitting}
               onClick={() => handleSubmit(false)}
-              disabled={!form.title || !form.price || !form.categoryId}
             >
               Create Product
             </Button>

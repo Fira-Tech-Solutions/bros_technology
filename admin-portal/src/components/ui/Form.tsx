@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function Input({ label, error, icon: Icon, className = '', style = {}, ...props }: any) {
+export function Input({ label, error, icon: Icon, className = '', style = {}, required, ...props }: any) {
   const [focused, setFocused] = React.useState(false);
 
   const inputStyle: React.CSSProperties = {
@@ -35,6 +35,7 @@ export function Input({ label, error, icon: Icon, className = '', style = {}, ..
           }}
         >
           {label}
+          {required && <span style={{ color: 'var(--color-danger)', marginLeft: 2 }}>*</span>}
         </label>
       )}
       <div style={{ position: 'relative' }}>
@@ -76,7 +77,7 @@ export function Input({ label, error, icon: Icon, className = '', style = {}, ..
   );
 }
 
-export function Select({ label, error, children, className = '', style = {}, ...props }: any) {
+export function Select({ label, error, children, className = '', style = {}, required, ...props }: any) {
   const [focused, setFocused] = React.useState(false);
 
   const selectStyle: React.CSSProperties = {
@@ -115,6 +116,7 @@ export function Select({ label, error, children, className = '', style = {}, ...
           }}
         >
           {label}
+          {required && <span style={{ color: 'var(--color-danger)', marginLeft: 2 }}>*</span>}
         </label>
       )}
       <select
@@ -134,7 +136,7 @@ export function Select({ label, error, children, className = '', style = {}, ...
   );
 }
 
-export function Textarea({ label, error, className = '', style = {}, ...props }: any) {
+export function Textarea({ label, error, className = '', style = {}, required, ...props }: any) {
   const [focused, setFocused] = React.useState(false);
 
   const textareaStyle: React.CSSProperties = {
@@ -171,6 +173,7 @@ export function Textarea({ label, error, className = '', style = {}, ...props }:
           }}
         >
           {label}
+          {required && <span style={{ color: 'var(--color-danger)', marginLeft: 2 }}>*</span>}
         </label>
       )}
       <textarea
