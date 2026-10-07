@@ -1,5 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { get, post, patch, del } from '../lib/api';
+import { toast } from '../contexts/ToastContext';
+
+const getErrorMessage = (err: any) => {
+  const data = err?.response?.data;
+  if (data?.details && Array.isArray(data.details)) {
+    const msgs = data.details.map((d: any) => d.message).filter(Boolean).join(', ');
+    return msgs || data?.error || 'Something went wrong';
+  }
+  return data?.error || err?.message || 'Something went wrong';
+};
 
 const fetchAll = async (endpoint: string) => {
   const firstRes = await get(endpoint, { params: { page: 1, limit: 100 } });
@@ -61,6 +71,10 @@ export function useCreateListing() {
     mutationFn: (fd: FormData) => post('/api/listings', fd, { timeout: 120000 }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['listings'] });
+      toast('Product created successfully', 'success');
+    },
+    onError: (err: any) => {
+      toast(getErrorMessage(err), 'error');
     },
   });
 }

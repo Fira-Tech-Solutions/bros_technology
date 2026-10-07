@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useCategories, useCreateListing } from '../hooks';
 import { Button, Input, Textarea, Select } from '../components/ui';
-import { ArrowLeft, Upload, X, Check, ChevronDown, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, Plus, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Upload, X, Check, ChevronDown, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, Plus } from 'lucide-react';
 import { PRODUCT_OPTIONS, FIELD_LABELS } from '../config/productOptions';
 
 const ICON_MAP: Record<string, any> = {
@@ -21,7 +21,6 @@ export default function AddListing() {
   const { data: categories = [] } = useCategories();
   const createListing = useCreateListing();
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [categorySearch, setCategorySearch] = useState('');
   const [form, setForm] = useState<Record<string, any>>({
@@ -32,7 +31,7 @@ export default function AddListing() {
   const [showFieldDropdown, setShowFieldDropdown] = useState<string | null>(null);
   const [customMode, setCustomMode] = useState<string | null>(null);
   const [customValue, setCustomValue] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<'create' | 'another' | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const clearError = (key: string) =>
@@ -183,8 +182,7 @@ export default function AddListing() {
     updateForm('imagePreviews', form.imagePreviews.filter((_: any, i: number) => i !== index));
   };
 
-  const handleSubmit = async (addAnother = false) => {
-    setError(null);
+  const handleSubmit = (addAnother = false) => {
     const allErrs = { ...validateStep1(), ...validateStep2() };
     if (Object.keys(allErrs).length > 0) {
       setErrors(allErrs);
@@ -192,57 +190,40 @@ export default function AddListing() {
       return;
     }
     setErrors({});
-    setSubmitting(true);
-    try {
-      const fd = new FormData();
-      fd.append('title', form.title);
-      fd.append('description', form.description || '');
-      fd.append('price', form.price);
-      fd.append('categoryId', form.categoryId);
-      fd.append('agentId', user?.id || '');
-      fd.append('status', 'AVAILABLE');
-      fd.append('attributes', JSON.stringify(attributes));
-      fd.append('stockQuantity', form.stockQuantity || '1');
-      form.images.forEach((img: any) => fd.append('images', img));
-      await createListing.mutateAsync(fd);
+    setPendingAction(addAnother ? 'another' : 'create');
 
-      if (addAnother) {
-        // Reset form for next product but keep category
-        setForm({
-          title: '',
-          description: '',
-          price: '',
-          categoryId: form.categoryId,
-          stockQuantity: '1',
-          images: [],
-          imagePreviews: [],
-        });
-        setAttributes({});
-        setErrors({});
-        setStep(1);
-      } else {
-        navigate('/properties');
-      }
-    } catch (err: any) {
-      const data = err.response?.data;
-      if (data?.details && Array.isArray(data.details)) {
-        const fieldErrs: Record<string, string> = {};
-        for (const d of data.details) {
-          if (!d?.field) continue;
-          const label = FIELD_LABELS[d.field] || d.field;
-          fieldErrs[`attr.${d.field}`] = d.message || `${label} is required`;
-        }
-        if (Object.keys(fieldErrs).length > 0) {
-          setErrors(prev => ({ ...prev, ...fieldErrs }));
-          focusFirstError(fieldErrs);
-        }
-        const msgs = data.details.map((d: any) => d.message).join(', ');
-        setError(msgs || data.error || 'Validation failed');
-      } else {
-        setError(data?.error || err.message || 'Something went wrong');
-      }
-    } finally {
-      setSubmitting(false);
+    const fd = new FormData();
+    fd.append('title', form.title);
+    fd.append('description', form.description || '');
+    fd.append('price', form.price);
+    fd.append('categoryId', form.categoryId);
+    fd.append('agentId', user?.id || '');
+    fd.append('status', 'AVAILABLE');
+    fd.append('attributes', JSON.stringify(attributes));
+    fd.append('stockQuantity', form.stockQuantity || '1');
+    form.images.forEach((img: any) => fd.append('images', img));
+
+    // Fire the upload in the background — the mutation lives on the query client,
+    // so it keeps running after navigation and reports via toast.
+    createListing.mutate(fd);
+
+    if (addAnother) {
+      // Reset form for next product but keep category
+      setForm({
+        title: '',
+        description: '',
+        price: '',
+        categoryId: form.categoryId,
+        stockQuantity: '1',
+        images: [],
+        imagePreviews: [],
+      });
+      setAttributes({});
+      setErrors({});
+      setStep(1);
+      setPendingAction(null);
+    } else {
+      navigate('/properties');
     }
   };
 
@@ -276,22 +257,6 @@ export default function AddListing() {
           <div key={i} style={{ flex: 1, height: 4, borderRadius: 2, background: i + 1 <= step ? 'var(--color-primary)' : 'var(--color-border)', transition: 'background 0.3s ease' }} />
         ))}
       </div>
-
-      {error && (
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '12px 14px', marginBottom: 20, borderRadius: 'var(--radius-md)', background: '#fef2f2', border: '1px solid #fecaca', animation: 'fadeIn 0.2s ease-out' }}>
-          <AlertTriangle size={16} style={{ color: '#dc2626', flexShrink: 0, marginTop: 2 }} />
-          <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 13, fontWeight: 600, color: '#991b1b', fontFamily: 'var(--font-body)', margin: 0 }}>Validation Error</p>
-            <p style={{ fontSize: 13, color: '#b91c1c', fontFamily: 'var(--font-body)', margin: '4px 0 0 0' }}>{error}</p>
-          </div>
-          <button
-            onClick={() => setError(null)}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#991b1b', padding: 2, flexShrink: 0 }}
-          >
-            <X size={14} />
-          </button>
-        </div>
-      )}
 
       {step === 1 && (
         <div className="card-padding" style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)', display: 'flex', flexDirection: 'column', gap: 20, animation: 'fadeIn 0.2s ease-out' }}>
@@ -706,14 +671,14 @@ export default function AddListing() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <Button
               variant="secondary"
-              loading={submitting}
+              loading={pendingAction === 'another'}
               onClick={() => handleSubmit(true)}
             >
               Create & Add Another
             </Button>
             <Button
               icon={Check}
-              loading={submitting}
+              loading={pendingAction === 'create'}
               onClick={() => handleSubmit(false)}
             >
               Create Product
