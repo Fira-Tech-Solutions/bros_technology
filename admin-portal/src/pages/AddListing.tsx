@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { toast } from '../contexts/ToastContext';
 import { useCategories, useCreateListing } from '../hooks';
 import { Button, Input, Textarea, Select } from '../components/ui';
 import { ArrowLeft, Upload, X, Check, ChevronDown, Smartphone, Laptop, Headphones, Watch, Monitor, Tag, Plus } from 'lucide-react';
@@ -206,6 +207,7 @@ export default function AddListing() {
     // Fire the upload in the background — the mutation lives on the query client,
     // so it keeps running after navigation and reports via toast.
     createListing.mutate(fd);
+    toast('Creating product in background — you\'ll be notified when it\'s done', 'info');
 
     if (addAnother) {
       // Reset form for next product but keep category

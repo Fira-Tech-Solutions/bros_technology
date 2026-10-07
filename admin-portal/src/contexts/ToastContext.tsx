@@ -61,7 +61,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           display: 'flex',
           flexDirection: 'column',
           gap: 10,
-          width: 'min(360px, calc(100vw - 40px))',
+          width: 'min(440px, calc(100vw - 32px))',
         }}
       >
         {toasts.map(t => {
@@ -72,8 +72,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               style={{
                 display: 'flex',
                 alignItems: 'flex-start',
-                gap: 10,
-                padding: '12px 14px',
+                gap: 12,
+                padding: '16px 18px',
                 borderRadius: 'var(--radius-md)',
                 background: 'var(--color-surface)',
                 borderLeft: `4px solid ${border}`,
@@ -81,8 +81,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 animation: 'slideInRight 0.25s ease-out',
               }}
             >
-              <Icon size={18} style={{ color, flexShrink: 0, marginTop: 1 }} />
-              <p style={{ flex: 1, margin: 0, fontSize: 13, color: 'var(--color-text)', fontFamily: 'var(--font-body)', lineHeight: 1.4 }}>
+              <Icon size={20} style={{ color, flexShrink: 0, marginTop: 1 }} />
+              <p style={{ flex: 1, margin: 0, fontSize: 14, color: 'var(--color-text)', fontFamily: 'var(--font-body)', lineHeight: 1.5 }}>
                 {t.message}
               </p>
               <button
