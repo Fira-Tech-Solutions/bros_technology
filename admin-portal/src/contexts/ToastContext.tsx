@@ -39,7 +39,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const showToast = useCallback((message: string, type: ToastType = 'info') => {
     const id = Date.now() + Math.random();
     setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 5000);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 10000);
   }, []);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <div
         style={{
           position: 'fixed',
-          top: 20,
+          bottom: 20,
           right: 20,
           zIndex: 9999,
           display: 'flex',
