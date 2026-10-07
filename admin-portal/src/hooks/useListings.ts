@@ -40,6 +40,9 @@ export function useListings() {
   return useQuery({
     queryKey: ['listings'],
     queryFn: () => fetchAll('/api/listings'),
+    // Keep the optimistic entry visible while the background upload completes
+    // and avoid an unnecessary refetch+spinner when navigating back.
+    staleTime: 30_000,
   });
 }
 
@@ -65,15 +68,51 @@ export function useDeleteListing() {
   });
 }
 
+const optimisticListing = (fd: FormData) => {
+  const tempId = `temp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  let attributes: any = {};
+  try {
+    attributes = JSON.parse((fd.get('attributes') as string) || '{}');
+  } catch {}
+  return {
+    id: tempId,
+    tempId,
+    title: (fd.get('title') as string) || 'Untitled Product',
+    description: (fd.get('description') as string) || '',
+    price: parseFloat(fd.get('price') as string) || 0,
+    categoryId: fd.get('categoryId') as string,
+    agentId: fd.get('agentId') as string,
+    status: 'AVAILABLE',
+    stockQuantity: parseInt(fd.get('stockQuantity') as string) || 1,
+    attributes,
+    images: [],
+    category: null,
+    agent: { name: '' },
+    createdAt: new Date().toISOString(),
+    _optimistic: true,
+  };
+};
+
 export function useCreateListing() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (fd: FormData) => post('/api/listings', fd, { timeout: 120000 }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['listings'] });
+    onMutate: async (fd) => {
+      await qc.cancelQueries({ queryKey: ['listings'] });
+      const prev = qc.getQueryData<any[]>(['listings']);
+      const optimistic = optimisticListing(fd);
+      qc.setQueryData<any[]>(['listings'], (old: any[] | undefined) => [optimistic, ...(old || [])]);
+      return { tempId: optimistic.tempId, prev };
+    },
+    onSuccess: (data, _fd, ctx) => {
+      const created = data?.data?.data || data?.data?.listing || data?.data;
+      qc.setQueryData<any[]>(['listings'], (old: any[] | undefined) =>
+        (old || []).map((l) => (l.tempId === ctx?.tempId ? created : l))
+      );
       toast('Product created successfully', 'success');
     },
-    onError: (err: any) => {
+    onError: (err, _fd, ctx) => {
+      if (ctx?.prev) qc.setQueryData<any[]>(['listings'], ctx.prev);
       toast(getErrorMessage(err), 'error');
     },
   });
